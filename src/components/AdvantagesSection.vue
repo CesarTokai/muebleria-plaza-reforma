@@ -3,25 +3,39 @@
     <div class="container advantages-row">
       <div class="adv-card">
         <div class="icon-circle shadow-sm mb-3">
-          <i class="fas fa-truck"></i>
+          <i class="bi bi-truck"></i>
         </div>
         <h4>Envío rápido</h4>
         <p>Recibe tus muebles en tu domicilio</p>
       </div>
       <div class="adv-card">
         <div class="icon-circle shadow-sm mb-3">
-          <i class="fas fa-couch"></i>
+          <i class="bi bi-sofa"></i>
         </div>
         <h4>Personalización</h4>
         <p>Colores y medidas a tu gusto</p>
       </div>
       <div class="adv-card">
         <div class="icon-circle shadow-sm mb-3">
-          <i class="fas fa-credit-card"></i>
+          <i class="bi bi-credit-card-2-back"></i>
         </div>
         <h4>Crédito fácil</h4>
         <p>Pagos cómodos, sin buró</p>
       </div>
+      <div class="adv-card">
+        <div class="icon-circle shadow-sm mb-3">
+          <!-- SVG Mercado Libre (amarillo) -->
+          <svg height="32" viewBox="0 0 48 32">
+            <ellipse cx="24" cy="16" rx="23" ry="12" fill="#ffe600"/>
+            <ellipse cx="24" cy="16" rx="20" ry="10" fill="#fff"/>
+            <path d="M11.5 17.5C15 21.5 33 21.5 36.5 17.5" fill="none" stroke="#ffd600" stroke-width="2"/>
+            <path d="M19.3 17.5c.8-2.2 8.6-2.2 9.4 0" fill="none" stroke="#ffd600" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h4>Pagos por Mercado Libre</h4>
+        <p>Compra segura y protegida</p>
+      </div>
+   
     </div>
   </section>
 </template>
@@ -81,10 +95,18 @@
   font-size: 2.2rem;
   color: #860734;
   transition: color 0.15s;
+  display: block;
 }
 
-.adv-card:hover .icon-circle i {
-  color: #e94e77;
+.icon-circle svg {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: block;
+}
+
+.adv-card:hover .icon-circle i,
+.adv-card:hover .icon-circle svg {
+  filter: brightness(1.2) drop-shadow(0 1px 4px #ffd70055);
 }
 
 .adv-card h4 {

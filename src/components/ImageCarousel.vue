@@ -1,145 +1,195 @@
 <template>
-  <div class="carousel-box">
-    <div class="carousel-inner">
-      <transition name="slide-fade" mode="out-in">
-        <img
-          :src="images[current]"
-          :key="images[current]"
-          class="carousel-img"
-          :alt="'slide-'+current"
-        />
-      </transition>
-      <button class="carousel-btn left" @click="prev">&#10094;</button>
-      <button class="carousel-btn right" @click="next">&#10095;</button>
+  <section class="split-slider">
+    <div class="split-left d-flex flex-column align-items-start justify-content-center px-">
+      <h2 class="mb-3">Calidad y diseño <span>exclusivo</span></h2>
+      <p class="mb-4">Descubre muebles hechos a mano que transforman tu espacio en un verdadero hogar.</p>
+      <router-link to="/productos" class="btn-split-slider">Ver Catálogo</router-link>
     </div>
-    <div class="carousel-dots">
-      <span
-        v-for="(img, i) in images"
-        :key="i"
-        :class="{ active: i === current }"
-        @click="goTo(i)"
-      ></span>
+    <div
+      class="split-right"
+      @mousedown="startDrag"
+      @mousemove="onDrag"
+      @mouseup="endDrag"
+      @mouseleave="endDrag"
+      @touchstart="startDrag"
+      @touchmove="onDrag"
+      @touchend="endDrag"
+    >
+      <div class="slider-track" :style="{ transform: `translateX(-${current * 100}%)` }">
+        <div
+          v-for="(img, i) in images"
+          :key="i"
+          class="slider-img"
+        >
+          <img :src="img" class="img-fluid" />
+        </div>
+      </div>
+      <div class="slider-dots">
+        <span
+          v-for="(img, i) in images"
+          :key="i"
+          :class="{ active: i === current }"
+          @click="goTo(i)"
+        ></span>
+      </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-const props = defineProps({ images: Array })
+import { ref } from 'vue';
 
-const current = ref(0)
-const total = computed(() => props.images.length)
-
-function next() {
-  current.value = (current.value + 1) % total.value
-}
-function prev() {
-  current.value = (current.value - 1 + total.value) % total.value
-}
-function goTo(i) {
-  current.value = i
-}
-
-const images = ref([
+const images = [
   "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1460518451285-97b6aa326961?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=800&q=80",
-  "https://images.pexels.com/photos/1866149/pexels-photo-1866149.jpeg?auto=compress&w=800",
-  "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg?auto=compress&w=800",
-  "https://images.pexels.com/photos/276528/pexels-photo-276528.jpeg?auto=compress&w=800",
-]);
+];
+
+const current = ref(0);
+
+function goTo(i) {
+  current.value = i;
+}
+
+// --- Drag/Swipe logic (desktop + touch)
+let startX = 0;
+let dragging = false;
+
+function startDrag(e) {
+  dragging = true;
+  startX = e.touches ? e.touches[0].clientX : e.clientX;
+}
+function onDrag(e) {
+  if (!dragging) return;
+  let x = e.touches ? e.touches[0].clientX : e.clientX;
+  let diff = x - startX;
+  if (Math.abs(diff) > 60) {
+    if (diff < 0 && current.value < images.length - 1) {
+      current.value++;
+    } else if (diff > 0 && current.value > 0) {
+      current.value--;
+    }
+    dragging = false; // solo un slide por drag
+  }
+}
+function endDrag() {
+  dragging = false;
+}
 </script>
 
 <style scoped>
-.carousel-box {
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto 2.5rem;
+.split-slider {
+  display: flex;
+  width: 120%;
+  min-height: 340px;
+  max-width: 980px; 
+  margin: 2.5rem auto 2.5rem auto;
   background: #fff;
-  border-radius: 22px;
-  box-shadow: 0 8px 32px #86073417;
-  position: relative;
+  border-radius: 26px;
+  box-shadow: 0 10px 38px #86073412;
   overflow: hidden;
-  min-height: 280px;
 }
-.carousel-inner {
-  position: relative;
-  width: 100%;
-  height: 330px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.carousel-img {
-  width: 100%;
-  height: 330px;
-  object-fit: cover;
-  border-radius: 20px;
-  box-shadow: 0 4px 16px #86073413;
-  transition: box-shadow 0.3s;
-}
-.carousel-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(134, 7, 52, 0.8);
-  border: none;
+.split-left {
+  flex: 1 1 50%;
+  background: linear-gradient(95deg, #860734 90%, #ffd70015 100%);
   color: #fff;
+  min-height: 280px;
+  padding: 2.2rem 1.8rem;
+}
+.split-left h2 {
+  font-weight: 800;
   font-size: 2.1rem;
-  border-radius: 50%;
-  width: 42px;
-  height: 42px;
-  cursor: pointer;
-  transition: background 0.18s, box-shadow 0.18s;
-  z-index: 2;
-  box-shadow: 0 2px 8px #86073411;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.89;
+  line-height: 1.1;
+  text-shadow: 0 2px 9px #86073445;
 }
-.carousel-btn:hover {
-  background: #a03b68;
-  box-shadow: 0 3px 15px #86073425;
+.split-left h2 span {
+  color: #ffd700;
+  font-style: italic;
+  font-size: 1.1em;
 }
-.carousel-btn.left { left: 18px; }
-.carousel-btn.right { right: 18px; }
-.carousel-dots {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin: 0.5rem 0 1rem 0;
+.split-left p {
+  font-size: 1.12rem;
+  opacity: 0.97;
+  margin-bottom: 2rem;
 }
-.carousel-dots span {
-  width: 12px; height: 12px;
-  border-radius: 50%;
-  display: inline-block;
-  background: #ccc;
-  cursor: pointer;
-  transition: background 0.18s, transform 0.2s;
+.btn-split-slider {
+  background: linear-gradient(90deg,#ffd700 65%,#860734 120%);
+  color: #860734 !important;
+  padding: 0.7rem 2rem;
+  border-radius: 26px;
+  font-weight: 700;
+  font-size: 1.04rem;
+  box-shadow: 0 3px 14px #ffd70019;
+  border: none;
+  text-decoration: none;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.15s;
 }
-.carousel-dots span.active {
-  background: #860734;
-  transform: scale(1.2);
-  box-shadow: 0 2px 10px #86073420;
+.btn-split-slider:hover {
+  background: linear-gradient(90deg,#ffe66b 50%,#a03b68 100%);
+  color: #6a0530 !important;
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 7px 28px #ffd70029;
 }
 
-/* Animaciones */
-.slide-fade-enter-active, .slide-fade-leave-active {
-  transition: all 0.5s cubic-bezier(.35,1.11,.58,1);
+.split-right {
+  flex: 1 1 50%;
+  position: relative;
+  background: #faf6fa;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: pan-y;
 }
-.slide-fade-enter-from {
-  opacity: 0;
-  transform: translateX(40px);
+.slider-track {
+  display: flex;
+  transition: transform 0.45s cubic-bezier(.7,.04,.38,1.13);
+  width: 100%;
+  height: 100%;
 }
-.slide-fade-leave-to {
-  opacity: 0;
-  transform: translateX(-40px);
+.slider-img {
+  min-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-@media (max-width: 700px) {
-  .carousel-box, .carousel-inner, .carousel-img { height: 210px !important; }
-  .carousel-inner { min-height: 170px !important; }
-  .carousel-img { border-radius: 14px; }
+.slider-img img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: 0 2px 14px #86073415;
+  background: #fff;
+}
+.slider-dots {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 19px;
+  display: flex;
+  justify-content: center;
+  gap: 0.44rem;
+}
+.slider-dots span {
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  background: #ccc;
+  display: inline-block;
+  cursor: pointer;
+  transition: background 0.16s, transform 0.18s;
+}
+.slider-dots span.active {
+  background: #860734;
+  transform: scale(1.18);
+  box-shadow: 0 2px 10px #8607341b;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .split-slider { flex-direction: column; max-width: 97vw; min-height: 330px; }
+  .split-left, .split-right { flex: 1 1 100%; min-height: 180px;}
+  .split-left { padding: 1.1rem 1rem; text-align: center; align-items: center;}
+  .slider-img img { height: 155px; }
 }
 </style>

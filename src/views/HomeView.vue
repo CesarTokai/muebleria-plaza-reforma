@@ -13,7 +13,6 @@
       </div>
     </section>
         <InspirationGallery :images="galleryImages" />
-    <Testimonials :testimonials="testimonialsList" />
     <CtaSection />
     <MapSection />
 
