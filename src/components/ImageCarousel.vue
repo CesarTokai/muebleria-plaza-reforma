@@ -1,9 +1,9 @@
 <template>
   <section class="split-slider">
     <div class="split-left d-flex flex-column align-items-start justify-content-center px-">
-      <h2 class="mb-3">Calidad y diseño <span>exclusivo</span></h2>
+      <h2 class="mb-3">El mejor regalo de mama encuentralo en nuestra sucursal <span></span></h2>
       <p class="mb-4">Descubre muebles hechos a mano que transforman tu espacio en un verdadero hogar.</p>
-      <router-link to="/productos" class="btn-split-slider">Ver Catálogo</router-link>
+      <router-link to="/productos" class="btn-split-slider">Descubre mas</router-link>
     </div>
     <div
       class="split-right"
@@ -37,6 +37,7 @@
 </template>
 
 <script setup>
+import './assets/styles.css'; 
 import { ref } from 'vue';
 
 const images = [
@@ -79,117 +80,5 @@ function endDrag() {
 </script>
 
 <style scoped>
-.split-slider {
-  display: flex;
-  width: 120%;
-  min-height: 340px;
-  max-width: 980px; 
-  margin: 2.5rem auto 2.5rem auto;
-  background: #fff;
-  border-radius: 26px;
-  box-shadow: 0 10px 38px #86073412;
-  overflow: hidden;
-}
-.split-left {
-  flex: 1 1 50%;
-  background: linear-gradient(95deg, #860734 90%, #ffd70015 100%);
-  color: #fff;
-  min-height: 280px;
-  padding: 2.2rem 1.8rem;
-}
-.split-left h2 {
-  font-weight: 800;
-  font-size: 2.1rem;
-  line-height: 1.1;
-  text-shadow: 0 2px 9px #86073445;
-}
-.split-left h2 span {
-  color: #ffd700;
-  font-style: italic;
-  font-size: 1.1em;
-}
-.split-left p {
-  font-size: 1.12rem;
-  opacity: 0.97;
-  margin-bottom: 2rem;
-}
-.btn-split-slider {
-  background: linear-gradient(90deg,#ffd700 65%,#860734 120%);
-  color: #860734 !important;
-  padding: 0.7rem 2rem;
-  border-radius: 26px;
-  font-weight: 700;
-  font-size: 1.04rem;
-  box-shadow: 0 3px 14px #ffd70019;
-  border: none;
-  text-decoration: none;
-  transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.15s;
-}
-.btn-split-slider:hover {
-  background: linear-gradient(90deg,#ffe66b 50%,#a03b68 100%);
-  color: #6a0530 !important;
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 7px 28px #ffd70029;
-}
 
-.split-right {
-  flex: 1 1 50%;
-  position: relative;
-  background: #faf6fa;
-  min-width: 0;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  touch-action: pan-y;
-}
-.slider-track {
-  display: flex;
-  transition: transform 0.45s cubic-bezier(.7,.04,.38,1.13);
-  width: 100%;
-  height: 100%;
-}
-.slider-img {
-  min-width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.slider-img img {
-  width: 100%;
-  height: 260px;
-  object-fit: cover;
-  border-radius: 20px;
-  box-shadow: 0 2px 14px #86073415;
-  background: #fff;
-}
-.slider-dots {
-  position: absolute;
-  left: 0; right: 0;
-  bottom: 19px;
-  display: flex;
-  justify-content: center;
-  gap: 0.44rem;
-}
-.slider-dots span {
-  width: 11px; height: 11px;
-  border-radius: 50%;
-  background: #ccc;
-  display: inline-block;
-  cursor: pointer;
-  transition: background 0.16s, transform 0.18s;
-}
-.slider-dots span.active {
-  background: #860734;
-  transform: scale(1.18);
-  box-shadow: 0 2px 10px #8607341b;
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-  .split-slider { flex-direction: column; max-width: 97vw; min-height: 330px; }
-  .split-left, .split-right { flex: 1 1 100%; min-height: 180px;}
-  .split-left { padding: 1.1rem 1rem; text-align: center; align-items: center;}
-  .slider-img img { height: 155px; }
-}
 </style>

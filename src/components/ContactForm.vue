@@ -57,6 +57,7 @@
 </template>
 
 <script setup>
+import './assets/styles.css'; // Asegúrate de tener estilos para el formulario
 import { ref } from 'vue';
 
 const form = ref({
@@ -119,66 +120,5 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-.contact-form {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 2rem;
-  background: #181515;
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-}
 
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-input, textarea {
-  width: 100%;
-  padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-textarea {
-  min-height: 120px;
-  resize: vertical;
-}
-
-.error {
-  border-color: #ff3860;
-}
-
-.error-message {
-  color: #ff3860;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-  display: block;
-}
-
-button {
-  background-color: #860734;
-  color: white;
-  padding: 0.8rem 1.5rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-button:hover {
-  background-color: #6a0530;
-}
-
-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
 </style>

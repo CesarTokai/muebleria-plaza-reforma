@@ -7,7 +7,6 @@
 </template>
 
 <script setup>
-// main.js o main.ts
 import './assets/styles.css';
 
 import ProductCard from './ProductCard.vue'
