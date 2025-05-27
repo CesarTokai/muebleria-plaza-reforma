@@ -1,41 +1,80 @@
 <template>
   <div class="product-detail">
+    <Navbar />
     <Header />
-    <div class="container">
-      <div class="product-container">
-        <!-- Galería de imágenes -->
-        <div class="gallery">
-          <div class="main-image">
-            <img :src="currentImage" :alt="product.name">
-          </div>
-          <div class="thumbnails">
-            <img 
-              v-for="(img, index) in product.images" 
-              :key="index" 
-              :src="img" 
-              @click="currentImage = img"
-              :class="{ 'active': currentImage === img }"
+
+    <main class="detail-page">
+      <div class="container">
+        <div class="product-container">
+          <!-- Galería de imágenes -->
+          <section class="gallery">
+            <div class="main-image-wrap">
+              <img
+                :src="currentImage"
+                :alt="product.name"
+                class="main-image"
+                @mousemove="onZoom"
+                @mouseleave="resetZoom"
+                ref="zoomImg"
+              />
+            </div>
+            <div class="thumbs-wrap">
+              <button class="thumb-arrow left" @click="scrollThumbs(-1)">‹</button>
+              <div class="thumbnails" ref="thumbs">
+                <img
+                  v-for="(img, i) in product.images"
+                  :key="i"
+                  :src="img"
+                  :class="{ active: currentImage === img }"
+                  @click="currentImage = img"
+                />
+              </div>
+              <button class="thumb-arrow right" @click="scrollThumbs(1)">›</button>
+            </div>
+          </section>
+
+          <!-- Detalles del producto -->
+          <aside class="details">
+            <h1 class="title">{{ product.name }}</h1>
+            <div class="price-stock">
+              <p class="price">${{ product.price.toLocaleString('es-MX') }}</p>
+              <p class="stock" :class="{ 'out': !product.inStock }">
+                {{ product.inStock ? 'En stock' : 'Agotado' }}
+              </p>
+            </div>
+
+            <div class="trust-badges">
+              <span><i class="fas fa-truck"></i> Entrega rápida y segura</span>
+              <span><i class="fas fa-shield-alt"></i> Apartado sin anticipo</span>
+            </div>
+
+            <p class="description">{{ product.description }}</p>
+
+            <div class="features">
+              <h3>Características:</h3>
+              <ul>
+                <li v-for="(f, idx) in product.features" :key="idx">{{ f }}</li>
+              </ul>
+            </div>
+
+            <!-- Botón de Apartar -->
+            <button
+              class="cta-button"
+              :disabled="!product.inStock"
+              @click="reserveProduct"
             >
-          </div>
-        </div>
-
-        <!-- Detalles del producto -->
-        <div class="details">
-          <h1>{{ product.name }}</h1>
-          <p class="price">${{ product.price.toLocaleString('es-MX') }}</p>
-          <p class="description">{{ product.description }}</p>
-          
-          <div class="features">
-            <h3>Características:</h3>
-            <ul>
-              <li v-for="(feature, index) in product.features" :key="index">{{ feature }}</li>
-            </ul>
-          </div>
-
-          <button class="cta-button" @click="addToCart">Añadir al carrito</button>
+              <i class="fab fa-whatsapp"></i>
+              {{ product.inStock ? 'Apartar por WhatsApp' : 'No disponible' }}
+            </button>
+            <div v-if="product.inStock" class="apartado-info">
+              <i class="fas fa-lock"></i>
+              Aparta tu producto sin compromiso. Un asesor te contactará para confirmar tu pedido.
+            </div>
+          </aside>
         </div>
       </div>
-    </div>
+    </main>
+
     <Footer />
   </div>
 </template>
@@ -43,15 +82,19 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import Navbar from '@/components/Navbar.vue';
+import Header from '@/components/Header.vue';
+import Footer from '@/components/Footer.vue';
 
+// Simula los datos (en producción lo traes de la API por ID)
 const route = useRoute();
-const currentImage = ref('');
-
 const product = ref({
   id: route.params.id,
   name: 'Sofá Esquinero "Clásico"',
   price: 12999,
-  description: 'Sofá de alta calidad fabricado en madera de roble con tapicería en piel sintética resistente.',
+  inStock: true,
+  description:
+    'Sofá de alta calidad fabricado en madera de roble con tapicería en piel sintética resistente. Elegante y cómodo, ideal para tu sala.',
   images: [
     '/assets/img/products/sofa-1.jpg',
     '/assets/img/products/sofa-2.jpg',
@@ -61,116 +104,247 @@ const product = ref({
     'Material: Madera de roble y piel sintética',
     'Dimensiones: 220cm x 160cm x 85cm',
     'Color: Café oscuro',
-    'Garantía: 2 años'
+    'Garantía: 2 años',
+    'Entrega a domicilio incluida'
   ]
 });
+
+const currentImage = ref('');
+const thumbs = ref(null);
+const zoomImg = ref(null);
 
 onMounted(() => {
   currentImage.value = product.value.images[0];
 });
 
-const addToCart = () => {
-  alert(`${product.value.name} añadido al carrito`);
-  // Lógica para añadir al carrito (usar Pinia/Vuex en proyecto real)
-};
+// Scroll de miniaturas
+function scrollThumbs(direction) {
+  const el = thumbs.value;
+  el.scrollBy({ left: direction * 100, behavior: 'smooth' });
+}
+
+// Zoom ligero
+function onZoom(e) {
+  const img = zoomImg.value;
+  const rect = img.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+  img.style.transformOrigin = `${x}% ${y}%`;
+  img.style.transform = 'scale(1.8)';
+}
+function resetZoom() {
+  const img = zoomImg.value;
+  img.style.transformOrigin = 'center center';
+  img.style.transform = 'scale(1)';
+}
+
+// Apartar producto
+function reserveProduct() {
+  // WhatsApp directo o cambia el número y mensaje como gustes
+  const phone = '523411223344'; // <--- Tu número, con código país y sin espacios
+  const msg = `Hola, quiero apartar el producto: ${product.value.name} (ID: ${product.value.id})`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+}
 </script>
 
 <style scoped>
+.detail-page {
+  background: #faf6fa;
+  padding: 2.5rem 0 4rem;
+}
 .product-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 3rem;
-  margin: 3rem 0;
+  align-items: flex-start;
+}
+@media (max-width: 900px) {
+  .product-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
 }
 
+/* Galería */
 .gallery {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.3rem;
 }
-
-.main-image img {
+.main-image-wrap {
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px #86073416;
+  background: #fff;
+}
+.main-image {
   width: 100%;
-  height: 400px;
+  height: 380px;
   object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  transition: transform 0.24s;
+  cursor: zoom-in;
 }
-
+@media (max-width: 700px) {
+  .main-image { height: 220px; }
+}
+.thumbs-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
 .thumbnails {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.6rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 3px;
 }
-
 .thumbnails img {
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.3s;
   border: 2px solid transparent;
+  transition: border-color 0.21s, transform 0.21s;
 }
-
-.thumbnails img:hover, 
-.thumbnails img.active {
-  transform: scale(1.05);
+.thumbnails img.active,
+.thumbnails img:hover {
   border-color: #860734;
+  transform: scale(1.07);
 }
-
-.details h1 {
-  font-size: 2.2rem;
-  color: #333;
-  margin-bottom: 1rem;
-}
-
-.price {
-  font-size: 1.8rem;
+.thumb-arrow {
+  background: #fafafa;
+  border: 1px solid #eee;
+  font-size: 1.4rem;
   color: #860734;
+  cursor: pointer;
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  transition: background 0.18s, color 0.18s;
+  box-shadow: 0 2px 8px #86073407;
+}
+.thumb-arrow.left { margin-right: 0.6rem; }
+.thumb-arrow.right { margin-left: 0.6rem; }
+.thumb-arrow:hover {
+  background: #ffd70055;
+  color: #6a0530;
+}
+
+/* Detalles */
+.details {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px #86073412;
+  padding: 2.2rem 2rem 2.4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  min-width: 280px;
+  max-width: 500px;
+  margin: 0 auto;
+  position: relative;
+}
+.title {
+  font-size: 2.2rem;
+  color: #860734;
+  margin-bottom: 1.3rem;
+  font-weight: 900;
+}
+.price-stock {
+  display: flex;
+  align-items: baseline;
+  gap: 1.4rem;
+  margin-bottom: 1.2rem;
+}
+.price {
+  font-size: 1.75rem;
+  color: #ffd700;
+  font-weight: 900;
+  text-shadow: 0 2px 12px #86073412;
+}
+.stock {
+  font-size: 1rem;
+  color: #388e3c;
   font-weight: 700;
-  margin-bottom: 1.5rem;
+  letter-spacing: 0.2px;
+}
+.stock.out { color: #d32f2f; }
+
+.trust-badges {
+  display: flex;
+  gap: 1.4rem;
+  margin-bottom: 1.4rem;
+  flex-wrap: wrap;
+  font-size: 1.07rem;
+  color: #860734;
+}
+.trust-badges i {
+  color: #ffd700;
+  margin-right: 0.32em;
 }
 
 .description {
-  line-height: 1.6;
-  margin-bottom: 2rem;
   color: #555;
+  line-height: 1.5;
+  margin-bottom: 1.2rem;
+  font-size: 1.1rem;
 }
 
-.features {
-  margin-bottom: 2rem;
+.features h3 {
+  margin-bottom: 0.7rem;
+  color: #860734;
+  font-size: 1.17rem;
+  font-weight: 800;
 }
-
 .features ul {
-  list-style-type: disc;
-  padding-left: 1.5rem;
-  margin-top: 0.5rem;
+  list-style: disc;
+  padding-left: 1.4rem;
+  margin-bottom: 1.3rem;
 }
-
 .features li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   color: #555;
+  font-size: 1.04rem;
 }
 
 .cta-button {
-  background-color: #860734;
-  color: white;
-  padding: 1rem 2rem;
+  margin-top: auto;
+  background: #25D366;
+  color: #fff;
+  font-weight: 800;
   border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 30px;
+  font-size: 1.19rem;
+  box-shadow: 0 4px 20px #25d36634;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.2s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  justify-content: center;
 }
-
-.cta-button:hover {
-  background-color: #6a0530;
+.cta-button:disabled {
+  background: #ccc;
+  color: #fff;
+  cursor: not-allowed;
 }
-
-@media (max-width: 768px) {
-  .product-container {
-    grid-template-columns: 1fr;
-  }
+.cta-button:hover:not(:disabled) {
+  background: #128C7E;
+  transform: translateY(-2px) scale(1.04);
+}
+.apartado-info {
+  margin-top: 1.1rem;
+  color: #860734;
+  font-size: 1.06rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  font-weight: 600;
+}
+.apartado-info i {
+  color: #ffd700;
+  font-size: 1.2em;
 }
 </style>

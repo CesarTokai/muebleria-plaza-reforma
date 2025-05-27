@@ -8,7 +8,6 @@
         <p><i class="fas fa-phone"></i> 734 153 2692</p>
         <p><i class="fas fa-clock"></i> Lunes a Sábado <span class="footer-horario">(9:00 AM - 8:00 PM)</span></p>
       </div>
-
       <!-- Beneficios y Métodos de pago -->
       <div class="footer-col footer-benefits">
         <h4><i class="fas fa-star"></i> Beneficios</h4>
@@ -19,35 +18,26 @@
           <li><i class="fas fa-credit-card"></i> Tarjeta, efectivo y meses sin intereses</li>
           <li><i class="fas fa-hand-holding-heart"></i> Garantía de satisfacción</li>
         </ul>
-        <!-- Métodos de pago -->
-         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
         <div class="payment-section">
           <span class="payment-label"><i class="fas fa-shipping-fast"></i> Métodos de pago:</span>
           <div class="payment-icons">
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" title="Visa" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="MasterCard"
-              title="MasterCard" />
-            <img src="https://seeklogo.com/images/M/mercado-pago-logo-0B017F44B8-seeklogo.com.png" alt="Mercado Pago"
-              title="Mercado Pago" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="MasterCard" title="MasterCard" />
+            <img src="https://seeklogo.com/images/M/mercado-pago-logo-0B017F44B8-seeklogo.com.png" alt="Mercado Pago" title="Mercado Pago" />
             <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Logo_Oxxo.svg" alt="Oxxo" title="Oxxo" />
           </div>
         </div>
       </div>
-
       <!-- Descripción -->
       <div class="footer-col footer-description">
         <h4><i class="fas fa-lightbulb"></i> Diseña la vida que tú quieras</h4>
         <p>
           Gaia es la marca mexicana de muebles y accesorios de diseño.<br>
-          Compra rápido, fácil y seguro. Sofás, sillas, mesas, escritorios, cómodas, burós, camas, colchones, lámparas y
-          accesorios en diferentes estilos.<br>
+          Compra rápido, fácil y seguro. Sofás, sillas, mesas, escritorios, cómodas, burós, camas, colchones, lámparas y accesorios en diferentes estilos.<br>
           Proponemos diseños simples y modernos adaptados a tu espacio.<br>
-          <span class="footer-mision">Nuestra misión: empoderarte a seguir soñando y diseñar la vida que tú
-            quieras.</span>
+          <span class="footer-mision">Nuestra misión: empoderarte a seguir soñando y diseñar la vida que tú quieras.</span>
         </p>
       </div>
-
       <!-- Redes sociales -->
       <div class="footer-col footer-social">
         <h4><i class="fas fa-share-alt"></i> Síguenos</h4>
@@ -70,13 +60,11 @@
   </footer>
 </template>
 
-<script setup>
 
-import './assets/styles.css';
+<script setup>
 </script>
 
-<style scoped>
-.footer-section {
+<style scoped>.footer-section {
   background: linear-gradient(120deg, #860734 80%, #440224 100%);
   color: #fff;
   padding: 3rem 0 1rem 0;
@@ -88,75 +76,37 @@ import './assets/styles.css';
 
 .footer-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
+  flex-direction: row;      /* <-- siempre en fila en desktop */
+  flex-wrap: nowrap;        /* <-- no saltes a otra fila en desktop */
+  gap: 1.5rem;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: stretch;     /* <-- iguala la altura de las columnas */
+  width: 100%;
 }
 
+/* Haz todas las columnas iguales, pero la descripción un poco más ancha */
 .footer-col {
   flex: 1 1 240px;
   min-width: 210px;
-  max-width: 350px;
+  max-width: 340px;
   margin-bottom: 1.5rem;
   padding: 1.2rem 1rem 0.8rem 1rem;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255,255,255,0.03);
   box-shadow: 0 2px 18px #86073413;
-}
-
-.footer-col h4 {
-  margin-bottom: 1.2rem;
-  font-weight: 800;
-  font-size: 1.15rem;
-  color: #ffd700;
-  letter-spacing: 1px;
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
-.footer-col ul {
-  list-style: none;
-  padding-left: 0;
-  margin-bottom: 0.8rem;
-}
-
-.footer-col li,
-.footer-col a,
-.footer-col p {
-  color: #fff;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  letter-spacing: 0.2px;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
+/* Solo la descripción: más ancha */
+.footer-description {
+  flex: 2.2 1 390px !important;
+  min-width: 260px;
+  max-width: 600px;
   font-size: 1rem;
-}
-
-.footer-col li i,
-.footer-col a i {
-  color: #ffd700;
-  min-width: 1.3em;
-}
-
-.footer-mision {
-  color: #ffd700;
-  font-style: italic;
-  display: block;
-  margin-top: 0.6em;
-}
-
-.payment-section {
-  margin-top: 1.3em;
-}
-
-.payment-label {
-  font-weight: 700;
-  color: #fffde6;
-  margin-bottom: 0.7em;
-  display: block;
+  line-height: 1.7;
+  color: #ffe6f0;
 }
 
 .payment-icons {
@@ -164,6 +114,7 @@ import './assets/styles.css';
   align-items: center;
   gap: 12px;
   margin-top: 0.4em;
+  flex-wrap: wrap;
 }
 
 .payment-icons img {
@@ -171,9 +122,12 @@ import './assets/styles.css';
   border-radius: 7px;
   box-shadow: 0 1px 6px #0002;
   padding: 3px 8px;
-  height: 28px;
+  height: 38px;              /* <-- TAMAÑO MÁXIMO! */
+  max-width: 70px;           /* <-- Ajusta el máximo ancho */
+  object-fit: contain;
   transition: box-shadow 0.2s, transform 0.16s;
   border: 1px solid #eee;
+  margin-bottom: 3px;
 }
 
 .payment-icons img:hover {
@@ -181,87 +135,35 @@ import './assets/styles.css';
   transform: scale(1.09) rotate(-2deg);
 }
 
-.footer-social-links {
-  display: flex;
-  gap: 1.3rem;
-  margin-bottom: 0.6rem;
-}
 
-.footer-social-links a {
-  color: #ffd700;
-  background: #fff2;
-  border-radius: 50%;
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  transition: background 0.2s, color 0.19s, transform 0.19s;
+@media (max-width: 1150px) {
+  .footer-row {
+    flex-wrap: wrap;          /* Apila columnas en móvil/tablet */
+  }
+  .footer-col {
+    min-width: 220px;
+    max-width: 95vw;
+  }
+  .footer-description {
+    max-width: 98vw;
+  }
 }
-
-.footer-social-links a:hover {
-  background: #fff5;
-  color: #fff;
-  transform: translateY(-4px) scale(1.09);
-}
-
-.footer-ayuda {
-  margin-top: 1.4em;
-}
-
-.footer-ayuda h4 {
-  color: #ffd700;
-  font-size: 1.09rem;
-  margin-bottom: 0.5rem;
-  gap: 0.4rem;
-}
-
-.footer-ayuda a {
-  color: #fff;
-  font-weight: 600;
-  font-size: 0.97rem;
-  margin-right: 1.3rem;
-}
-
-.footer-ayuda a i {
-  color: #25D366;
-  margin-right: 0.5em;
-}
-
-.footer-horario {
-  color: #ffd700;
-  font-size: 0.95em;
-  margin-left: 0.5em;
-}
-
-.footer-description {
-  font-size: 0.99rem;
-  line-height: 1.6;
-  color: #ffe6f0;
-}
-
-@media (max-width: 950px) {
+@media (max-width: 850px) {
   .footer-row {
     flex-direction: column;
     align-items: center;
-    gap: 1.2rem;
   }
-
   .footer-col {
-    width: 99%;
-    max-width: 570px;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 1.3rem;
     text-align: center;
   }
+  .footer-description {
+    width: 100%;
+    max-width: 99vw;
+    font-size: 0.99rem;
+  }
 }
 
-.footer-copyright {
-  margin-top: 1.8rem;
-  color: #ffd700e3;
-  font-size: 0.99rem;
-  text-align: center;
-  letter-spacing: 0.8px;
-  border-top: 1px solid #ffd70022;
-  padding-top: 0.7rem;
-}
 </style>
