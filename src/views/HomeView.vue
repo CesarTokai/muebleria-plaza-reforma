@@ -22,6 +22,17 @@
     <Testimonials :testimonials="testimonialsList" />
 
     <Footer />
+    <!-- Botón flotante de WhatsApp -->
+<a
+  href="https://wa.me/521XXXXXXXXXX?text=¡Hola!%20Quiero%20más%20información%20sobre%20sus%20muebles."
+  class="whatsapp-float"
+  target="_blank"
+  rel="noopener"
+  aria-label="Chatea por WhatsApp"
+>
+  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg" alt="WhatsApp" />
+</a>
+
   </div>
 </template>
 
@@ -79,4 +90,47 @@ const featuredProducts = [
 ]
 </script>
 
-<style scoped></style>
+<style scoped>
+
+.whatsapp-float {
+  position: fixed;
+  bottom: 24px;
+  right: 22px;
+  z-index: 9999;
+  background: #25D366;
+  border-radius: 50%;
+  box-shadow: 0 4px 18px #25d36653;
+  width: 61px;
+  height: 61px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.17s, box-shadow 0.16s;
+  animation: waPop 0.7s;
+}
+.whatsapp-float img {
+  width: 37px;
+  height: 37px;
+  filter: brightness(1.13) drop-shadow(0 2px 8px #25d36655);
+}
+.whatsapp-float:hover {
+  transform: scale(1.08) translateY(-3px);
+  box-shadow: 0 7px 25px #25d36685;
+}
+@media (max-width: 700px) {
+  .whatsapp-float {
+    width: 52px;
+    height: 52px;
+    bottom: 18px;
+    right: 12px;
+  }
+  .whatsapp-float img {
+    width: 29px;
+    height: 29px;
+  }
+}
+@keyframes waPop {
+  0% { transform: scale(0.5) translateY(40px); opacity: 0;}
+  100% { transform: scale(1) translateY(0); opacity: 1;}
+}
+</style>
