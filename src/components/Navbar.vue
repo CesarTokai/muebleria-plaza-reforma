@@ -47,7 +47,6 @@ const navItems = [
   { name: "Oficina", to: "/oficina" },
   { name: "Cocinas", to: "/cocinas" },
   { name: "Bebés y niños", to: "/bebes-ninos" },
-  { name: "Decoración", to: "/decoracion" },
   { name: "Contacto", to: "/contacto" }
 ];
 

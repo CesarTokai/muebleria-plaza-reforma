@@ -36,7 +36,7 @@ const benefits = [
       </svg>
     `,
     title: 'ENVIOS A TODO MÉXICO',
-    desc: 'Realizamos entregas gratuitas en GDL. A Puerto Vallarta por solo el 5% del valor de su pedido. Envíos a toda la república mediante fleteras aliadas, cotiza por chat!'
+    desc: 'Realizamos entregas gratuitas en GDL. A toda la zona sur por solo el 5% del valor de su pedido. Envíos a toda la república mediante fleteras aliadas, cotiza por chat!'
   },
   {
     icon: `
@@ -48,7 +48,7 @@ const benefits = [
       </svg>
     `,
     title: 'OFERTAS INCREIBLES',
-    desc: 'Descubre las mejores ofertas en nuestros Modelos! Además, recibe una garantía de 1 año al comprar cualquier producto en Muebles Laffayette.'
+    desc: 'Descubre las mejores ofertas en nuestros Modelos! Además, recibe una garantía de 1 año al comprar cualquier producto en Muebles.'
   },
   {
     icon: `
@@ -59,8 +59,8 @@ const benefits = [
         <rect x="36" y="35" width="6" height="7" rx="2" fill="#176C5B"/>
       </svg>
     `,
-    title: '+40 AÑOS',
-    desc: 'Contamos con más de 40 años de experiencia y 4 Sucursales en Jalisco, ofreciendo Muebles de Calidad a Precios Justos.'
+    title: '+20 AÑOS',
+    desc: 'Contamos con más de 20 años de experiencia y  Sucursales en morelos, ofreciendo Muebles de Calidad a Precios Justos.'
   },
 ];
 </script>
