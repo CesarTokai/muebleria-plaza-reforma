@@ -40,7 +40,7 @@ function closeMenu() {
 
 const navItems = [
   { name: "Inicio", to: "/" },
-  { name: "Electrodomésticos", to: "/productos" },
+  { name: "Todos los productos", to: "/productos" },
   { name: "Camas", to: "/camas" },
   { name: "Salas", to: "/salas" },
   { name: "Comedores", to: "/comedores" },

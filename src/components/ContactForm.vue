@@ -310,7 +310,7 @@ textarea.error {
 
 button[type="submit"] {
   background: linear-gradient(90deg, #a81552 65%, #860734 100%);
-  color: #fffde6;
+  color: #ff23146e;
   font-weight: 700;
   font-size: 1.09rem;
   border: none;
@@ -319,7 +319,7 @@ button[type="submit"] {
   cursor: pointer;
   margin-top: 0.3em;
   transition: background 0.15s, color 0.13s, box-shadow 0.16s, transform 0.13s;
-  box-shadow: 0 2px 9px #ffffff;
+  box-shadow: 0 2px 9px #963b3b;
   width: 100%;
 }
 

@@ -5,14 +5,37 @@
     <main class="products-page">
       <div class="container">
         <h1 class="main-title">Catálogo de Productos</h1>
+
+        <!-- Buscador y filtros -->
         <div class="filters">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Buscar producto..."
+            v-model="searchTerm"
+          />
           <select v-model="selectedCategory">
             <option value="">Todas las categorías</option>
             <option v-for="cat in categories" :key="cat.value" :value="cat.value">
               {{ cat.label }}
             </option>
           </select>
+          <input
+            type="number"
+            class="price-input"
+            placeholder="Precio mínimo"
+            v-model.number="minPrice"
+            min="0"
+          />
+          <input
+            type="number"
+            class="price-input"
+            placeholder="Precio máximo"
+            v-model.number="maxPrice"
+            min="0"
+          />
         </div>
+
         <div class="gallery-grid">
           <div
             v-for="product in filteredProducts"
@@ -29,11 +52,11 @@
             <div class="product-info">
               <h4 class="product-name">{{ product.name }}</h4>
               <span class="product-price">${{ product.price.toLocaleString('es-MX') }}</span>
-<button class="product-btn" @click="goToProduct(product.id)">Ver detalles</button>
+              <button class="product-btn" @click="goToProduct(product.id)">Ver detalles</button>
             </div>
           </div>
           <div v-if="filteredProducts.length === 0" class="no-products">
-            No hay productos en esta categoría.
+            No hay productos que coincidan con la búsqueda o los filtros.
           </div>
         </div>
       </div>
@@ -48,7 +71,6 @@ import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 import Navbar from '../components/Navbar.vue'
 import { ref, computed } from 'vue'
-
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
@@ -61,21 +83,32 @@ const products = [
   { id: 1, name: 'Sofá Esquinero', price: 12999, category: 'salas', img: '/assets/img/products/sofa.jpg' },
   { id: 2, name: 'Mesa de Centro', price: 5999, category: 'salas', img: '/assets/img/products/mesa.jpg' },
   { id: 3, name: 'Cama King Size', price: 15499, category: 'recamaras', img: '/assets/img/products/cama.jpg' },
-]
+  { id: 4, name: 'Buro Moderno', price: 1899, category: 'recamaras', img: '/assets/img/products/buro.jpg' },
+  { id: 5, name: 'Silla Lounge', price: 3800, category: 'salas', img: '/assets/img/products/silla.jpg' },
+  // ...agrega más productos aquí
+];
 
 const categories = [
   { value: 'salas', label: 'Salas' },
   { value: 'recamaras', label: 'Recámaras' },
-  // Puedes agregar más aquí, solo agrega en tu arreglo y aparecerán.
-]
+  // ...agrega más categorías si quieres
+];
 
-const selectedCategory = ref('')
+const selectedCategory = ref('');
+const searchTerm = ref('');
+const minPrice = ref('');
+const maxPrice = ref('');
 
 const filteredProducts = computed(() => {
-  return selectedCategory.value
-    ? products.filter(p => p.category === selectedCategory.value)
-    : products
-})
+  return products.filter(product => {
+    const matchesCategory = !selectedCategory.value || product.category === selectedCategory.value;
+    const matchesSearch = !searchTerm.value ||
+      product.name.toLowerCase().includes(searchTerm.value.toLowerCase());
+    const matchesMinPrice = !minPrice.value || product.price >= minPrice.value;
+    const matchesMaxPrice = !maxPrice.value || product.price <= maxPrice.value;
+    return matchesCategory && matchesSearch && matchesMinPrice && matchesMaxPrice;
+  });
+});
 </script>
 
 <style scoped>
@@ -89,32 +122,42 @@ const filteredProducts = computed(() => {
   text-align: center;
   color: #860734;
   font-size: 2.2rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.2rem;
   font-weight: 900;
   letter-spacing: 1px;
 }
 
+/* Filtros */
 .filters {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 2.5rem;
   gap: 1rem;
+  margin-bottom: 2.2rem;
 }
-
+.filters input,
 .filters select {
-  padding: 0.7rem 1.5rem;
-  border: 2px solid #860734;
+  padding: 0.62rem 1.2rem;
   border-radius: 7px;
-  font-size: 1.1rem;
-  background: #fff;
-  color: #333;
-  box-shadow: 0 2px 8px #86073410;
+  font-size: 1.07rem;
+  border: 2px solid #860734;
+  background: #fffdfa;
+  color: #3a223a;
+  box-shadow: 0 2px 8px #86073412;
   outline: none;
-  transition: border-color 0.2s;
+  min-width: 160px;
+  transition: border-color 0.2s, box-shadow 0.15s;
 }
-
-.filters select:focus {
+.filters select:focus,
+.filters input:focus {
   border-color: #e94e77;
+  box-shadow: 0 0 0 2px #ffd70055;
+}
+.search-input {
+  min-width: 200px;
+}
+.price-input {
+  width: 130px;
 }
 
 .gallery-grid {
@@ -221,5 +264,7 @@ const filteredProducts = computed(() => {
   }
   .product-img-wrap { height: 150px; }
   .product-card { padding: 1.1rem 0.4rem; }
+  .filters { flex-direction: column; gap: 0.6rem; }
+  .search-input { min-width: 98vw; width: 98vw; }
 }
 </style>
