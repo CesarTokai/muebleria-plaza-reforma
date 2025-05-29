@@ -98,7 +98,7 @@ onUnmounted(() => {
 }
 .menu-toggle {
   display: none;
-  background: none;
+  background: rgba(255,255,255,0.13); /* Fondo sutil para visibilidad */
   border: none;
   outline: none;
   cursor: pointer;
@@ -107,9 +107,15 @@ onUnmounted(() => {
   width: 35px;
   height: 32px;
   margin-left: auto;
-  z-index: 100;
+  z-index: 200; /* Aumenta el z-index para estar por encima del nav */
   justify-content: center;
   align-items: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #86073422;
+  transition: background 0.18s;
+}
+.menu-toggle:hover {
+  background: #ffd70033;
 }
 .menu-toggle span {
   display: block;
@@ -119,6 +125,7 @@ onUnmounted(() => {
   border-radius: 4px;
   background: #fff;
   transition: all 0.33s cubic-bezier(.55,.06,.68,.19);
+  box-shadow: 0 1px 4px #86073422;
 }
 .menu-toggle span.open:nth-child(1) {
   transform: rotate(45deg) translate(6px, 6px);
