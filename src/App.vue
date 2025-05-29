@@ -16,4 +16,16 @@ body, #app {
   background: #fff !important;
   display: block !important;
 }
+
+/* App.vue o main.css (NO en v-scroll-animate.js) */
+.before-enter {
+  opacity: 0;
+  transform: translateX(60px); /* Cambia a -60px, Y, etc. según el efecto */
+  transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
+  will-change: opacity, transform;
+}
+.enter {
+  opacity: 1;
+  transform: translateX(0);
+}
 </style>
