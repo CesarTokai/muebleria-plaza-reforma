@@ -45,7 +45,6 @@ const navItems = [
   { name: "Salas", to: "/salas" },
   { name: "Comedores", to: "/comedores" },
   { name: "Oficina", to: "/oficina" },
-  { name: "Cocinas", to: "/cocinas" },
   { name: "Bebés y niños", to: "/bebes-ninos" },
   { name: "Contacto", to: "/contacto" }
 ];
@@ -78,7 +77,7 @@ onUnmounted(() => {
   max-width: 1250px;
   margin: 0 auto;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center; /* <-- Cambia esto */
   align-items: center;
   gap: 2rem;
   padding-left: 2rem;
@@ -134,7 +133,8 @@ onUnmounted(() => {
   display: flex;
   gap: 1.5rem;
   align-items: center;
-  margin-left: auto;
+  justify-content: center; /* <-- Agrega esto */
+  /* elimina o comenta margin-left: auto; */
   transition: all 0.24s;
 }
 .nav-link {

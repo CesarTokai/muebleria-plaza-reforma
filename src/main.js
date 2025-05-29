@@ -1,7 +1,10 @@
 import { createApp } from 'vue'
-import router from './router';
 import App from './App.vue'
+import scrollAnimate from './directives/v-scroll-animate'
+import router from './router';
 import './components/assets/styles.css';
 
 
-createApp(App).use(router).mount('#app')
+const app = createApp(App)
+app.directive('scroll-animate', scrollAnimate)
+app.use(router).mount('#app')

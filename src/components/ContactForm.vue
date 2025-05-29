@@ -91,12 +91,13 @@
           </div>
         </section>
       </div>
-    </main>
-
-    <!-- WhatsApp flotante -->
+      <!-- WhatsApp flotante -->
     <a :href="whatsAppUrl" class="whatsapp-float" target="_blank" aria-label="WhatsApp">
       <i class="fab fa-whatsapp"></i>
     </a>
+    </main>
+
+    
 
 </template>
 
@@ -493,6 +494,12 @@ button[type="submit"]:disabled {
 .whatsapp-float:hover {
   background: #128C7E;
   transform: scale(1.09);
+}
+
+.whatsapp-float i {
+  color: #fff !important;
+  font-size: 1.4em;
+  line-height: 1;
 }
 
 @keyframes floatWhats {

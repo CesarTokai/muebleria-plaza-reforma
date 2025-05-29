@@ -23,8 +23,6 @@
           <div class="payment-icons">
             <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" title="Visa" />
             <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="MasterCard" title="MasterCard" />
-            <img src="https://seeklogo.com/images/M/mercado-pago-logo-0B017F44B8-seeklogo.com.png" alt="Mercado Pago" title="Mercado Pago" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Logo_Oxxo.svg" alt="Oxxo" title="Oxxo" />
           </div>
         </div>
       </div>
@@ -166,4 +164,10 @@
   }
 }
 
+.footer-copyright {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 1rem;
+  color: #ffe6f0;
+}
 </style>

@@ -1,38 +1,55 @@
 <template>
   <div>
     <Navbar />
-    <Header />
-
-
-    <ImageCarousel :images="carouselImages" />
-    <AdvantagesSection />
-    <MisionVision />
-
-    <HeroBanner />
-    <section class="featured-section">
+    <div v-scroll-animate>
+      <Header />
+    </div>
+    <div v-scroll-animate>
+      <ImageCarousel :images="carouselImages" />
+    </div>
+    <div v-scroll-animate>
+      <AdvantagesSection />
+    </div>
+    <div v-scroll-animate>
+      <MisionVision />
+    </div>
+    <div v-scroll-animate>
+      <HeroBanner />
+    </div>
+    <section class="featured-section" v-scroll-animate>
       <div class="container">
         <h2 class="featured-title">Productos Destacados</h2>
         <ProductGallery :products="featuredProducts" />
       </div>
     </section>
-    <InspirationGallery :images="galleryImages" />
-    <CtaSection />
-    <BenefitsSection />
-    <MapSection />
-    <Testimonials :testimonials="testimonialsList" />
-
-    <Footer />
+    <div v-scroll-animate>
+      <InspirationGallery :images="galleryImages" />
+    </div>
+    <div v-scroll-animate>
+      <CtaSection />
+    </div>
+    <div v-scroll-animate>
+      <BenefitsSection />
+    </div>
+    <div v-scroll-animate>
+      <MapSection />
+    </div>
+    <div v-scroll-animate>
+      <Testimonials :testimonials="testimonialsList" />
+    </div>
+    <div v-scroll-animate>
+      <Footer />
+    </div>
     <!-- Botón flotante de WhatsApp -->
-<a
-  href="https://wa.me/521XXXXXXXXXX?text=¡Hola!%20Quiero%20más%20información%20sobre%20sus%20muebles."
-  class="whatsapp-float"
-  target="_blank"
-  rel="noopener"
-  aria-label="Chatea por WhatsApp"
->
-  <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg" alt="WhatsApp" />
-</a>
-
+    <a
+      href="https://wa.me/521XXXXXXXXXX?text=¡Hola!%20Quiero%20más%20información%20sobre%20sus%20muebles."
+      class="whatsapp-float"
+      target="_blank"
+      rel="noopener"
+      aria-label="Chatea por WhatsApp"
+    >
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg" alt="WhatsApp" />
+    </a>
   </div>
 </template>
 
