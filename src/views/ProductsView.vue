@@ -37,10 +37,12 @@
         </div>
 
         <div class="gallery-grid">
+          <div v-if="loadingProducts" class="no-products">Cargando productos...</div>
           <div
             v-for="product in filteredProducts"
             :key="product.id"
             class="product-card"
+            v-else
           >
             <div class="product-img-wrap">
               <img
@@ -55,7 +57,7 @@
               <button class="product-btn" @click="goToProduct(product.id)">Ver detalles</button>
             </div>
           </div>
-          <div v-if="filteredProducts.length === 0" class="no-products">
+          <div v-if="!loadingProducts && filteredProducts.length === 0" class="no-products">
             No hay productos que coincidan con la búsqueda o los filtros.
           </div>
         </div>
@@ -70,7 +72,8 @@ import '../components/assets/Styles.css';
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 import Navbar from '../components/Navbar.vue'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import axiosConfig from '../config/AxiosConfig.js'
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
@@ -79,14 +82,28 @@ function goToProduct(id) {
 }
 
 // Simula tus productos (después los traerás de la API)
-const products = [
-  { id: 1, name: 'Sofá Esquinero', price: 12999, category: 'salas', img: '/assets/img/products/sofa.jpg' },
-  { id: 2, name: 'Mesa de Centro', price: 5999, category: 'salas', img: '/assets/img/products/mesa.jpg' },
-  { id: 3, name: 'Cama King Size', price: 15499, category: 'recamaras', img: '/assets/img/products/cama.jpg' },
-  { id: 4, name: 'Buro Moderno', price: 1899, category: 'recamaras', img: '/assets/img/products/buro.jpg' },
-  { id: 5, name: 'Silla Lounge', price: 3800, category: 'salas', img: '/assets/img/products/silla.jpg' },
-  // ...agrega más productos aquí
-];
+const products = ref([])
+const loadingProducts = ref(false)
+
+async function fetchProducts() {
+  loadingProducts.value = true
+  try {
+    const res = await axiosConfig.doGet('/furniture/')
+    products.value = res.data.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      category: item.category,
+      img: item.img_base64 || '/assets/img/products/default.jpg',
+    }))
+  } catch (e) {
+    products.value = []
+  } finally {
+    loadingProducts.value = false
+  }
+}
+
+onMounted(fetchProducts)
 
 const categories = [
   { value: 'salas', label: 'Salas' },
@@ -100,7 +117,7 @@ const minPrice = ref('');
 const maxPrice = ref('');
 
 const filteredProducts = computed(() => {
-  return products.filter(product => {
+  return products.value.filter(product => {
     const matchesCategory = !selectedCategory.value || product.category === selectedCategory.value;
     const matchesSearch = !searchTerm.value ||
       product.name.toLowerCase().includes(searchTerm.value.toLowerCase());

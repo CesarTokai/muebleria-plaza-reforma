@@ -12,7 +12,8 @@
     <section class="featured-section">
       <div class="container">
         <h2 class="featured-title">Productos Destacados</h2>
-        <ProductGallery :products="featuredProducts" />
+        <div v-if="loadingFeatured">Cargando productos...</div>
+        <ProductGallery v-else :products="featuredProducts" />
       </div>
     </section>
     <InspirationGallery :images="galleryImages" />
@@ -50,7 +51,8 @@ import InspirationGallery from '../components/InspirationGallery.vue';
 import Testimonials from '../components/Testimonials.vue';
 import CtaSection from '../components/CtaSection.vue';
 import MapSection from '../components/MapSection.vue';
-
+import { ref, onMounted } from 'vue';
+import axiosConfig from '../config/AxiosConfig.js';
 
 
 
@@ -82,12 +84,29 @@ const testimonialsList = [
   }
 ]
 
+const featuredProducts = ref([]);
+const loadingFeatured = ref(false);
 
+async function fetchFeaturedProducts() {
+  loadingFeatured.value = true;
+  try {
+    const res = await axiosConfig.doGet('/furniture/');
+    // Puedes filtrar aquí si quieres solo algunos destacados, por ahora muestra los primeros 6
+    featuredProducts.value = res.data.slice(0, 6).map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      img: item.img_base64 || '/assets/img/products/default.jpg',
+      // Puedes agregar más campos si ProductGallery los usa
+    }));
+  } catch (e) {
+    featuredProducts.value = [];
+  } finally {
+    loadingFeatured.value = false;
+  }
+}
 
-const featuredProducts = [
-  { id: 1, name: 'Sofá Esquinero "Clásico"', price: 12999, img: '/assets/img/products/sofa.jpg' },
-  { id: 2, name: 'Mesa de Centro Roble', price: 5999, img: '/assets/img/products/mesa.jpg' }
-]
+onMounted(fetchFeaturedProducts);
 </script>
 
 <style scoped>

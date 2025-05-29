@@ -167,20 +167,24 @@ watch(perPage, () => {
   justify-content: center;
 }
 .testimonial-card {
-  background: #fff;
-  border-radius: 1.2rem;
-  box-shadow: 0 4px 22px #86073413;
-  padding: 1.6rem 1.2rem 1.3rem 1.2rem;
-  min-width: 220px;
-  max-width: 350px;
+  background: linear-gradient(135deg, #fffdfa 70%, #ffe8fa 100%);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px #86073433, 0 2px 10px #ffd70022;
+  padding: 2.1rem 1.5rem 1.7rem 1.5rem;
+  min-width: 240px;
+  max-width: 370px;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 1.5px solid #fff4f8;
-  transition: box-shadow 0.18s;
+  border: 2.5px solid #fff4f8;
+  transition: box-shadow 0.22s, transform 0.18s;
   text-align: center;
   position: relative;
+}
+.testimonial-card:hover {
+  box-shadow: 0 12px 40px #86073444, 0 4px 18px #ffd70033;
+  transform: translateY(-6px) scale(1.04);
 }
 .testimonial-icon {
   margin-bottom: 1.2rem;
@@ -236,7 +240,7 @@ watch(perPage, () => {
 }
 @media (max-width: 1024px) {
   .testimonial-list { gap: 1.1rem; }
-  .testimonial-card { min-width: 190px; max-width: 280px;}
+  .testimonial-card { min-width: 190px; max-width: 280px; padding: 1.2rem 0.7rem 1rem 0.7rem;}
 }
 @media (max-width: 600px) {
   .testimonials-section { padding: 1.4rem 0 1.4rem 0; border-radius: 1.2rem; }

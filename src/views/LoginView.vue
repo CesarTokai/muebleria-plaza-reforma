@@ -3,8 +3,8 @@
     <form class="login-form" @submit.prevent="handleLogin">
       <h2>Iniciar sesión</h2>
       <div class="form-group">
-        <label for="username">Usuario</label>
-        <input v-model="username" id="username" type="text" required />
+        <label for="email">Ingresa tu correo electronico</label>
+        <input v-model="email" id="email" type="text" required />
       </div>
       <div class="form-group">
         <label for="password">Contraseña</label>
@@ -21,7 +21,7 @@ import { ref } from 'vue';
 import axios from '../config/AxiosConfig';
 import { useRouter } from 'vue-router';
 
-const username = ref('');
+const email = ref('');
 const password = ref('');
 const error = ref('');
 const loading = ref(false);
@@ -31,9 +31,9 @@ async function handleLogin() {
   error.value = '';
   loading.value = true;
   try {
-    const res = await axios.doPost('/login', { username: username.value, password: password.value });
-    if (res.data && res.data.token) {
-      localStorage.setItem('token', res.data.token);
+    const res = await axios.doPost('/login', { email: email.value, password: password.value });
+    if (res.data && (res.data.token || res.data.access_token)) {
+      localStorage.setItem('token', res.data.token || res.data.access_token);
       router.push('/admin');
     } else {
       error.value = 'Credenciales incorrectas';

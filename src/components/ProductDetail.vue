@@ -5,7 +5,9 @@
 
     <main class="detail-page">
       <div class="container">
-        <div class="product-container">
+        <div v-if="loading" class="no-products">Cargando producto...</div>
+        <div v-else-if="error" class="no-products">{{ error }}</div>
+        <div v-else class="product-container">
           <!-- Galería de imágenes -->
           <section class="gallery">
             <div class="main-image-wrap">
@@ -50,7 +52,7 @@
 
             <p class="description">{{ product.description }}</p>
 
-            <div class="features">
+            <div class="features" v-if="product.features.length">
               <h3>Características:</h3>
               <ul>
                 <li v-for="(f, idx) in product.features" :key="idx">{{ f }}</li>
@@ -80,42 +82,59 @@
 </template>
 
 <script setup>
+import axiosConfig from '../config/AxiosConfig.js';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import Navbar from '@/components/Navbar.vue';
 import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
 
-// Simula los datos (en producción lo traes de la API por ID)
 const route = useRoute();
 const product = ref({
   id: route.params.id,
-  name: 'Sofá Esquinero "Clásico"',
-  price: 12999,
+  name: '',
+  price: 0,
   inStock: true,
-  description:
-    'Sofá de alta calidad fabricado en madera de roble con tapicería en piel sintética resistente. Elegante y cómodo, ideal para tu sala.',
-  images: [
-    '/assets/img/products/sofa-1.jpg',
-    '/assets/img/products/sofa-2.jpg',
-    '/assets/img/products/sofa-3.jpg'
-  ],
-  features: [
-    'Material: Madera de roble y piel sintética',
-    'Dimensiones: 220cm x 160cm x 85cm',
-    'Color: Café oscuro',
-    'Garantía: 2 años',
-    'Entrega a domicilio incluida'
-  ]
+  description: '',
+  images: [],
+  features: []
 });
-
 const currentImage = ref('');
 const thumbs = ref(null);
 const zoomImg = ref(null);
+const loading = ref(true);
+const error = ref('');
 
-onMounted(() => {
-  currentImage.value = product.value.images[0];
-});
+async function fetchProduct() {
+  loading.value = true;
+  try {
+    const res = await axiosConfig.doGet(`/furniture/${route.params.id}`);
+    const item = res.data;
+    product.value = {
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      inStock: item.stock > 0,
+      description: item.description,
+      images: item.img_base64 ? [item.img_base64] : ['/assets/img/products/default.jpg'],
+      features: [
+        item.brand ? `Marca: ${item.brand}` : null,
+        item.color ? `Color: ${item.color}` : null,
+        item.material ? `Material: ${item.material}` : null,
+        item.dimensions ? `Dimensiones: ${item.dimensions}` : null,
+        item.category ? `Categoría: ${item.category}` : null,
+        `Stock: ${item.stock}`
+      ].filter(Boolean)
+    };
+    currentImage.value = product.value.images[0];
+  } catch (e) {
+    error.value = 'No se pudo cargar el producto.';
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(fetchProduct);
 
 // Scroll de miniaturas
 function scrollThumbs(direction) {
@@ -179,14 +198,14 @@ function reserveProduct() {
 }
 .main-image {
   width: 100%;
-  height: 380px;
+  height: 480px;
   object-fit: cover;
   border-radius: 12px;
   transition: transform 0.24s;
   cursor: zoom-in;
 }
 @media (max-width: 700px) {
-  .main-image { height: 220px; }
+  .main-image { height: 300px; }
 }
 .thumbs-wrap {
   position: relative;
