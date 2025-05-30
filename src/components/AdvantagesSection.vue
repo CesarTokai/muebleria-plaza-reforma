@@ -10,7 +10,12 @@
       </div>
       <div class="adv-card">
         <div class="icon-circle shadow-sm mb-3">
-          <i class="bi bi-sofa"></i>
+          <!-- Icono personalizado para Personalización -->
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="15" fill="#ffd700" stroke="#860734" stroke-width="2"/>
+            <rect x="8" y="14" width="16" height="4" rx="2" fill="#fff" stroke="#860734" stroke-width="1.5"/>
+            <rect x="14" y="8" width="4" height="16" rx="2" fill="#fff" stroke="#860734" stroke-width="1.5"/>
+          </svg>
         </div>
         <h4>Personalización</h4>
         <p>Colores y medidas a tu gusto</p>
@@ -24,15 +29,16 @@
       </div>
       <div class="adv-card">
         <div class="icon-circle shadow-sm mb-3">
-          <!-- SVG Mercado Libre (amarillo) -->
-          <svg height="32" viewBox="0 0 48 32">
-            <ellipse cx="24" cy="16" rx="23" ry="12" fill="#ffe600"/>
+          <!-- SVG Mercado Pago (azul) -->
+          <svg width="32" height="32" viewBox="0 0 48 32" fill="none">
+            <ellipse cx="24" cy="16" rx="23" ry="12" fill="#00B1EA"/>
             <ellipse cx="24" cy="16" rx="20" ry="10" fill="#fff"/>
-            <path d="M11.5 17.5C15 21.5 33 21.5 36.5 17.5" fill="none" stroke="#ffd600" stroke-width="2"/>
-            <path d="M19.3 17.5c.8-2.2 8.6-2.2 9.4 0" fill="none" stroke="#ffd600" stroke-width="2" stroke-linecap="round"/>
+            <path d="M16 16c2-2 14-2 16 0" fill="none" stroke="#00B1EA" stroke-width="2"/>
+            <path d="M20 16c.7-1.5 7.3-1.5 8 0" fill="none" stroke="#00B1EA" stroke-width="2" stroke-linecap="round"/>
+            <ellipse cx="24" cy="16" rx="8" ry="3" fill="#00B1EA" opacity="0.13"/>
           </svg>
         </div>
-        <h4>Pagos por Mercado Libre</h4>
+        <h4>Pagos por Mercado Pago</h4>
         <p>Compra segura y protegida</p>
       </div>
    

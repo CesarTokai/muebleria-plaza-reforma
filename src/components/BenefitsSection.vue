@@ -36,7 +36,7 @@ const benefits = [
       </svg>
     `,
     title: 'ENVIOS A TODO MÉXICO',
-    desc: 'Realizamos entregas gratuitas en GDL. A toda la zona sur por solo el 5% del valor de su pedido. Envíos a toda la república mediante fleteras aliadas, cotiza por chat!'
+    desc: 'Realizamos entregas gratuitas. A toda la zona sur por solo el 5% del valor de su pedido. Envíos a toda la república mediante fleteras aliadas, cotiza por chat!'
   },
   {
     icon: `
