@@ -72,10 +72,11 @@ import '../components/assets/Styles.css';
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 import Navbar from '../components/Navbar.vue'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import axiosConfig from '../config/AxiosConfig.js'
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 const router = useRouter();
+const route = useRoute();
 
 function goToProduct(id) {
   router.push({ name: 'ProductoDetalle', params: { id } });
@@ -103,7 +104,23 @@ async function fetchProducts() {
   }
 }
 
-onMounted(fetchProducts)
+onMounted(() => {
+  fetchProducts();
+  const categoria = ref(route.params.categoria);
+  fetchProductosPorCategoria(categoria.value);
+});
+
+watch(() => route.params.categoria, (newCategoria) => {
+  if (newCategoria) {
+    fetchProductosPorCategoria(newCategoria);
+  }
+});
+
+function fetchProductosPorCategoria(categoria) {
+  if (categoria) {
+    selectedCategory.value = categoria;
+  }
+}
 
 const categories = [
   { value: 'salas', label: 'Salas' },

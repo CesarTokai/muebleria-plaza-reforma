@@ -20,6 +20,7 @@
 
 <script setup>
 import { ref, defineComponent, h, markRaw } from 'vue';
+import { useRouter } from 'vue-router';
 
 // Iconos SVG como componentes Vue válidos
 const IconStorage = defineComponent({
@@ -156,6 +157,8 @@ const IconBath = defineComponent({
   }
 });
 
+const router = useRouter();
+
 const categories = ref([
   { name: "Almacenamiento y organización", icon: markRaw(IconStorage), active: true },
   { name: "Sala", icon: markRaw(IconSofa) },
@@ -176,7 +179,7 @@ const categories = ref([
 function selectCategory(cat) {
   categories.value.forEach(c => (c.active = false));
   cat.active = true;
-  // Aquí podrías emitir un evento o filtrar productos
+  router.push(`/productos/${cat.name}`);
 }
 </script>
 

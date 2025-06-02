@@ -20,6 +20,16 @@
         >
           {{ item.name }}
         </router-link>
+        <router-link
+          v-for="cat in categories"
+          :key="cat.value"
+          :to="`/productos/${cat.value}`"
+          class="nav-link"
+          @click="closeMenu"
+          active-class="active-link"
+        >
+          {{ cat.label }}
+        </router-link>
       </nav>
     </div>
   </header>
@@ -47,6 +57,12 @@ const navItems = [
   { name: "Oficina", to: "/oficina" },
   { name: "Bebés y niños", to: "/bebes-ninos" },
   { name: "Contacto", to: "/contacto" }
+];
+
+const categories = [
+  { value: 'salas', label: 'Salas' },
+  { value: 'recamaras', label: 'Recámaras' },
+  // ...agrega más categorías si quieres
 ];
 
 function handleScroll() {
@@ -175,6 +191,39 @@ onUnmounted(() => {
 .nav-link:hover::after,
 .nav-link.active-link::after {
   width: 60%;
+}
+
+nav {
+  background: #fff;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+nav ul {
+  display: flex;
+  flex-wrap: wrap; /* Permite que los elementos se ajusten si no hay espacio */
+  justify-content: center; /* Centra los elementos horizontalmente */
+  align-items: center; /* Alinea los elementos verticalmente */
+  gap: 1rem; /* Espaciado uniforme entre los elementos */
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+nav ul li {
+  display: flex;
+  align-items: center; /* Asegura que los botones estén alineados verticalmente */
+}
+nav ul li a {
+  text-decoration: none;
+  color: #860734;
+  font-weight: bold;
+  padding: 0.5rem 1rem; /* Espaciado interno para consistencia */
+  border-radius: 5px;
+  transition: background-color 0.2s, color 0.2s;
+  background-color: red; /* Fondo rojo para las letras */
+}
+nav ul li a:hover {
+  background-color: darkred; /* Fondo rojo oscuro al pasar el mouse */
+  color: #fff; /* Cambia el color del texto al pasar el mouse */
 }
 
 @media (max-width: 950px) {
