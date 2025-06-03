@@ -39,7 +39,7 @@
         <div class="gallery-grid">
           <div v-if="loadingProducts" class="no-products">Cargando productos...</div>
           <div
-            v-for="product in filteredProducts"
+            v-for="product in paginatedProducts"
             :key="product.id"
             class="product-card"
             v-else
@@ -60,6 +60,18 @@
           <div v-if="!loadingProducts && filteredProducts.length === 0" class="no-products">
             No hay productos que coincidan con la búsqueda o los filtros.
           </div>
+        </div>
+
+        <!-- Paginación -->
+        <div class="pagination" v-if="totalPages > 1">
+          <button
+            v-for="page in totalPages"
+            :key="page"
+            :class="['page-btn', { active: page === currentPage }]"
+            @click="goToPage(page)"
+          >
+            {{ page }}
+          </button>
         </div>
       </div>
     </main>
@@ -125,7 +137,11 @@ function fetchProductosPorCategoria(categoria) {
 const categories = [
   { value: 'salas', label: 'Salas' },
   { value: 'recamaras', label: 'Recámaras' },
-  // ...agrega más categorías si quieres
+  { value: 'comedores', label: 'Comedores' },
+  { value: 'oficina', label: 'Oficina' },
+  { value: 'bebes-ninos', label: 'Bebés y Niños' },
+  { value: 'exteriores', label: 'Exteriores' },
+  { value: 'decoracion', label: 'Decoración' }
 ];
 
 const selectedCategory = ref('');
@@ -133,9 +149,13 @@ const searchTerm = ref('');
 const minPrice = ref('');
 const maxPrice = ref('');
 
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
 const filteredProducts = computed(() => {
   return products.value.filter(product => {
-    const matchesCategory = !selectedCategory.value || product.category === selectedCategory.value;
+    const matchesCategory = !selectedCategory.value || 
+      product.category?.trim().toLowerCase() === selectedCategory.value.trim().toLowerCase();
     const matchesSearch = !searchTerm.value ||
       product.name.toLowerCase().includes(searchTerm.value.toLowerCase());
     const matchesMinPrice = !minPrice.value || product.price >= minPrice.value;
@@ -143,6 +163,22 @@ const filteredProducts = computed(() => {
     return matchesCategory && matchesSearch && matchesMinPrice && matchesMaxPrice;
   });
 });
+
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return filteredProducts.value.slice(start, end);
+});
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredProducts.value.length / itemsPerPage);
+});
+
+function goToPage(page) {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+}
 </script>
 
 <style scoped>
@@ -166,6 +202,7 @@ const filteredProducts = computed(() => {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center; /* Asegura que los elementos estén centrados verticalmente */
   gap: 1rem;
   margin-bottom: 2.2rem;
 }
@@ -289,6 +326,31 @@ const filteredProducts = computed(() => {
   font-size: 1.2rem;
   opacity: 0.87;
   margin-top: 2rem;
+}
+
+/* Paginación */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+.page-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #860734;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.page-btn.active {
+  background: #ffd700;
+  color: #860734;
+  font-weight: bold;
+}
+.page-btn:hover {
+  background: #a50e48;
 }
 
 /* Responsive */

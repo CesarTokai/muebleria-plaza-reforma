@@ -51,18 +51,27 @@ function closeMenu() {
 const navItems = [
   { name: "Inicio", to: "/" },
   { name: "Todos los productos", to: "/productos" },
-  { name: "Camas", to: "/camas" },
-  { name: "Salas", to: "/salas" },
-  { name: "Comedores", to: "/comedores" },
-  { name: "Oficina", to: "/oficina" },
-  { name: "Bebés y niños", to: "/bebes-ninos" },
   { name: "Contacto", to: "/contacto" }
 ];
 
+
+
+
 const categories = [
-  { value: 'salas', label: 'Salas' },
-  { value: 'recamaras', label: 'Recámaras' },
-  // ...agrega más categorías si quieres
+  { label: "Almacenamiento y organización", value: "almacenamiento-y-organizacion" },
+  { label: "Sala", value: "sala" },
+  { label: "Oficina", value: "oficina" },
+  { label: "Camas y colchones", value: "camas-y-colchones" },
+  { label: "Comedor", value: "comedor" },
+  { label: "Cocinas", value: "cocinas" },
+  { label: "Utensilios de cocina y vajilla", value: "utensilios-de-cocina-y-vajilla" },
+  { label: "Bebés y niños", value: "bebes-y-ninos" },
+  { label: "Decoración", value: "decoracion" },
+  { label: "Espejos y cuadros", value: "espejos-y-cuadros" },
+  { label: "Electrodomésticos pequeños", value: "electrodomesticos-pequenos" },
+  { label: "Bicicletas", value: "bicicletas" },
+  { label: "Refrigeradores", value: "refrigeradores" },
+  { label: "Baño", value: "bano" }
 ];
 
 function handleScroll() {
