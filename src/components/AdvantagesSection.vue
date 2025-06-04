@@ -29,13 +29,13 @@
       </div>
       <div class="adv-card">
         <div class="icon-circle shadow-sm mb-3">
-          <!-- SVG Mercado Pago (azul) -->
-          <svg width="32" height="32" viewBox="0 0 48 32" fill="none">
-            <ellipse cx="24" cy="16" rx="23" ry="12" fill="#00B1EA"/>
+          <!-- Rediseño del SVG de Mercado Pago para mayor claridad y equilibrio visual -->
+          <svg width="48" height="32" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="48" height="32" rx="6" fill="#00579F"/>
             <ellipse cx="24" cy="16" rx="20" ry="10" fill="#fff"/>
-            <path d="M16 16c2-2 14-2 16 0" fill="none" stroke="#00B1EA" stroke-width="2"/>
-            <path d="M20 16c.7-1.5 7.3-1.5 8 0" fill="none" stroke="#00B1EA" stroke-width="2" stroke-linecap="round"/>
-            <ellipse cx="24" cy="16" rx="8" ry="3" fill="#00B1EA" opacity="0.13"/>
+            <path d="M16 16c2-2 14-2 16 0" fill="none" stroke="#00579F" stroke-width="2.5"/>
+            <path d="M20 16c.7-1.5 7.3-1.5 8 0" fill="none" stroke="#00579F" stroke-width="2.5" stroke-linecap="round"/>
+            <ellipse cx="24" cy="16" rx="8" ry="3" fill="#00579F" opacity="0.3"/>
           </svg>
         </div>
         <h4>Pagos por Mercado Pago</h4>

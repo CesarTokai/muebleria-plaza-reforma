@@ -214,10 +214,9 @@ const handleSubmit = async () => {
 /* --- Formulario --- */
 .contact-form-col {
   border-radius: 1.4rem;
-    background: #fffdfa !important;
+    background: #ffffff !important;
 
   box-shadow: 0 6px 28px #ff025a98;
-  padding: 2rem 2rem 1.4rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -233,7 +232,6 @@ input, textarea {
   margin-bottom: 1.05rem;
   font-size: 1.27rem;
   font-weight: 800;
-  letter-spacing: 0.6px;
 }
 
 .contact-form {
@@ -248,13 +246,13 @@ input, textarea {
 
 
 .contact-form-col, .contact-form {
-  background: #fffdfa !important;
+  background: #ffffff !important;
 }
 .contact-form, .contact-form * {
   background: transparent !important;
 }
 input, textarea, select, button {
-  background: #fffdfa !important;
+  background: #ffffff !important;
   color: #22081e !important;
 }
 
@@ -527,7 +525,6 @@ button[type="submit"]:disabled {
   .contact-form-col,
   .contact-info-col {
     border-radius: 1rem;
-    padding: 0.8rem 0.13rem;
     box-shadow: none;
     min-width: 0;
   }

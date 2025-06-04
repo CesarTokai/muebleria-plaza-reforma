@@ -30,7 +30,7 @@
       <div class="footer-col footer-description">
         <h4><i class="fas fa-lightbulb"></i> Diseña la vida que tú quieras</h4>
         <p>
-          Gaia es la marca mexicana de muebles y accesorios de diseño.<br>
+          La muebleria de la reforma es la marca mexicana de muebles y accesorios de diseño.<br>
           Compra rápido, fácil y seguro. Sofás, sillas, mesas, escritorios, cómodas, burós, camas, colchones, lámparas y accesorios en diferentes estilos.<br>
           Proponemos diseños simples y modernos adaptados a tu espacio.<br>
           <span class="footer-mision">Nuestra misión: empoderarte a seguir soñando y diseñar la vida que tú quieras.</span>
@@ -40,7 +40,7 @@
       <div class="footer-col footer-social">
         <h4><i class="fas fa-share-alt"></i> Síguenos</h4>
         <div class="footer-social-links">
-          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
           <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
           <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
         </div>

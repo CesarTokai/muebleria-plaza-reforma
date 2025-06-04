@@ -2,7 +2,6 @@
   <header class="header" :class="{ shadow: scrolled }">
     <div class="container">
       <router-link to="/" class="logo-link">
-        <img src="/img/logo.png" alt="Mueblería Plaza Reforma" class="logo" />
       </router-link>
       <button class="menu-toggle" @click="toggleMenu" :aria-expanded="isMenuOpen" aria-label="Menú">
         <span :class="{ open: isMenuOpen }"></span>
@@ -54,24 +53,15 @@ const navItems = [
   { name: "Contacto", to: "/contacto" }
 ];
 
-
-
-
 const categories = [
-  { label: "Almacenamiento y organización", value: "almacenamiento-y-organizacion" },
   { label: "Sala", value: "sala" },
   { label: "Oficina", value: "oficina" },
   { label: "Camas y colchones", value: "camas-y-colchones" },
   { label: "Comedor", value: "comedor" },
   { label: "Cocinas", value: "cocinas" },
-  { label: "Utensilios de cocina y vajilla", value: "utensilios-de-cocina-y-vajilla" },
-  { label: "Bebés y niños", value: "bebes-y-ninos" },
-  { label: "Decoración", value: "decoracion" },
-  { label: "Espejos y cuadros", value: "espejos-y-cuadros" },
   { label: "Electrodomésticos pequeños", value: "electrodomesticos-pequenos" },
   { label: "Bicicletas", value: "bicicletas" },
   { label: "Refrigeradores", value: "refrigeradores" },
-  { label: "Baño", value: "bano" }
 ];
 
 function handleScroll() {
@@ -89,40 +79,46 @@ onUnmounted(() => {
 <style scoped>
 .header {
   background-color: #860734;
-  padding: 0.9rem 0;
+  padding: 1rem 0;
   position: sticky;
   top: 0;
   z-index: 30;
   transition: box-shadow 0.18s;
 }
 .header.shadow {
-  box-shadow: 0 2px 22px #8607342c;
+  box-shadow: 0 2px 22px rgba(134, 7, 52, 0.2);
 }
 .container {
   max-width: 1250px;
   margin: 0 auto;
   display: flex;
-  justify-content: center; /* <-- Cambia esto */
+  justify-content: space-between; /* Separar logo/nombre del menú */
   align-items: center;
-  gap: 2rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
+  gap: 3rem; /* Incrementar espacio entre elementos */
+  padding: 0 2rem;
 }
 .logo-link {
   display: flex;
   align-items: center;
-  margin-right: 2.5rem;
+  gap: 2rem; /* Incrementar espacio entre logo y nombre */
+  text-decoration: none;
 }
 .logo {
-  height: 38px;
+  height: 90px;
   width: auto;
   object-fit: contain;
   transition: filter 0.2s;
-  filter: drop-shadow(0 3px 8px #86073418);
+  filter: drop-shadow(0 3px 8px rgba(134, 7, 52, 0.1));
+}
+.brand-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 1px 4px rgba(255, 215, 0, 0.5);
 }
 .menu-toggle {
   display: none;
-  background: rgba(255,255,255,0.13); /* Fondo sutil para visibilidad */
+  background: rgba(255, 255, 255, 0.13);
   border: none;
   outline: none;
   cursor: pointer;
@@ -131,25 +127,25 @@ onUnmounted(() => {
   width: 35px;
   height: 32px;
   margin-left: auto;
-  z-index: 200; /* Aumenta el z-index para estar por encima del nav */
+  z-index: 200;
   justify-content: center;
   align-items: center;
   border-radius: 8px;
-  box-shadow: 0 2px 8px #86073422;
+  box-shadow: 0 2px 8px rgba(134, 7, 52, 0.2);
   transition: background 0.18s;
 }
 .menu-toggle:hover {
-  background: #ffd70033;
+  background: rgba(255, 215, 0, 0.2);
 }
 .menu-toggle span {
   display: block;
-  height: 3.2px;
+  height: 3px;
   width: 27px;
   margin: 3px 0;
   border-radius: 4px;
   background: #fff;
-  transition: all 0.33s cubic-bezier(.55,.06,.68,.19);
-  box-shadow: 0 1px 4px #86073422;
+  transition: all 0.33s cubic-bezier(0.55, 0.06, 0.68, 0.19);
+  box-shadow: 0 1px 4px rgba(134, 7, 52, 0.2);
 }
 .menu-toggle span.open:nth-child(1) {
   transform: rotate(45deg) translate(6px, 6px);
@@ -163,29 +159,28 @@ onUnmounted(() => {
 
 .nav {
   display: flex;
-  gap: 1.5rem;
+  gap: 2rem; /* Incrementar espacio entre enlaces del menú */
   align-items: center;
-  justify-content: center; /* <-- Agrega esto */
-  /* elimina o comenta margin-left: auto; */
+  justify-content: center;
   transition: all 0.24s;
 }
 .nav-link {
   color: #fff;
   font-weight: 600;
   letter-spacing: 0.4px;
-  font-size: 1.11rem;
+  font-size: 1.1rem;
   text-decoration: none;
   position: relative;
-  padding: 0.2rem 0.7rem;
+  padding: 0.5rem 1rem;
   border-radius: 8px;
   transition: color 0.16s, background 0.16s;
 }
 .nav-link::after {
   content: '';
   display: block;
-  height: 2.5px;
+  height: 3px;
   border-radius: 2px;
-  width: 0%;
+  width: 0;
   background: #ffd700;
   position: absolute;
   left: 20%;
@@ -195,58 +190,29 @@ onUnmounted(() => {
 .nav-link:hover,
 .nav-link.active-link {
   color: #ffd700;
-  background: #fff1;
+  background: rgba(255, 255, 255, 0.1);
 }
 .nav-link:hover::after,
 .nav-link.active-link::after {
   width: 60%;
 }
 
-nav {
-  background: #fff;
-  padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-nav ul {
-  display: flex;
-  flex-wrap: wrap; /* Permite que los elementos se ajusten si no hay espacio */
-  justify-content: center; /* Centra los elementos horizontalmente */
-  align-items: center; /* Alinea los elementos verticalmente */
-  gap: 1rem; /* Espaciado uniforme entre los elementos */
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-nav ul li {
-  display: flex;
-  align-items: center; /* Asegura que los botones estén alineados verticalmente */
-}
-nav ul li a {
-  text-decoration: none;
-  color: #860734;
-  font-weight: bold;
-  padding: 0.5rem 1rem; /* Espaciado interno para consistencia */
-  border-radius: 5px;
-  transition: background-color 0.2s, color 0.2s;
-  background-color: red; /* Fondo rojo para las letras */
-}
-nav ul li a:hover {
-  background-color: darkred; /* Fondo rojo oscuro al pasar el mouse */
-  color: #fff; /* Cambia el color del texto al pasar el mouse */
-}
-
 @media (max-width: 950px) {
-  .container { gap: 0.8rem; padding-left: 1rem; padding-right: 1rem; }
-  .logo-link { margin-right: 1rem;}
-  .nav { gap: 0.85rem; }
-}
-@media (max-width: 700px) {
-  .container { padding-left: 0.5rem; padding-right: 0.5rem; }
-  .logo { height: 29px; }
-  .nav-link { font-size: 0.96rem; }
+  .container {
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+  .logo {
+    height: 40px;
+  }
+  .nav {
+    gap: 1rem;
+  }
 }
 @media (max-width: 650px) {
-  .menu-toggle { display: flex; }
+  .menu-toggle {
+    display: flex;
+  }
   .nav {
     flex-direction: column;
     align-items: flex-start;
@@ -256,18 +222,18 @@ nav ul li a:hover {
     right: 0;
     width: 85vw;
     height: 100vh;
-    padding: 4.5rem 2.3rem 1.5rem 2.3rem;
-    gap: 1.25rem;
+    padding: 4.5rem 2rem;
+    gap: 1.5rem;
     z-index: 99;
     transform: translateX(110%);
-    box-shadow: -7px 0 20px #86073433;
-    transition: transform 0.36s cubic-bezier(.78,-0.02,.61,.97);
+    box-shadow: -7px 0 20px rgba(134, 7, 52, 0.2);
+    transition: transform 0.36s cubic-bezier(0.78, -0.02, 0.61, 0.97);
   }
   .nav.active {
-    transform: translateX(0%);
+    transform: translateX(0);
   }
   .nav-link {
-    font-size: 1.11rem;
+    font-size: 1rem;
     width: 100%;
     border-radius: 12px;
     padding: 0.8rem 1rem;

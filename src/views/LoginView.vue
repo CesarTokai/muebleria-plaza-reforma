@@ -48,62 +48,91 @@ async function handleLogin() {
 
 <style scoped>
 .login-container {
-  min-height: 70vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(120deg, #faf6fa 60%, #f7e6ef 100%);
+  background: linear-gradient(135deg, #af2e2e, #dd3939, #fad0c4);
+  animation: gradient-animation 6s ease infinite;
 }
+
+@keyframes gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 .login-form {
-  background: #fff;
-  padding: 2.5rem 2rem 2rem 2rem;
-  border-radius: 18px;
-  box-shadow: 0 4px 24px #86073418;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 3rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   min-width: 320px;
-  max-width: 95vw;
-}
-.login-form h2 {
-  color: #860734;
-  font-weight: 800;
-  margin-bottom: 1.5rem;
+  max-width: 400px;
   text-align: center;
+  backdrop-filter: blur(10px);
 }
+
+.login-form h2 {
+  color: #000000;
+  font-weight: 800;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+}
+
 .form-group {
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
 }
+
 label {
   display: block;
-  margin-bottom: 0.4rem;
-  color: #860734;
+  margin-bottom: 0.5rem;
+  color: #333;
   font-weight: 600;
 }
+
 input {
   width: 100%;
-  padding: 0.7rem;
-  border: 1.5px solid #ffd700;
-  border-radius: 7px;
+  padding: 0.8rem;
+  border: 1.5px solid #fff461;
+  border-radius: 8px;
   font-size: 1rem;
-  margin-bottom: 0.2rem;
+  transition: border-color 0.3s;
 }
+
+input:focus {
+  border-color: #fdff9a;
+  outline: none;
+}
+
 button {
   width: 100%;
-  background: #860734;
+  background: linear-gradient(135deg, #ff6f61, #ff9a9e);
   color: #fff;
   font-weight: 700;
   border: none;
-  border-radius: 7px;
-  padding: 0.8rem 0;
-  font-size: 1.1rem;
-  margin-top: 0.7rem;
-  transition: background 0.18s;
+  border-radius: 8px;
+  padding: 0.9rem 0;
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(255, 111, 97, 0.4);
+}
+
 button:disabled {
-  background: #bfa2b7;
+  background: #ffd1d1;
   cursor: not-allowed;
 }
+
 .login-error {
   color: #e94e77;
-  margin-top: 0.7rem;
+  margin-top: 1rem;
   text-align: center;
   font-weight: 600;
 }

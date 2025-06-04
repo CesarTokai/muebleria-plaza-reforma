@@ -172,85 +172,146 @@ onMounted(fetchFurniture);
 
 <style scoped>
 .admin-dashboard {
-  min-height: 60vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 2rem;
+  justify-content: flex-start;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #f3e7e9, #e3eeff);
+  animation: gradient-animation 6s ease infinite;
+  gap: 2rem;
 }
+
+@keyframes gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 h1 {
-  color: #860734;
-  margin-bottom: 1.2rem;
+  color: #4a4a4a;
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
+
+p {
+  color: #6a6a6a;
+  font-size: 1.3rem;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  max-width: 800px;
+}
+
 button {
-  background: #860734;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
   color: #fff;
   border: none;
-  border-radius: 7px;
-  padding: 0.7rem 2rem;
-  font-size: 1.1rem;
-  margin-top: 2rem;
-  cursor: pointer;
-  font-weight: 700;
-}
-button:hover {
-  background: #ffd700;
-  color: #860734;
-}
-.furniture-list {
-  width: 100%;
-  max-width: 800px;
-  margin: 2rem 0;
-}
-.furniture-item {
-  border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  padding: 0.9rem 2rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 1.5rem;
 }
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
+}
+
+button:disabled {
+  background: #bfa2b7;
+  cursor: not-allowed;
+}
+
+table {
+  width: 100%;
+  max-width: 1200px;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+thead {
+  background: #6a11cb;
+  color: #fff;
+}
+
+td, th {
+  padding: 1.2rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+tbody tr:hover {
+  background: #f9f9f9;
+}
+
 .modal-form {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 2rem;
 }
-.modal-form h2 {
-  color: #fff;
-  margin-bottom: 1rem;
-}
+
 .modal-form form {
   background: #fff;
-  padding: 2rem;
-  border-radius: 10px;
-  min-width: 320px;
+  padding: 2.5rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
+  gap: 1.5rem;
 }
+
+.modal-form h2 {
+  color: #4a4a4a;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.8rem;
+}
+
 .modal-form input,
 .modal-form textarea {
-  padding: 0.5rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
   font-size: 1rem;
 }
+
 .modal-form button {
-  width: fit-content;
+  width: 100%;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-table {
-  border-collapse: collapse;
-  margin: 1rem 0;
-}
-td,
-th {
-  padding: 0.5rem 0.7rem;
-  text-align: left;
+
+.modal-form button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
 }
 </style>

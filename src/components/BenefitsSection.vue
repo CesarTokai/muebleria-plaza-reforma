@@ -67,44 +67,52 @@ const benefits = [
 
 <style scoped>
 .benefits-section {
-  background: #fafafa;
-  padding: 2.5rem 0 2.3rem 0;
+  background: linear-gradient(135deg, #f9f9f9, #ffffff);
+  padding: 3rem 0;
   border-radius: 0 0 2rem 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 2.5rem;
+  padding: 0 2rem;
 }
 
 .benefits-title {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-family: 'Montserrat', serif;
   font-weight: 700;
-  color: #222;
-  margin-bottom: 2rem;
+  color: #333;
+  margin-bottom: 2.5rem;
+  text-align: center;
 }
 
 .benefits-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem 2.5rem;
-  justify-content: space-between;
+  gap: 2rem;
+  justify-content: center;
 }
 
 .benefit-card {
-  flex: 1 1 250px;
-  min-width: 230px;
-  max-width: 350px;
-  background: none;
-  border-radius: 1.3rem;
+  flex: 1 1 280px;
+  max-width: 320px;
+  background: #ffffff;
+  border-radius: 1.5rem;
   text-align: center;
-  padding: 0 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.benefit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
 .benefit-icon {
-  margin-bottom: 1.1rem;
+  margin-bottom: 1.2rem;
   min-height: 64px;
   display: flex;
   align-items: center;
@@ -112,19 +120,18 @@ const benefits = [
 }
 
 .benefit-title {
-  font-size: 1.17rem;
+  font-size: 1.3rem;
   font-weight: 700;
-  color: #222;
-  margin-bottom: 0.7rem;
-  letter-spacing: 0.6px;
+  color: #176C5B;
+  margin-bottom: 0.8rem;
+  letter-spacing: 0.5px;
 }
 
 .benefit-desc {
-  color: #444;
+  color: #555;
   font-size: 1rem;
   font-weight: 500;
-  margin-bottom: 0.5rem;
-  line-height: 1.35;
+  line-height: 1.5;
 }
 
 @media (max-width: 900px) {
@@ -134,15 +141,14 @@ const benefits = [
   }
   .benefit-card {
     max-width: 100%;
-    min-width: 0;
-    margin-bottom: 1.4rem;
+    margin-bottom: 1.5rem;
   }
   .container {
-    padding: 0 0.9rem;
+    padding: 0 1rem;
   }
   .benefits-title {
-    font-size: 1.1rem;
-    margin-bottom: 1.2rem;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
   }
 }
 </style>

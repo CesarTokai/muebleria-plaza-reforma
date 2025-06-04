@@ -80,19 +80,28 @@ function closeModal() {
     modalImgRef.value.style.transform = "";
     scale.value = 1;
   }
+  lastDist = 0; // Reiniciar la distancia para evitar problemas con el gesto de "pinch"
 }
 
 // Zoom con la rueda del mouse o "pinch" móvil
 const scale = ref(1);
 function zoom(e) {
   e.preventDefault();
-  scale.value += e.deltaY < 0 ? 0.1 : -0.1;
-  scale.value = Math.max(1, Math.min(3, scale.value));
+  const zoomStep = 0.1;
+  const maxScale = 3;
+  const minScale = 1;
+
+  // Ajustar el nivel de zoom
+  scale.value += e.deltaY < 0 ? zoomStep : -zoomStep;
+  scale.value = Math.max(minScale, Math.min(maxScale, scale.value));
+
+  // Aplicar transformación a la imagen
   if (modalImgRef.value) {
     modalImgRef.value.style.transform = `scale(${scale.value})`;
   }
 }
-// BÁSICO: Pinch móvil
+
+// Mejorar el manejo de "pinch" en dispositivos táctiles
 let lastDist = 0;
 function onPinch(e) {
   if (e.touches && e.touches.length === 2) {
@@ -103,12 +112,23 @@ function onPinch(e) {
       let diff = dist - lastDist;
       scale.value += diff / 200;
       scale.value = Math.max(1, Math.min(3, scale.value));
-      if (modalImgRef.value)
+      if (modalImgRef.value) {
         modalImgRef.value.style.transform = `scale(${scale.value})`;
+      }
     }
     lastDist = dist;
+  } else {
+    lastDist = 0; // Reiniciar si no hay dos puntos de contacto
   }
 }
+
+// Reiniciar la distancia al finalizar el "pinch"
+function resetPinch() {
+  lastDist = 0;
+}
+
+// Asegurar que el evento de "touchend" reinicie el estado del "pinch"
+window.addEventListener("touchend", resetPinch);
 </script>
 
 <style scoped>
