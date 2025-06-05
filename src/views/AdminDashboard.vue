@@ -46,24 +46,51 @@
     </div>
 
     <div v-if="showForm" class="modal-form">
-      <h2>{{ isEditing ? 'Editar' : 'Agregar' }} mueble</h2>
       <form @submit.prevent="saveFurniture">
-        <input v-model="form.name" placeholder="Nombre" required />
-        <input v-model.number="form.price" type="number" placeholder="Precio" required />
-        <input v-model="form.category" placeholder="Categoría" required />
-        <input v-model.number="form.stock" type="number" placeholder="Stock" />
-        <input v-model="form.brand" placeholder="Marca" />
-        <input v-model="form.color" placeholder="Color" />
-        <input v-model="form.material" placeholder="Material" />
-        <input v-model="form.dimensions" placeholder="Dimensiones" />
-        <textarea v-model="form.description" placeholder="Descripción"></textarea>
-        <div style="margin:0.5rem 0">
-          <label>Imagen:</label>
-          <input type="file" accept="image/*" @change="handleImageUpload" />
-          <img v-if="form.img_base64" :src="form.img_base64" alt="preview" style="max-width:80px;max-height:80px;display:block;margin-top:0.5rem" />
+        <h2>{{ isEditing ? 'Editar mueble' : 'Agregar nuevo mueble' }}</h2>
+        <p class="form-instructions">Por favor, completa los campos a continuación para {{ isEditing ? 'editar' : 'agregar' }} un mueble.</p>
+
+        <div class="form-grid">
+          <div>
+            <label for="name">Nombre del mueble</label>
+            <input id="name" v-model="form.name" placeholder="Ejemplo: Silla de madera" required />
+
+            <label for="price">Precio</label>
+            <input id="price" v-model.number="form.price" type="number" placeholder="Ejemplo: 1500" required />
+
+            <label for="category">Categoría</label>
+            <input id="category" v-model="form.category" placeholder="Ejemplo: Muebles de oficina" required />
+
+            <label for="stock">Stock disponible</label>
+            <input id="stock" v-model.number="form.stock" type="number" placeholder="Ejemplo: 10" />
+
+            <label for="brand">Marca</label>
+            <input id="brand" v-model="form.brand" placeholder="Ejemplo: IKEA" />
+          </div>
+
+          <div>
+            <label for="color">Color</label>
+            <input id="color" v-model="form.color" placeholder="Ejemplo: Blanco" />
+
+            <label for="material">Material</label>
+            <input id="material" v-model="form.material" placeholder="Ejemplo: Madera" />
+
+            <label for="dimensions">Dimensiones</label>
+            <input id="dimensions" v-model="form.dimensions" placeholder="Ejemplo: 120x60x80 cm" />
+
+            <label for="description">Descripción</label>
+            <textarea id="description" v-model="form.description" placeholder="Ejemplo: Una silla cómoda y resistente, ideal para oficinas."></textarea>
+
+            <label for="image">Imagen</label>
+            <input id="image" type="file" accept="image/*" @change="handleImageUpload" />
+            <img v-if="form.img_base64" :src="form.img_base64" alt="Vista previa de la imagen" class="image-preview" />
+          </div>
         </div>
-        <button type="submit">Guardar</button>
-        <button type="button" @click="showForm=false" style="margin-left:0.5rem">Cancelar</button>
+
+        <div class="form-buttons">
+          <button type="submit">Guardar</button>
+          <button type="button" @click="showForm = false">Cancelar</button>
+        </div>
       </form>
     </div>
   </div>
@@ -274,18 +301,38 @@ tbody tr:hover {
   padding: 2.5rem;
   border-radius: 12px;
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .modal-form h2 {
-  color: #4a4a4a;
+  color: #333;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.modal-form .form-instructions {
+  color: #666;
+  font-size: 0.9rem;
   margin-bottom: 1.5rem;
   text-align: center;
-  font-size: 1.8rem;
+}
+
+.modal-form .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.modal-form label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #444;
+  display: block;
 }
 
 .modal-form input,
@@ -295,16 +342,43 @@ tbody tr:hover {
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.modal-form input:focus,
+.modal-form textarea:focus {
+  border-color: #6a11cb;
+  outline: none;
+  box-shadow: 0 0 5px rgba(106, 17, 203, 0.5);
+}
+
+.modal-form textarea {
+  resize: none;
+  height: 100px;
+}
+
+.modal-form .image-preview {
+  max-width: 100px;
+  max-height: 100px;
+  margin-top: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.modal-form .form-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .modal-form button {
-  width: 100%;
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 1rem;
-  font-size: 1.2rem;
+  padding: 0.8rem;
+  font-size: 1rem;
   cursor: pointer;
   font-weight: 600;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -313,5 +387,10 @@ tbody tr:hover {
 .modal-form button:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
+}
+
+.modal-form button:disabled {
+  background: #bfa2b7;
+  cursor: not-allowed;
 }
 </style>
