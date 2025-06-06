@@ -17,7 +17,8 @@ const routes = [
     name: 'Productos',
     component: ProductsView,
     props: true
-  }
+  },
+  { path: '/:pathMatch(.*)*', component: () => import('../views/NotFound.vue') } // Ruta para Not Found
 ];
 
 const router = createRouter({
@@ -26,8 +27,13 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth && !localStorage.getItem('token')) {
+  const token = localStorage.getItem('token');
+  const userRole = localStorage.getItem('role'); // Suponiendo que el rol del usuario se almacena en localStorage
+
+  if (to.meta.requiresAuth && !token) {
     next('/login');
+  } else if (to.path === '/admin' && userRole !== 'admin') {
+    next('/'); // Redirigir al home si no es administrador
   } else {
     next();
   }

@@ -59,7 +59,12 @@
             <input id="price" v-model.number="form.price" type="number" placeholder="Ejemplo: 1500" required />
 
             <label for="category">Categoría</label>
-            <input id="category" v-model="form.category" placeholder="Ejemplo: Muebles de oficina" required />
+            <select id="category" v-model="form.category" required>
+              <option value="" disabled>Selecciona una categoría</option>
+              <option v-for="cat in categories" :key="cat.value" :value="cat.value">
+                {{ cat.label }}
+              </option>
+            </select>
 
             <label for="stock">Stock disponible</label>
             <input id="stock" v-model.number="form.stock" type="number" placeholder="Ejemplo: 10" />
@@ -121,6 +126,17 @@ const form = reactive({
   dimensions: ''
 });
 
+const categories = [
+  { label: "Sala", value: "sala" },
+  { label: "Oficina", value: "oficina" },
+  { label: "Camas y colchones", value: "camas-y-colchones" },
+  { label: "Comedor", value: "comedor" },
+  { label: "Cocinas", value: "cocinas" },
+  { label: "Electrodomésticos pequeños", value: "electrodomesticos-pequenos" },
+  { label: "Bicicletas", value: "bicicletas" },
+  { label: "Refrigeradores", value: "refrigeradores" },
+];
+
 function logout() {
   localStorage.removeItem('token');
   router.push('/login');
@@ -162,7 +178,29 @@ function openEditForm(item) {
   showForm.value = true;
 }
 
+function validateForm() {
+  if (!form.name.trim()) {
+    alert('El nombre del mueble es obligatorio.');
+    return false;
+  }
+  if (form.price <= 0) {
+    alert('El precio debe ser mayor a 0.');
+    return false;
+  }
+  if (!form.category.trim()) {
+    alert('La categoría es obligatoria.');
+    return false;
+  }
+  if (form.stock < 0) {
+    alert('El stock no puede ser negativo.');
+    return false;
+  }
+  return true;
+}
+
 async function saveFurniture() {
+  if (!validateForm()) return;
+
   try {
     if (isEditing.value) {
       await axiosConfig.doPut(`/furniture/${form.id}`, form);
@@ -232,29 +270,7 @@ p {
   max-width: 800px;
 }
 
-button {
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.9rem 2rem;
-  font-size: 1.2rem;
-  cursor: pointer;
-  font-weight: 600;
-  transition: transform 0.2s, box-shadow 0.2s;
-  margin-bottom: 1.5rem;
-}
-
-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
-}
-
-button:disabled {
-  background: #bfa2b7;
-  cursor: not-allowed;
-}
-
+/* Estilos para la tabla */
 table {
   width: 100%;
   max-width: 1200px;
@@ -268,7 +284,7 @@ table {
 }
 
 thead {
-  background: #6a11cb;
+  background: #d32f2f; /* Cambiar a rojo */
   color: #fff;
 }
 
@@ -280,6 +296,30 @@ td, th {
 
 tbody tr:hover {
   background: #f9f9f9;
+}
+
+/* Estilos para los botones */
+button {
+  background: linear-gradient(135deg, #d32f2f, #f44336); /* Cambiar a tonos rojos */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.9rem 2rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 1.5rem;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4); /* Cambiar a rojo */
+}
+
+button:disabled {
+  background: #e57373; /* Cambiar a un tono rojo claro */
+  cursor: not-allowed;
 }
 
 .modal-form {
@@ -324,8 +364,8 @@ tbody tr:hover {
 
 .modal-form .form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  grid-template-columns: 1.2fr 1.2fr; /* Ajustar proporciones de las columnas */
+  gap: 3rem; /* Incrementar aún más el espacio entre columnas */
 }
 
 .modal-form label {
@@ -336,26 +376,22 @@ tbody tr:hover {
 }
 
 .modal-form input,
-.modal-form textarea {
-  width: 100%;
-  padding: 1rem;
+.modal-form textarea,
+.modal-form select {
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
   background-color: #f9f9f9;
   color: #333;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .modal-form input:focus,
-.modal-form textarea:focus {
-  border-color: #6a11cb;
+.modal-form textarea:focus,
+.modal-form select:focus {
+  border-color: #d32f2f; /* Cambiar a rojo */
   outline: none;
-  box-shadow: 0 0 5px rgba(106, 17, 203, 0.5);
-}
-
-.modal-form textarea {
-  resize: none;
-  height: 100px;
+  box-shadow: 0 0 5px rgba(211, 47, 47, 0.5); /* Cambiar a rojo */
 }
 
 .modal-form .image-preview {
@@ -373,7 +409,7 @@ tbody tr:hover {
 }
 
 .modal-form button {
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  background: linear-gradient(135deg, #d32f2f, #f44336); /* Cambiar a tonos rojos */
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -386,11 +422,11 @@ tbody tr:hover {
 
 .modal-form button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
+  box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4); /* Cambiar a rojo */
 }
 
 .modal-form button:disabled {
-  background: #bfa2b7;
+  background: #e57373; /* Cambiar a un tono rojo claro */
   cursor: not-allowed;
 }
 </style>

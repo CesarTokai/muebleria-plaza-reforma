@@ -70,7 +70,13 @@ async function handleLogin() {
     const res = await axios.doPost('/login', { email: email.value, password: password.value });
     if (res.data && (res.data.token || res.data.access_token)) {
       localStorage.setItem('token', res.data.token || res.data.access_token);
-      router.push('/admin');
+      localStorage.setItem('role', 'admin'); // Simulate admin role for testing
+
+      if ('admin' === 'admin') {
+        router.push('/admin'); // Redirect admin users to admin dashboard
+      } else {
+        router.push('/'); // Redirect other users to home page
+      }
     } else {
       error.value = 'Credenciales incorrectas';
     }
