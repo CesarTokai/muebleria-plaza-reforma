@@ -24,18 +24,18 @@
         </thead>
         <tbody>
           <tr v-for="item in furnitureList" :key="item.id">
-            <td>{{ item.name }}</td>
-            <td>${{ item.price }}</td>
-            <td>{{ item.category }}</td>
-            <td>{{ item.stock }}</td>
-            <td>{{ item.brand }}</td>
-            <td>{{ item.color }}</td>
-            <td>{{ item.material }}</td>
-            <td>{{ item.dimensions }}</td>
-            <td>
+            <td :data-label="'Nombre'">{{ item.name }}</td>
+            <td :data-label="'Precio'">${{ item.price }}</td>
+            <td :data-label="'Categoría'">{{ item.category }}</td>
+            <td :data-label="'Stock'">{{ item.stock }}</td>
+            <td :data-label="'Marca'">{{ item.brand }}</td>
+            <td :data-label="'Color'">{{ item.color }}</td>
+            <td :data-label="'Material'">{{ item.material }}</td>
+            <td :data-label="'Dimensiones'">{{ item.dimensions }}</td>
+            <td :data-label="'Imagen'">
               <img v-if="item.img_base64" :src="item.img_base64" alt="img" style="max-width:60px;max-height:60px;" />
             </td>
-            <td>
+            <td :data-label="'Acciones'">
               <button @click="openEditForm(item)">Editar</button>
               <button @click="deleteFurniture(item.id)" style="margin-left:0.5rem">Eliminar</button>
             </td>
@@ -246,6 +246,8 @@ onMounted(fetchFurniture);
   background: linear-gradient(135deg, #f3e7e9, #e3eeff);
   animation: gradient-animation 6s ease infinite;
   gap: 2rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @keyframes gradient-animation {
@@ -296,6 +298,80 @@ td, th {
 
 tbody tr:hover {
   background: #f9f9f9;
+}
+
+@media (max-width: 900px) {
+  .admin-dashboard {
+    padding: 1.5rem 0.5rem;
+  }
+  table {
+    font-size: 0.95rem;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 100%;
+    max-width: 100vw;
+  }
+}
+
+@media (max-width: 700px) {
+  .admin-dashboard {
+    padding: 1rem 0.2rem;
+    gap: 1rem;
+  }
+  .modal-form form {
+    padding: 1rem;
+    max-width: 98vw;
+  }
+  .modal-form .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+  table {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-dashboard {
+    padding: 0.5rem 0.1rem;
+  }
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+  thead {
+    display: none;
+  }
+  tr {
+    margin-bottom: 1.2rem;
+    border-bottom: 2px solid #eee;
+  }
+  td {
+    position: relative;
+    padding-left: 50%;
+    min-height: 40px;
+    border: none;
+    border-bottom: 1px solid #eee;
+  }
+  td:before {
+    position: absolute;
+    left: 0.5rem;
+    top: 0.8rem;
+    width: 45%;
+    white-space: nowrap;
+    font-weight: bold;
+    color: #d32f2f;
+    content: attr(data-label);
+  }
+  .modal-form form {
+    padding: 0.5rem;
+    max-width: 100vw;
+  }
 }
 
 /* Estilos para los botones */
