@@ -12,7 +12,7 @@
               <defs><clipPath id="clip0_6_330"><rect fill="white" height="48" width="48"></rect></clipPath></defs>
             </svg>
           </span>
-          <span class="navbar__title">Furniture Haven</span>
+          <span class="navbar__title">Mueblería Plaza Reforma S.A. de C.V.</span>
         </a>
       </div>
 
@@ -25,7 +25,7 @@
           <span class="navbar__search-icon">
             <svg width="16" height="16" viewBox="0 0 256 256" fill="none"><path fill="#9EADB3" d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg>
           </span>
-          <input type="search" class="navbar__search-input" placeholder="Search products..." aria-label="Buscar productos" />
+          <input type="search" class="navbar__search-input" placeholder="Busca productos..." aria-label="Buscar productos" />
         </div>
 
         <button class="navbar__icon" title="Wishlist" aria-label="Wishlist">
@@ -46,11 +46,13 @@
 
 <script setup>
 const nav = [
-  { label: 'Home', href: '#', active: true },
-  { label: 'Living Room', href: '#', active: false },
-  { label: 'Bedroom', href: '#', active: false },
-  { label: 'Dining', href: '#', active: false },
-  { label: 'Office', href: '#', active: false }
+  { label: 'Inicio', href: '#', active: true },
+  { label: 'Sala de estar', href: '#', active: false },
+  { label: 'Dormitorio', href: '#', active: false },
+  { label: 'Comedor', href: '#', active: false },
+  { label: 'Office', href: '#', active: false },
+  { label: 'Productos', href: '#', active: false }
+
 ]
 </script>
 
