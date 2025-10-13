@@ -8,6 +8,9 @@
       <ImageCarousel :images="carouselImages" />
     </div>
     <div v-scroll-animate>
+      <Gallery :images="galleryImages" />
+    </div>
+    <div v-scroll-animate>
       <AdvantagesSection />
     </div>
     <div v-scroll-animate>
@@ -70,6 +73,7 @@ import CtaSection from '../components/CtaSection.vue';
 import MapSection from '../components/MapSection.vue';
 import { ref, onMounted } from 'vue';
 import axiosConfig from '../config/AxiosConfig.js';
+import Gallery from "@/components/assets/Gallery.vue";
 
 
 
