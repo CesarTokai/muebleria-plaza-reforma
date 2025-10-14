@@ -7,7 +7,7 @@
             <!-- SVG logo -->
             <svg width="28" height="28" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g clip-path="url(#clip0_6_330)">
-                <path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="#1976D2" fill-rule="evenodd"/>
+                <path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="#860734" fill-rule="evenodd"/>
               </g>
               <defs><clipPath id="clip0_6_330"><rect fill="white" height="48" width="48"></rect></clipPath></defs>
             </svg>
@@ -29,33 +29,52 @@
       </nav>
 
       <div class="navbar__actions">
-        <div class="navbar__search">
+        <form @submit.prevent="handleSearch" class="navbar__search">
           <span class="navbar__search-icon">
             <svg width="16" height="16" viewBox="0 0 256 256" fill="none"><path fill="#9EADB3" d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg>
           </span>
-          <input type="search" class="navbar__search-input" placeholder="Busca productos..." aria-label="Buscar productos" />
-        </div>
-
-        <button class="navbar__icon" title="Wishlist" aria-label="Wishlist">
-          <svg width="20" height="20" viewBox="0 0 256 256"><path fill="#9EADB3" d="M178,32c-20.65,0-38.73,8.88-50,23.89C116.73,40.88,98.65,32,78,32A62.07,62.07,0,0,0,16,94c0,70,103.79,126.66,108.21,129a8,8,0,0,0,7.58,0C136.21,220.66,240,164,240,94A62.07,62.07,0,0,0,178,32ZM128,206.8C109.74,196.16,32,147.69,32,94A46.06,46.06,0,0,1,78,48c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,42.6-27a46.06,46.06,0,0,1,46,46C224,147.61,146.24,196.15,128,206.8Z"/></svg>
-        </button>
-
-        <button class="navbar__icon" title="Cart" aria-label="Cart">
-          <svg width="20" height="20" viewBox="0 0 256 256"><path fill="#9EADB3" d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200ZM176,88a48,48,0,0,1-96,0,8,8,0,0,1,16,0,32,32,0,0,0,64,0,8,8,0,0,1,16,0Z"/></svg>
-        </button>
-
-        <span class="navbar__avatar" aria-hidden="true">
-          <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User avatar" />
-        </span>
+          <input
+            type="search"
+            class="navbar__search-input"
+            placeholder="Busca productos..."
+            aria-label="Buscar productos"
+            v-model="searchQuery"
+            @keyup.enter="handleSearch"
+          />
+          <button
+            v-if="searchQuery"
+            type="button"
+            class="navbar__search-clear"
+            @click="clearSearch"
+            title="Limpiar búsqueda"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </form>
       </div>
     </div>
   </header>
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
+import { ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
+const searchQuery = ref('');
+
+// Sincronizar el input con el query param de la URL
+watch(() => route.query.buscar, (newSearch) => {
+  if (newSearch) {
+    searchQuery.value = newSearch;
+  } else if (route.name !== 'ProductosList' && route.name !== 'Productos') {
+    searchQuery.value = '';
+  }
+}, { immediate: true });
 
 // Usamos rutas con nombre para categorías y producto listado
 const nav = [
@@ -65,7 +84,24 @@ const nav = [
   { label: 'Comedor', to: { name: 'Productos', params: { categoria: 'comedores' } } },
   { label: 'Office', to: { name: 'Productos', params: { categoria: 'oficina' } } },
   { label: 'Productos', to: { name: 'ProductosList' } }
-]
+];
+
+function handleSearch() {
+  if (searchQuery.value.trim()) {
+    router.push({
+      name: 'ProductosList',
+      query: { buscar: searchQuery.value.trim() }
+    });
+  }
+}
+
+function clearSearch() {
+  searchQuery.value = '';
+  // Si estamos en la página de productos, limpiar el query param
+  if (route.name === 'ProductosList' || route.name === 'Productos') {
+    router.push({ name: 'ProductosList' });
+  }
+}
 
 function isActive(item) {
   if (!route || !route.path) return false;
@@ -91,80 +127,103 @@ function isActive(item) {
 </script>
 
 <style scoped>
-/* Navbar outer container (rounded border visible) */
+/* Variables */
+:root {
+  --nav-bg: #ffffff;
+  --nav-shadow: 0 1px 0 rgba(27, 31, 35, 0.04), 0 2px 6px rgba(0, 0, 0, 0.08);
+  --nav-text: #222c36;
+  --nav-link: #586069;
+  --nav-link-hover: #860734;
+  --nav-primary: #860734;
+}
+
+/* Navbar Container */
 .navbar {
-  padding: 12px; /* outer spacing so border is visible around page content */
+  background: var(--nav-bg);
+  box-shadow: var(--nav-shadow);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .navbar__inner {
-  background: linear-gradient(180deg, #ffffff, #fbfdff);
-  border-radius: 12px;
-  border: 3px solid #9cc7ff; /* soft blue border like the screenshot */
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 10px 20px;
+  gap: 2rem;
+  height: 64px;
 }
 
+/* Brand / Logo */
 .navbar__brand-wrap {
-  display: flex;
-  align-items: center;
-  min-width: 220px; /* leave space for brand */
+  flex-shrink: 0;
 }
 
 .navbar__brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0.75rem;
   text-decoration: none;
+  transition: opacity 0.2s;
 }
 
-.navbar__logo svg { display: block; }
-
-.navbar__title {
-  font-family: Inter, 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial;
-  font-weight: 700;
-  color: #0f1724;
-  font-size: 1.05rem;
-  letter-spacing: 0.2px;
+.navbar__brand:hover {
+  opacity: 0.8;
 }
 
-/* Center nav links */
-.navbar__nav {
+.navbar__logo {
   display: flex;
-  gap: 22px;
   align-items: center;
   justify-content: center;
-  flex: 1 1 auto;
+}
+
+.navbar__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--nav-text);
+  white-space: nowrap;
+}
+
+/* Navigation Links */
+.navbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
 }
 
 .navbar__link {
-  color: #475569;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  color: var(--nav-link);
   text-decoration: none;
-  font-weight: 600;
-  padding: 6px 8px;
-  border-radius: 8px;
-  font-size: 0.98rem;
-  transition: color 160ms ease, background 160ms ease, transform 160ms ease;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .navbar__link:hover {
-  color: #0ea5e9;
+  background: rgba(134, 7, 52, 0.08);
+  color: var(--nav-link-hover);
 }
 
 .navbar__link.active {
-  color: #0ea5e9;
-  background: rgba(14,165,233,0.06);
+  background: rgba(134, 7, 52, 0.12);
+  color: var(--nav-primary);
+  font-weight: 600;
 }
 
-/* Actions to the right */
+/* Actions (search, buttons, etc.) */
 .navbar__actions {
   display: flex;
-  gap: 12px;
   align-items: center;
-  justify-content: flex-end;
-  min-width: 260px;
+  gap: 1rem;
+  flex-shrink: 0;
 }
 
 /* Search capsule */
@@ -177,6 +236,21 @@ function isActive(item) {
   height: 40px;
   border: 1px solid rgba(14,165,233,0.12);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.navbar__search:focus-within {
+  border-color: #860734;
+  box-shadow: 0 0 0 3px rgba(134, 7, 52, 0.1);
+}
+
+.navbar__search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+  flex-shrink: 0;
 }
 
 .navbar__search-input {
@@ -188,80 +262,104 @@ function isActive(item) {
   width: 160px;
   font-family: inherit;
 }
+
 .navbar__search-input::placeholder {
   color: #b0bec5;
   font-weight: 400;
 }
-.navbar__icon {
-  background: none;
+
+.navbar__search-clear {
+  background: transparent;
   border: none;
-  padding: 0;
-  margin: 0 2px;
+  padding: 4px;
+  margin-left: 4px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  border-radius: 50%;
-  transition: background 0.15s;
-  height: 40px;
-  width: 40px;
   justify-content: center;
-}
-.navbar__icon:hover {
-  background: #e3f0fc;
-}
-.navbar__avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
   border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid #e3f0fc;
-  background: #fff;
+  transition: all 0.2s;
+  color: #9EADB3;
 }
-.navbar__avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
+
+.navbar__search-clear:hover {
+  background: rgba(134, 7, 52, 0.1);
+  color: #860734;
 }
-@media (max-width: 900px) {
-  .navbar__container {
-    padding: 0 12px;
-    gap: 10px;
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .navbar__inner {
+    gap: 1rem;
+    padding: 0 1rem;
   }
+
   .navbar__nav {
-    gap: 16px;
+    gap: 0;
   }
-  .navbar__search {
-    min-width: 120px;
-    padding: 0 6px;
-  }
-  .navbar__search-input {
-    width: 80px;
-    font-size: 0.95rem;
-  }
-}
-@media (max-width: 700px) {
-  .navbar__container {
-    flex-wrap: wrap;
-    gap: 8px;
-    min-height: 56px;
-  }
-  .navbar__nav {
-    gap: 8px;
-  }
-  .navbar__search {
-    min-width: 60px;
-    padding: 0 2px;
-  }
-  .navbar__search-input {
-    width: 50px;
+
+  .navbar__link {
+    padding: 0.5rem 0.75rem;
     font-size: 0.9rem;
   }
+
   .navbar__title {
-    font-size: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .navbar__search-input {
+    width: 120px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar__inner {
+    height: auto;
+    padding: 0.75rem 1rem;
+    flex-wrap: wrap;
+  }
+
+  .navbar__brand-wrap {
+    order: 1;
+  }
+
+  .navbar__actions {
+    order: 2;
+    margin-left: auto;
+  }
+
+  .navbar__nav {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    gap: 0.25rem;
+    padding: 0.5rem 0;
+    scrollbar-width: none;
+  }
+
+  .navbar__nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .navbar__link {
+    flex-shrink: 0;
+  }
+
+  .navbar__title {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar__search-input {
+    width: 100px;
+    font-size: 0.9rem;
+  }
+
+  .navbar__title {
+    font-size: 0.85rem;
   }
 }
 </style>

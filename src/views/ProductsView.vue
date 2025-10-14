@@ -163,6 +163,7 @@ import Navbar from '../components/Navbar.vue'
 import { ref, computed, onMounted, watch } from 'vue'
 import axiosConfig from '../config/AxiosConfig.js'
 import { useRouter, useRoute } from 'vue-router';
+
 const router = useRouter();
 const route = useRoute();
 
@@ -208,6 +209,20 @@ onMounted(() => {
   fetchProducts();
   const categoria = ref(route.params.categoria);
   fetchProductosPorCategoria(categoria.value);
+
+  // Si hay un query param 'buscar', establecer el término de búsqueda
+  if (route.query.buscar) {
+    searchTerm.value = route.query.buscar;
+  }
+});
+
+// Observar cambios en los query params para búsquedas
+watch(() => route.query.buscar, (newSearchQuery) => {
+  if (newSearchQuery) {
+    searchTerm.value = newSearchQuery;
+    selectedCategory.value = ''; // Limpiar categoría al buscar
+    currentPage.value = 1;
+  }
 });
 
 watch(() => route.params.categoria, (newCategoria) => {
