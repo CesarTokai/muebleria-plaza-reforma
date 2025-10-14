@@ -174,6 +174,17 @@ function goToProduct(id) {
 const products = ref([])
 const loadingProducts = ref(false)
 
+// Helper: extrae una cadena de categoría desde distintos formatos
+function normalizeCategory(cat) {
+  if (!cat && cat !== 0) return '';
+  if (typeof cat === 'string') return cat;
+  // Si la API devuelve un objeto, intentar varios campos comunes
+  if (typeof cat === 'object') {
+    return (cat.value || cat.slug || cat.name || cat.label || '') + '';
+  }
+  return String(cat);
+}
+
 async function fetchProducts() {
   loadingProducts.value = true
   try {
@@ -182,7 +193,8 @@ async function fetchProducts() {
       id: item.id,
       name: item.name,
       price: item.price,
-      category: item.category,
+      // Normalizamos category a string para evitar discrepancias
+      category: normalizeCategory(item.category),
       img: item.img_base64 || '/assets/img/products/default.jpg',
     }))
   } catch (e) {
@@ -230,8 +242,9 @@ const itemsPerPage = 12;
 
 const filteredProducts = computed(() => {
   return products.value.filter(product => {
-    const matchesCategory = !selectedCategory.value || 
-      product.category?.trim().toLowerCase() === selectedCategory.value.trim().toLowerCase();
+    const prodCat = normalizeCategory(product.category).trim().toLowerCase();
+    const selectedCat = normalizeCategory(selectedCategory.value).trim().toLowerCase();
+    const matchesCategory = !selectedCat || prodCat === selectedCat;
     const matchesSearch = !searchTerm.value ||
       product.name.toLowerCase().includes(searchTerm.value.toLowerCase());
     const matchesMinPrice = !minPrice.value || product.price >= minPrice.value;
@@ -279,8 +292,11 @@ function clearFilters() {
 }
 
 function getCategoryLabel(category) {
-  const cat = categories.find(c => c.value?.toLowerCase() === category?.toLowerCase());
-  return cat ? cat.label : 'General';
+  // category puede venir ya normalizado (string) o bien ser nulo
+  if (!category) return 'General';
+  const catStr = normalizeCategory(category).toLowerCase();
+  const cat = categories.find(c => (c.value || '').toLowerCase() === catStr || (c.label || '').toLowerCase() === catStr);
+  return cat ? cat.label : normalizeCategory(category) || 'General';
 }
 
 function goToPage(page) {

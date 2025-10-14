@@ -424,39 +424,22 @@ function getStockClass(stock) {
 </script>
 
 <style scoped>
-/* Variables CSS */
-:root {
-  --primary: #860734;
-  --primary-dark: #6a0529;
-  --primary-light: #e94e77;
-  --secondary: #ffd700;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --text-dark: #1f2937;
-  --text-gray: #6b7280;
-  --bg-light: #f9fafb;
-  --bg-white: #ffffff;
-  --border: #e5e7eb;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-  --radius: 12px;
-  --radius-lg: 16px;
-}
+/* Las variables CSS globales se definen en src/components/assets/styles.css */
 
 .admin-dashboard {
   min-height: 100vh;
   background: linear-gradient(135deg, #f0f4f8 0%, #e9ecef 100%);
 }
 
-/* Header del Dashboard */
+/* Header del Dashboard - MEJORADO Y RESPONSIVO */
 .dashboard-header {
   background: linear-gradient(135deg, var(--primary), var(--primary-light));
   color: white;
-  padding: 2rem 2rem 3rem;
+  padding: 1.5rem 1rem 2.5rem;
   box-shadow: var(--shadow-lg);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .header-content {
@@ -465,30 +448,33 @@ function getStockClass(stock) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .header-title-section {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
+  flex: 1;
+  min-width: 200px;
 }
 
 .header-title-section i {
-  font-size: 3rem;
+  font-size: 2.5rem;
   opacity: 0.9;
 }
 
 .header-title-section h1 {
   margin: 0;
-  font-size: 2rem;
+  font-size: clamp(1.3rem, 4vw, 2rem);
   font-weight: 700;
   color: white;
 }
 
 .header-title-section p {
   margin: 0.3rem 0 0;
-  font-size: 1rem;
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
   opacity: 0.9;
   color: white;
 }
@@ -496,6 +482,7 @@ function getStockClass(stock) {
 .logout-btn {
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 0.75rem 1.5rem;
@@ -504,9 +491,10 @@ function getStockClass(stock) {
   align-items: center;
   gap: 0.5rem;
   font-weight: 600;
+  font-size: 0.95rem;
   transition: all 0.3s;
   cursor: pointer;
-  margin: 0;
+  white-space: nowrap;
 }
 
 .logout-btn:hover {
@@ -515,11 +503,11 @@ function getStockClass(stock) {
   box-shadow: var(--shadow);
 }
 
-/* Contenido del Dashboard */
+/* Contenido del Dashboard - MEJORADO */
 .dashboard-content {
   max-width: 1400px;
-  margin: -2rem auto 3rem;
-  padding: 0 2rem;
+  margin: -2rem auto 2rem;
+  padding: 0 1rem;
 }
 
 .content-wrapper {
@@ -531,22 +519,24 @@ function getStockClass(stock) {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Barra de acciones */
+/* Barra de acciones - MEJORADA Y RESPONSIVA */
 .actions-bar {
   background: var(--bg-white);
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .stats-summary {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .stat-item {
@@ -555,6 +545,7 @@ function getStockClass(stock) {
   gap: 0.5rem;
   color: var(--text-gray);
   font-weight: 600;
+  font-size: 0.95rem;
 }
 
 .stat-item i {
@@ -562,22 +553,23 @@ function getStockClass(stock) {
   color: var(--primary);
 }
 
-/* Botones */
+/* Botones - MEJORADOS */
 .btn-primary {
   background: linear-gradient(135deg, var(--primary), var(--primary-light));
   color: white;
   border: none;
-  padding: 0.875rem 1.75rem;
+  padding: 0.875rem 1.5rem;
   border-radius: var(--radius);
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.95rem;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: var(--shadow);
-  margin: 0;
+  white-space: nowrap;
 }
 
 .btn-primary:hover {
@@ -589,16 +581,16 @@ function getStockClass(stock) {
   background: var(--bg-light);
   color: var(--text-dark);
   border: 1px solid var(--border);
-  padding: 0.875rem 1.75rem;
+  padding: 0.875rem 1.5rem;
   border-radius: var(--radius);
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.95rem;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   cursor: pointer;
   transition: all 0.3s;
-  margin: 0;
 }
 
 .btn-secondary:hover {
@@ -617,7 +609,6 @@ function getStockClass(stock) {
   cursor: pointer;
   transition: all 0.2s;
   font-size: 1.1rem;
-  margin: 0;
   padding: 0;
 }
 
@@ -637,7 +628,7 @@ function getStockClass(stock) {
   background: #fef2f2;
 }
 
-/* Tabla */
+/* Tabla - COMPLETAMENTE REDISEÑADA PARA MÓVILES */
 .table-container {
   background: var(--bg-white);
   border-radius: var(--radius-lg);
@@ -662,6 +653,7 @@ function getStockClass(stock) {
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .furniture-table tbody tr {
@@ -710,11 +702,13 @@ function getStockClass(stock) {
 .name-cell {
   font-weight: 600;
   color: var(--text-dark);
+  max-width: 200px;
 }
 
 .price-cell {
   font-weight: 700;
   color: var(--primary);
+  white-space: nowrap;
 }
 
 .category-badge {
@@ -731,7 +725,7 @@ function getStockClass(stock) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
+  min-width: 50px;
   padding: 0.25rem 0.5rem;
   border-radius: 6px;
   font-weight: 600;
@@ -767,6 +761,7 @@ function getStockClass(stock) {
 .actions-cell {
   display: flex;
   gap: 0.5rem;
+  justify-content: center;
 }
 
 /* Loading */
@@ -796,7 +791,7 @@ function getStockClass(stock) {
 .empty-state {
   background: var(--bg-white);
   border-radius: var(--radius-lg);
-  padding: 4rem 2rem;
+  padding: 3rem 1.5rem;
   text-align: center;
   box-shadow: var(--shadow);
 }
@@ -811,6 +806,7 @@ function getStockClass(stock) {
 .empty-state h3 {
   color: var(--text-dark);
   margin-bottom: 0.5rem;
+  font-size: 1.5rem;
 }
 
 .empty-state p {
@@ -818,20 +814,21 @@ function getStockClass(stock) {
   margin-bottom: 2rem;
 }
 
-/* Modal */
+/* Modal - MEJORADO PARA MÓVILES */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.6) !important;
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  padding: 2rem;
+  z-index: 9999;
+  padding: 1rem;
   overflow-y: auto;
 }
 
@@ -843,19 +840,16 @@ function getStockClass(stock) {
   max-width: 900px;
   max-height: 90vh;
   overflow-y: auto;
-}
-
-.modal-form form {
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  z-index: 10000;
 }
 
 .form-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   background: var(--bg-white);
@@ -863,29 +857,27 @@ function getStockClass(stock) {
 }
 
 .form-header h2 {
+  margin: 0;
+  font-size: clamp(1.2rem, 4vw, 1.5rem);
+  color: var(--text-dark);
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  color: var(--text-dark);
-  font-size: 1.5rem;
-  margin: 0;
+  gap: 0.5rem;
 }
 
 .close-btn {
   background: transparent;
   border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--text-gray);
+  border-radius: 8px;
   transition: all 0.2s;
-  font-size: 1.25rem;
-  padding: 0;
-  margin: 0;
+  color: var(--text-gray);
+  font-size: 1.2rem;
 }
 
 .close-btn:hover {
@@ -894,24 +886,24 @@ function getStockClass(stock) {
 }
 
 .form-body {
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
 .form-column {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1rem;
 }
 
@@ -922,22 +914,22 @@ function getStockClass(stock) {
 }
 
 .form-group label {
+  font-weight: 600;
+  color: var(--text-dark);
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-weight: 600;
-  color: var(--text-dark);
-  font-size: 0.875rem;
 }
 
 .form-group label i {
   color: var(--primary);
+  font-size: 1rem;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-  width: 100%;
   padding: 0.75rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -959,59 +951,55 @@ function getStockClass(stock) {
   min-height: 80px;
 }
 
-/* Image Upload */
 .image-upload-wrapper {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .file-input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
+  display: none;
 }
 
 .file-label {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 2rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--bg-light);
   border: 2px dashed var(--border);
   border-radius: var(--radius);
   cursor: pointer;
-  transition: all 0.3s;
-  background: var(--bg-light);
+  transition: all 0.2s;
+  font-weight: 600;
+  color: var(--text-gray);
 }
 
 .file-label:hover {
+  background: #e5e7eb;
   border-color: var(--primary);
-  background: #fef2f7;
-}
-
-.file-label i {
-  font-size: 2rem;
   color: var(--primary);
 }
 
 .image-preview {
-  margin-top: 1rem;
-  max-width: 200px;
+  width: 100%;
   max-height: 200px;
+  object-fit: contain;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  object-fit: cover;
+  border: 1px solid var(--border);
 }
 
 .form-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem;
   border-top: 1px solid var(--border);
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
   position: sticky;
   bottom: 0;
   background: var(--bg-white);
+  flex-wrap: wrap;
 }
 
 /* Animaciones del modal */
@@ -1032,75 +1020,76 @@ function getStockClass(stock) {
 
 .modal-enter-from .modal-form,
 .modal-leave-to .modal-form {
-  transform: scale(0.9);
+  transform: scale(0.95);
 }
 
-/* Responsive */
+/* RESPONSIVE - TABLET */
 @media (max-width: 1024px) {
   .dashboard-content {
-    padding: 0 1rem;
+    padding: 0 0.75rem;
   }
 
   .form-grid {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+  }
+
+  .furniture-table {
+    font-size: 0.9rem;
+  }
+
+  .furniture-table th,
+  .furniture-table td {
+    padding: 0.75rem 0.5rem;
   }
 }
 
+/* RESPONSIVE - MÓVIL */
 @media (max-width: 768px) {
+  .dashboard-header {
+    padding: 1rem 0.75rem 2rem;
+  }
+
   .header-content {
     flex-direction: column;
     align-items: stretch;
   }
 
   .header-title-section {
-    flex-direction: column;
+    justify-content: center;
     text-align: center;
+  }
+
+  .header-title-section i {
+    font-size: 2rem;
+  }
+
+  .logout-btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .actions-bar {
     flex-direction: column;
     align-items: stretch;
+    padding: 1rem;
   }
 
+  .btn-primary {
+    width: 100%;
+  }
+
+  .stats-summary {
+    justify-content: center;
+  }
+
+  /* TABLA RESPONSIVA TIPO TARJETAS - MEJORADA */
   .table-container {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-lg);
   }
 
   .furniture-table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-
-  .modal-overlay {
-    padding: 0;
-  }
-
-  .modal-form {
-    max-height: 100vh;
-    border-radius: 0;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 600px) {
-  .dashboard-header {
-    padding: 1.5rem 1rem 2rem;
-  }
-
-  .header-title-section h1 {
-    font-size: 1.5rem;
-  }
-
-  .furniture-table,
-  .furniture-table thead,
-  .furniture-table tbody,
-  .furniture-table tr,
-  .furniture-table td {
     display: block;
   }
 
@@ -1108,41 +1097,184 @@ function getStockClass(stock) {
     display: none;
   }
 
+  .furniture-table tbody {
+    display: block;
+  }
+
   .table-row {
-    margin-bottom: 1rem;
+    display: block;
+    margin-bottom: 1.25rem;
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem;
+    border-radius: 16px;
+    padding: 1.25rem;
+    background: var(--bg-white);
+    box-shadow: 0 4px 15px rgba(134, 7, 52, 0.08);
+    transition: all 0.3s;
+  }
+
+  .table-row:hover {
+    box-shadow: 0 8px 25px rgba(134, 7, 52, 0.15);
+    transform: translateY(-2px);
   }
 
   .furniture-table td {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--border);
+    padding: 0.875rem 0;
+    border-bottom: 1px solid var(--bg-light);
   }
 
   .furniture-table td:last-child {
     border-bottom: none;
+    padding-top: 1.25rem;
+    border-top: 2px solid var(--bg-light);
+    margin-top: 0.5rem;
   }
 
   .furniture-table td::before {
     content: attr(data-label);
-    font-weight: 600;
-    color: var(--text-gray);
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  .img-cell::before {
+    content: 'Imagen';
+  }
+
+  .name-cell::before {
+    content: 'Nombre';
+  }
+
+  .price-cell::before {
+    content: 'Precio';
+  }
+
+  .img-cell,
+  .name-cell {
+    max-width: 100%;
+  }
+
+  .img-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
   }
 
   .actions-cell {
     justify-content: flex-end;
   }
 
+  .actions-cell::before {
+    display: none;
+  }
+
+  /* MODAL EN MÓVIL - MEJORADO */
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal-form {
+    max-height: 95vh;
+    border-radius: 24px 24px 0 0;
+    margin-top: auto;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
   .form-body {
-    padding: 1.5rem 1rem;
+    padding: 1rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
   }
 
   .form-footer {
+    flex-direction: column-reverse;
     padding: 1rem;
+  }
+
+  .form-footer .btn-primary,
+  .form-footer .btn-secondary {
+    width: 100%;
+  }
+}
+
+/* RESPONSIVE - MÓVIL PEQUEÑO */
+@media (max-width: 480px) {
+  .dashboard-header {
+    padding: 0.75rem 0.5rem 1.5rem;
+  }
+
+  .header-title-section h1 {
+    font-size: 1.2rem;
+  }
+
+  .header-title-section p {
+    font-size: 0.8rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    font-size: 0.9rem;
+    padding: 0.75rem 1.25rem;
+  }
+
+  .empty-state {
+    padding: 2rem 1rem;
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+  }
+
+  .empty-state h3 {
+    font-size: 1.25rem;
+  }
+
+  .form-header {
+    padding: 1rem;
+  }
+
+  .form-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .close-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Mejoras de accesibilidad y UX */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Modo oscuro (opcional) */
+@media (prefers-color-scheme: dark) {
+  .admin-dashboard {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
   }
 }
 </style>
