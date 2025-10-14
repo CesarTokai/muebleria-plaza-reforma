@@ -364,8 +364,8 @@ async function fetchRelatedProducts(category, currentProductId) {
 function goToProduct(productId) {
   // Scroll al inicio
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  // Navegar al nuevo producto
-  router.push(`/productos/${productId}`);
+  // Navegar al nuevo producto - CORREGIDO: debe ser /producto/:id no /productos/:id
+  router.push({ name: 'ProductoDetalle', params: { id: productId } });
   // Recargar el producto
   setTimeout(() => {
     fetchProduct();

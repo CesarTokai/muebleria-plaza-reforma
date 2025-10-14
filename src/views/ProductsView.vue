@@ -84,7 +84,7 @@
             class="product-item"
           >
             <!-- Tarjeta envolvente clicable -->
-            <router-link :to="{ name: 'ProductoDetalle', params: { id: product.id } }" class="product-card">
+            <div class="product-card" @click="goToProduct(product.id)">
               <div class="product-badge" v-if="product.price < 5000">¡Oferta!</div>
               <div class="product-img-wrap">
                 <img
@@ -97,14 +97,14 @@
                 <h4 class="product-name">{{ product.name }}</h4>
                 <div class="product-category-tag">{{ getCategoryLabel(product.category) }}</div>
                 <span class="product-price">${{ product.price.toLocaleString('es-MX') }}</span>
-                <button class="product-btn" type="button" @click.stop="goToProduct(product.id)">
+                <button class="product-btn" type="button">
                   <span>Ver detalles</span>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M5 12h14M12 5l7 7-7 7"/>
                   </svg>
                 </button>
               </div>
-            </router-link>
+            </div>
           </div>
 
           <div v-if="filteredProducts.length === 0" class="no-products">
