@@ -1,103 +1,251 @@
 <template>
   <div class="admin-dashboard">
-    <h1>Bienvenido al Dashboard de Admin</h1>
-    <p>Aquí puedes gestionar productos, usuarios, pedidos, etc.</p>
-    <button @click="logout">Cerrar sesión</button>
-
-    <div v-if="loading">Cargando muebles...</div>
-    <div v-else>
-      <button @click="openCreateForm" style="margin-bottom:1rem">Agregar mueble</button>
-      <table v-if="furnitureList.length" border="1" style="width:100%;margin-bottom:2rem">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Precio</th>
-            <th>Categoría</th>
-            <th>Stock</th>
-            <th>Marca</th>
-            <th>Color</th>
-            <th>Material</th>
-            <th>Dimensiones</th>
-            <th>Imagen</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in furnitureList" :key="item.id">
-            <td :data-label="'Nombre'">{{ item.name }}</td>
-            <td :data-label="'Precio'">${{ item.price }}</td>
-            <td :data-label="'Categoría'">{{ item.category }}</td>
-            <td :data-label="'Stock'">{{ item.stock }}</td>
-            <td :data-label="'Marca'">{{ item.brand }}</td>
-            <td :data-label="'Color'">{{ item.color }}</td>
-            <td :data-label="'Material'">{{ item.material }}</td>
-            <td :data-label="'Dimensiones'">{{ item.dimensions }}</td>
-            <td :data-label="'Imagen'">
-              <img v-if="item.img_base64" :src="item.img_base64" alt="img" style="max-width:60px;max-height:60px;" />
-            </td>
-            <td :data-label="'Acciones'">
-              <button @click="openEditForm(item)">Editar</button>
-              <button @click="deleteFurniture(item.id)" style="margin-left:0.5rem">Eliminar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div v-else>No hay muebles registrados.</div>
+    <!-- Header del Dashboard -->
+    <div class="dashboard-header">
+      <div class="header-content">
+        <div class="header-title-section">
+          <i class="bi bi-speedometer2"></i>
+          <div>
+            <h1>Panel de Administración</h1>
+            <p>Gestiona tu inventario de muebles</p>
+          </div>
+        </div>
+        <button @click="logout" class="logout-btn">
+          <i class="bi bi-box-arrow-right"></i>
+          Cerrar sesión
+        </button>
+      </div>
     </div>
 
-    <div v-if="showForm" class="modal-form">
-      <form @submit.prevent="saveFurniture">
-        <h2>{{ isEditing ? 'Editar mueble' : 'Agregar nuevo mueble' }}</h2>
-        <p class="form-instructions">Por favor, completa los campos a continuación para {{ isEditing ? 'editar' : 'agregar' }} un mueble.</p>
+    <!-- Contenedor principal -->
+    <div class="dashboard-content">
+      <!-- Loading state -->
+      <div v-if="loading" class="loading-container">
+        <div class="spinner"></div>
+        <p>Cargando muebles...</p>
+      </div>
 
-        <div class="form-grid">
-          <div>
-            <label for="name">Nombre del mueble</label>
-            <input id="name" v-model="form.name" placeholder="Ejemplo: Silla de madera" required />
-
-            <label for="price">Precio</label>
-            <input id="price" v-model.number="form.price" type="number" placeholder="Ejemplo: 1500" required />
-
-            <label for="category">Categoría</label>
-            <select id="category" v-model="form.category" required>
-              <option value="" disabled>Selecciona una categoría</option>
-              <option v-for="cat in categories" :key="cat.value" :value="cat.value">
-                {{ cat.label }}
-              </option>
-            </select>
-
-            <label for="stock">Stock disponible</label>
-            <input id="stock" v-model.number="form.stock" type="number" placeholder="Ejemplo: 10" />
-
-            <label for="brand">Marca</label>
-            <input id="brand" v-model="form.brand" placeholder="Ejemplo: IKEA" />
-          </div>
-
-          <div>
-            <label for="color">Color</label>
-            <input id="color" v-model="form.color" placeholder="Ejemplo: Blanco" />
-
-            <label for="material">Material</label>
-            <input id="material" v-model="form.material" placeholder="Ejemplo: Madera" />
-
-            <label for="dimensions">Dimensiones</label>
-            <input id="dimensions" v-model="form.dimensions" placeholder="Ejemplo: 120x60x80 cm" />
-
-            <label for="description">Descripción</label>
-            <textarea id="description" v-model="form.description" placeholder="Ejemplo: Una silla cómoda y resistente, ideal para oficinas."></textarea>
-
-            <label for="image">Imagen</label>
-            <input id="image" type="file" accept="image/*" @change="handleImageUpload" />
-            <img v-if="form.img_base64" :src="form.img_base64" alt="Vista previa de la imagen" class="image-preview" />
+      <!-- Content cuando no está cargando -->
+      <div v-else class="content-wrapper">
+        <!-- Barra de acciones -->
+        <div class="actions-bar">
+          <button @click="openCreateForm" class="btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            Agregar Mueble
+          </button>
+          <div class="stats-summary">
+            <div class="stat-item">
+              <i class="bi bi-box-seam"></i>
+              <span>{{ furnitureList.length }} productos</span>
+            </div>
           </div>
         </div>
 
-        <div class="form-buttons">
-          <button type="submit">Guardar</button>
-          <button type="button" @click="showForm = false">Cancelar</button>
+        <!-- Tabla de productos -->
+        <div v-if="furnitureList.length" class="table-container">
+          <table class="furniture-table">
+            <thead>
+              <tr>
+                <th>Imagen</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Categoría</th>
+                <th>Stock</th>
+                <th>Marca</th>
+                <th>Color</th>
+                <th>Material</th>
+                <th>Dimensiones</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in furnitureList" :key="item.id" class="table-row">
+                <td data-label="Imagen" class="img-cell">
+                  <div class="img-wrapper">
+                    <img v-if="item.img_base64" :src="item.img_base64" alt="img" />
+                    <div v-else class="no-image">
+                      <i class="bi bi-image"></i>
+                    </div>
+                  </div>
+                </td>
+                <td data-label="Nombre" class="name-cell">{{ item.name }}</td>
+                <td data-label="Precio" class="price-cell">${{ item.price.toLocaleString('es-MX') }}</td>
+                <td data-label="Categoría">
+                  <span class="category-badge">{{ getCategoryLabel(item.category) }}</span>
+                </td>
+                <td data-label="Stock">
+                  <span :class="['stock-badge', getStockClass(item.stock)]">
+                    {{ item.stock }}
+                  </span>
+                </td>
+                <td data-label="Marca">{{ item.brand || '-' }}</td>
+                <td data-label="Color">
+                  <span class="color-dot" :style="{ background: item.color || '#ccc' }"></span>
+                  {{ item.color || '-' }}
+                </td>
+                <td data-label="Material">{{ item.material || '-' }}</td>
+                <td data-label="Dimensiones">{{ item.dimensions || '-' }}</td>
+                <td data-label="Acciones" class="actions-cell">
+                  <button @click="openEditForm(item)" class="btn-icon btn-edit" title="Editar">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button @click="deleteFurniture(item.id)" class="btn-icon btn-delete" title="Eliminar">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </form>
+
+        <!-- Estado vacío -->
+        <div v-else class="empty-state">
+          <i class="bi bi-inbox"></i>
+          <h3>No hay muebles registrados</h3>
+          <p>Comienza agregando tu primer producto</p>
+          <button @click="openCreateForm" class="btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            Agregar Mueble
+          </button>
+        </div>
+      </div>
     </div>
+
+    <!-- Modal del formulario -->
+    <Transition name="modal">
+      <div v-if="showForm" class="modal-overlay" @click.self="showForm = false">
+        <div class="modal-form">
+          <form @submit.prevent="saveFurniture">
+            <div class="form-header">
+              <h2>
+                <i :class="isEditing ? 'bi bi-pencil-square' : 'bi bi-plus-square'"></i>
+                {{ isEditing ? 'Editar Mueble' : 'Nuevo Mueble' }}
+              </h2>
+              <button type="button" @click="showForm = false" class="close-btn">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+
+            <div class="form-body">
+              <div class="form-grid">
+                <!-- Columna izquierda -->
+                <div class="form-column">
+                  <div class="form-group">
+                    <label for="name">
+                      <i class="bi bi-card-heading"></i>
+                      Nombre del mueble *
+                    </label>
+                    <input id="name" v-model="form.name" placeholder="Ej: Silla ergonómica" required />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="price">
+                      <i class="bi bi-currency-dollar"></i>
+                      Precio *
+                    </label>
+                    <input id="price" v-model.number="form.price" type="number" placeholder="1500" required />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="category">
+                      <i class="bi bi-tags"></i>
+                      Categoría *
+                    </label>
+                    <select id="category" v-model="form.category_id" required>
+                      <option :value="null" disabled>Selecciona una categoría</option>
+                      <option v-for="cat in categories" :key="cat.value" :value="cat.value">
+                        {{ cat.label }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="stock">
+                        <i class="bi bi-box"></i>
+                        Stock
+                      </label>
+                      <input id="stock" v-model.number="form.stock" type="number" placeholder="10" />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="brand">
+                        <i class="bi bi-award"></i>
+                        Marca
+                      </label>
+                      <input id="brand" v-model="form.brand" placeholder="IKEA" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Columna derecha -->
+                <div class="form-column">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="color">
+                        <i class="bi bi-palette"></i>
+                        Color
+                      </label>
+                      <input id="color" v-model="form.color" placeholder="Blanco" />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="material">
+                        <i class="bi bi-tree"></i>
+                        Material
+                      </label>
+                      <input id="material" v-model="form.material" placeholder="Madera" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="dimensions">
+                      <i class="bi bi-rulers"></i>
+                      Dimensiones
+                    </label>
+                    <input id="dimensions" v-model="form.dimensions" placeholder="120x60x80 cm" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="description">
+                      <i class="bi bi-text-paragraph"></i>
+                      Descripción
+                    </label>
+                    <textarea id="description" v-model="form.description" placeholder="Describe las características del mueble..." rows="3"></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="image">
+                      <i class="bi bi-image"></i>
+                      Imagen del producto
+                    </label>
+                    <div class="image-upload-wrapper">
+                      <input id="image" type="file" accept="image/*" @change="handleImageUpload" class="file-input" />
+                      <label for="image" class="file-label">
+                        <i class="bi bi-cloud-upload"></i>
+                        <span>{{ form.img_base64 ? 'Cambiar imagen' : 'Subir imagen' }}</span>
+                      </label>
+                      <img v-if="form.img_base64" :src="form.img_base64" alt="Preview" class="image-preview" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-footer">
+              <button type="button" @click="showForm = false" class="btn-secondary">
+                <i class="bi bi-x-circle"></i>
+                Cancelar
+              </button>
+              <button type="submit" class="btn-primary">
+                <i class="bi bi-check-circle"></i>
+                {{ isEditing ? 'Guardar Cambios' : 'Crear Mueble' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -117,7 +265,7 @@ const form = reactive({
   name: '',
   description: '',
   price: 0,
-  category: '',
+  category_id: null,
   img_base64: '',
   stock: 0,
   brand: '',
@@ -127,14 +275,14 @@ const form = reactive({
 });
 
 const categories = [
-  { label: "Sala", value: "sala" },
-  { label: "Oficina", value: "oficina" },
-  { label: "Camas y colchones", value: "camas-y-colchones" },
-  { label: "Comedor", value: "comedor" },
-  { label: "Cocinas", value: "cocinas" },
-  { label: "Electrodomésticos pequeños", value: "electrodomesticos-pequenos" },
-  { label: "Bicicletas", value: "bicicletas" },
-  { label: "Refrigeradores", value: "refrigeradores" },
+  { label: "Sala", value: 1 },
+  { label: "Comedor", value: 2 },
+  { label: "Cocinas", value: 3 },
+  { label: "Oficina", value: 4 },
+  { label: "Camas y colchones", value: 5 },
+  { label: "Electrodomésticos pequeños", value: 6 },
+  { label: "Bicicletas", value: 7 },
+  { label: "Refrigeradores", value: 8 },
 ];
 
 function logout() {
@@ -161,7 +309,7 @@ function openCreateForm() {
     name: '',
     description: '',
     price: 0,
-    category: '',
+    category_id: null,
     img_base64: '',
     stock: 0,
     brand: '',
@@ -174,25 +322,28 @@ function openCreateForm() {
 
 function openEditForm(item) {
   isEditing.value = true;
-  Object.assign(form, item);
+  Object.assign(form, {
+    ...item,
+    category_id: item.category_id || item.category
+  });
   showForm.value = true;
 }
 
 function validateForm() {
   if (!form.name.trim()) {
-    alert('El nombre del mueble es obligatorio.');
+    axiosConfig.ToastWarning('Validación', 'El nombre del mueble es obligatorio.');
     return false;
   }
   if (form.price <= 0) {
-    alert('El precio debe ser mayor a 0.');
+    axiosConfig.ToastWarning('Validación', 'El precio debe ser mayor a 0.');
     return false;
   }
-  if (!form.category.trim()) {
-    alert('La categoría es obligatoria.');
+  if (!form.category_id) {
+    axiosConfig.ToastWarning('Validación', 'La categoría es obligatoria.');
     return false;
   }
   if (form.stock < 0) {
-    alert('El stock no puede ser negativo.');
+    axiosConfig.ToastWarning('Validación', 'El stock no puede ser negativo.');
     return false;
   }
   return true;
@@ -201,30 +352,56 @@ function validateForm() {
 async function saveFurniture() {
   if (!validateForm()) return;
 
+  // Preparar los datos para enviar
+  const dataToSend = {
+    name: form.name,
+    description: form.description || '',
+    price: parseFloat(form.price),
+    category_id: parseInt(form.category_id),
+    img_base64: form.img_base64 || '',
+    stock: parseInt(form.stock) || 0,
+    brand: form.brand || '',
+    color: form.color || '',
+    material: form.material || '',
+    dimensions: form.dimensions || ''
+  };
+
   try {
     if (isEditing.value) {
-      await axiosConfig.doPut(`/furniture/${form.id}`, form);
+      await axiosConfig.doPut(`/furniture/${form.id}/`, dataToSend);
+      axiosConfig.ToastSuccess('¡Éxito!', 'Mueble actualizado correctamente.');
     } else {
-      await axiosConfig.doPost('/furniture/', form);
+      await axiosConfig.doPost('/furniture/', dataToSend);
+      axiosConfig.ToastSuccess('¡Éxito!', 'Mueble creado correctamente.');
     }
     showForm.value = false;
     fetchFurniture();
   } catch (e) {
-    // Error handled by interceptor
+    console.error('Error al guardar:', e);
   }
 }
 
 async function deleteFurniture(id) {
   if (!confirm('¿Seguro que deseas eliminar este mueble?')) return;
   try {
-    await axiosConfig.doDelete(`/furniture/${id}`);
+    await axiosConfig.doDelete(`/furniture/${id}/`);
+    axiosConfig.ToastSuccess('¡Éxito!', 'Mueble eliminado correctamente.');
     fetchFurniture();
-  } catch (e) {}
+  } catch (e) {
+    console.error('Error al eliminar:', e);
+  }
 }
 
 function handleImageUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
+
+  // Validar tamaño (máximo 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    axiosConfig.ToastWarning('Imagen muy grande', 'La imagen no debe superar los 5MB.');
+    return;
+  }
+
   const reader = new FileReader();
   reader.onload = (ev) => {
     form.img_base64 = ev.target.result;
@@ -233,276 +410,739 @@ function handleImageUpload(e) {
 }
 
 onMounted(fetchFurniture);
+
+function getCategoryLabel(value) {
+  const cat = categories.find(c => c.value === value);
+  return cat ? cat.label : value;
+}
+
+function getStockClass(stock) {
+  if (stock === 0) return 'out-of-stock';
+  if (stock < 5) return 'low-stock';
+  return 'in-stock';
+}
 </script>
 
 <style scoped>
+/* Variables CSS */
+:root {
+  --primary: #860734;
+  --primary-dark: #6a0529;
+  --primary-light: #e94e77;
+  --secondary: #ffd700;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --text-dark: #1f2937;
+  --text-gray: #6b7280;
+  --bg-light: #f9fafb;
+  --bg-white: #ffffff;
+  --border: #e5e7eb;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  --radius: 12px;
+  --radius-lg: 16px;
+}
+
 .admin-dashboard {
   min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e9ecef 100%);
+}
+
+/* Header del Dashboard */
+.dashboard-header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  padding: 2rem 2rem 3rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: flex-start;
-  padding: 3rem 2rem;
-  background: linear-gradient(135deg, #f3e7e9, #e3eeff);
-  animation: gradient-animation 6s ease infinite;
   gap: 2rem;
-  width: 100%;
-  box-sizing: border-box;
 }
 
-@keyframes gradient-animation {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.header-title-section {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
-h1 {
-  color: #4a4a4a;
-  font-size: 2.8rem;
+.header-title-section i {
+  font-size: 3rem;
+  opacity: 0.9;
+}
+
+.header-title-section h1 {
+  margin: 0;
+  font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 1.5rem;
-  text-align: center;
+  color: white;
 }
 
-p {
-  color: #6a6a6a;
-  font-size: 1.3rem;
-  margin-bottom: 2.5rem;
-  text-align: center;
-  max-width: 800px;
+.header-title-section p {
+  margin: 0.3rem 0 0;
+  font-size: 1rem;
+  opacity: 0.9;
+  color: white;
 }
 
-/* Estilos para la tabla */
-table {
-  width: 100%;
-  max-width: 1200px;
-  border-collapse: collapse;
-  margin: 2rem 0;
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  text-align: left;
-}
-
-thead {
-  background: #d32f2f; /* Cambiar a rojo */
-  color: #fff;
-}
-
-td, th {
-  padding: 1.2rem;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-tbody tr:hover {
-  background: #f9f9f9;
-}
-
-@media (max-width: 900px) {
-  .admin-dashboard {
-    padding: 1.5rem 0.5rem;
-  }
-  table {
-    font-size: 0.95rem;
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-    width: 100%;
-    max-width: 100vw;
-  }
-}
-
-@media (max-width: 700px) {
-  .admin-dashboard {
-    padding: 1rem 0.2rem;
-    gap: 1rem;
-  }
-  .modal-form form {
-    padding: 1rem;
-    max-width: 98vw;
-  }
-  .modal-form .form-grid {
-    grid-template-columns: 1fr;
-    gap: 1.2rem;
-  }
-  table {
-    font-size: 0.85rem;
-  }
-}
-
-@media (max-width: 600px) {
-  .admin-dashboard {
-    padding: 0.5rem 0.1rem;
-  }
-  table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
-    display: block;
-  }
-  thead {
-    display: none;
-  }
-  tr {
-    margin-bottom: 1.2rem;
-    border-bottom: 2px solid #eee;
-  }
-  td {
-    position: relative;
-    padding-left: 50%;
-    min-height: 40px;
-    border: none;
-    border-bottom: 1px solid #eee;
-  }
-  td:before {
-    position: absolute;
-    left: 0.5rem;
-    top: 0.8rem;
-    width: 45%;
-    white-space: nowrap;
-    font-weight: bold;
-    color: #d32f2f;
-    content: attr(data-label);
-  }
-  .modal-form form {
-    padding: 0.5rem;
-    max-width: 100vw;
-  }
-}
-
-/* Estilos para los botones */
-button {
-  background: linear-gradient(135deg, #d32f2f, #f44336); /* Cambiar a tonos rojos */
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.9rem 2rem;
-  font-size: 1.2rem;
-  cursor: pointer;
+.logout-btn {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-weight: 600;
-  transition: transform 0.2s, box-shadow 0.2s;
-  margin-bottom: 1.5rem;
+  transition: all 0.3s;
+  cursor: pointer;
+  margin: 0;
 }
 
-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4); /* Cambiar a rojo */
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
 }
 
-button:disabled {
-  background: #e57373; /* Cambiar a un tono rojo claro */
-  cursor: not-allowed;
+/* Contenido del Dashboard */
+.dashboard-content {
+  max-width: 1400px;
+  margin: -2rem auto 3rem;
+  padding: 0 2rem;
 }
 
-.modal-form {
+.content-wrapper {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Barra de acciones */
+.actions-bar {
+  background: var(--bg-white);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.stats-summary {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-gray);
+  font-weight: 600;
+}
+
+.stat-item i {
+  font-size: 1.25rem;
+  color: var(--primary);
+}
+
+/* Botones */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  border: none;
+  padding: 0.875rem 1.75rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: var(--shadow);
+  margin: 0;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+  background: var(--bg-light);
+  color: var(--text-dark);
+  border: 1px solid var(--border);
+  padding: 0.875rem 1.75rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin: 0;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.btn-icon {
+  background: transparent;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1.1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.btn-edit {
+  color: #3b82f6;
+}
+
+.btn-edit:hover {
+  background: #eff6ff;
+}
+
+.btn-delete {
+  color: var(--danger);
+}
+
+.btn-delete:hover {
+  background: #fef2f2;
+}
+
+/* Tabla */
+.table-container {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.furniture-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.furniture-table thead {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+}
+
+.furniture-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.furniture-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+
+.furniture-table tbody tr:hover {
+  background: var(--bg-light);
+}
+
+.furniture-table td {
+  padding: 1rem;
+  color: var(--text-dark);
+}
+
+.img-cell {
+  width: 80px;
+}
+
+.img-wrapper {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-image {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-gray);
+  font-size: 1.5rem;
+}
+
+.name-cell {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.price-cell {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: #e0e7ff;
+  color: #4f46e5;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.stock-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.in-stock {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.low-stock {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.out-of-stock {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.color-dot {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px var(--border);
+  vertical-align: middle;
+  margin-right: 0.25rem;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Loading */
+.loading-container {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 4rem 2rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.empty-state {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 4rem 2rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.empty-state i {
+  font-size: 4rem;
+  color: var(--text-gray);
+  opacity: 0.5;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: var(--text-gray);
+  margin-bottom: 2rem;
+}
+
+/* Modal */
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 2rem;
+  overflow-y: auto;
+}
+
+.modal-form {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-form form {
-  background: #fff;
-  padding: 2.5rem;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 700px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
-.modal-form h2 {
-  color: #333;
-  margin-bottom: 1rem;
-  text-align: center;
-  font-size: 1.5rem;
-}
-
-.modal-form .form-instructions {
-  color: #666;
-  font-size: 0.9rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.modal-form .form-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 1.2fr; /* Ajustar proporciones de las columnas */
-  gap: 3rem; /* Incrementar aún más el espacio entre columnas */
-}
-
-.modal-form label {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #444;
-  display: block;
-}
-
-.modal-form input,
-.modal-form textarea,
-.modal-form select {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  background-color: #f9f9f9;
-  color: #333;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.modal-form input:focus,
-.modal-form textarea:focus,
-.modal-form select:focus {
-  border-color: #d32f2f; /* Cambiar a rojo */
-  outline: none;
-  box-shadow: 0 0 5px rgba(211, 47, 47, 0.5); /* Cambiar a rojo */
-}
-
-.modal-form .image-preview {
-  max-width: 100px;
-  max-height: 100px;
-  margin-top: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-}
-
-.modal-form .form-buttons {
+.form-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg-white);
+  z-index: 10;
+}
+
+.form-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-dark);
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-gray);
+  transition: all 0.2s;
+  font-size: 1.25rem;
+  padding: 0;
+  margin: 0;
+}
+
+.close-btn:hover {
+  background: var(--bg-light);
+  color: var(--text-dark);
+}
+
+.form-body {
+  padding: 2rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
-.modal-form button {
-  background: linear-gradient(135deg, #d32f2f, #f44336); /* Cambiar a tonos rojos */
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.8rem;
-  font-size: 1rem;
-  cursor: pointer;
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-weight: 600;
-  transition: transform 0.2s, box-shadow 0.2s;
+  color: var(--text-dark);
+  font-size: 0.875rem;
 }
 
-.modal-form button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4); /* Cambiar a rojo */
+.form-group label i {
+  color: var(--primary);
 }
 
-.modal-form button:disabled {
-  background: #e57373; /* Cambiar a un tono rojo claro */
-  cursor: not-allowed;
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(134, 7, 52, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Image Upload */
+.image-upload-wrapper {
+  position: relative;
+}
+
+.file-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.file-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.3s;
+  background: var(--bg-light);
+}
+
+.file-label:hover {
+  border-color: var(--primary);
+  background: #fef2f7;
+}
+
+.file-label i {
+  font-size: 2rem;
+  color: var(--primary);
+}
+
+.image-preview {
+  margin-top: 1rem;
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  object-fit: cover;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--border);
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-white);
+}
+
+/* Animaciones del modal */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s;
+}
+
+.modal-enter-active .modal-form,
+.modal-leave-active .modal-form {
+  transition: transform 0.3s;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .modal-form,
+.modal-leave-to .modal-form {
+  transform: scale(0.9);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .dashboard-content {
+    padding: 0 1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-title-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .actions-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .furniture-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .modal-overlay {
+    padding: 0;
+  }
+
+  .modal-form {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-header {
+    padding: 1.5rem 1rem 2rem;
+  }
+
+  .header-title-section h1 {
+    font-size: 1.5rem;
+  }
+
+  .furniture-table,
+  .furniture-table thead,
+  .furniture-table tbody,
+  .furniture-table tr,
+  .furniture-table td {
+    display: block;
+  }
+
+  .furniture-table thead {
+    display: none;
+  }
+
+  .table-row {
+    margin-bottom: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+  }
+
+  .furniture-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .furniture-table td:last-child {
+    border-bottom: none;
+  }
+
+  .furniture-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-gray);
+  }
+
+  .actions-cell {
+    justify-content: flex-end;
+  }
+
+  .form-body {
+    padding: 1.5rem 1rem;
+  }
+
+  .form-footer {
+    padding: 1rem;
+  }
 }
 </style>

@@ -81,27 +81,30 @@
           <div
             v-for="product in paginatedProducts"
             :key="product.id"
-            class="product-card"
+            class="product-item"
           >
-            <div class="product-badge" v-if="product.price < 5000">¡Oferta!</div>
-            <div class="product-img-wrap">
-              <img
-                :src="product.img || '/assets/img/products/default.jpg'"
-                :alt="product.name"
-                class="product-img"
-              />
-            </div>
-            <div class="product-info">
-              <h4 class="product-name">{{ product.name }}</h4>
-              <div class="product-category-tag">{{ getCategoryLabel(product.category) }}</div>
-              <span class="product-price">${{ product.price.toLocaleString('es-MX') }}</span>
-              <button class="product-btn" @click="goToProduct(product.id)">
-                <span>Ver detalles</span>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </button>
-            </div>
+            <!-- Tarjeta envolvente clicable -->
+            <router-link :to="{ name: 'ProductoDetalle', params: { id: product.id } }" class="product-card">
+              <div class="product-badge" v-if="product.price < 5000">¡Oferta!</div>
+              <div class="product-img-wrap">
+                <img
+                  :src="product.img || '/assets/img/products/default.jpg'"
+                  :alt="product.name"
+                  class="product-img"
+                />
+              </div>
+              <div class="product-info">
+                <h4 class="product-name">{{ product.name }}</h4>
+                <div class="product-category-tag">{{ getCategoryLabel(product.category) }}</div>
+                <span class="product-price">${{ product.price.toLocaleString('es-MX') }}</span>
+                <button class="product-btn" type="button" @click.stop="goToProduct(product.id)">
+                  <span>Ver detalles</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </button>
+              </div>
+            </router-link>
           </div>
 
           <div v-if="filteredProducts.length === 0" class="no-products">

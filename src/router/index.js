@@ -7,8 +7,8 @@ import LoginView from '../views/LoginView.vue';
 
 const routes = [
   { path: '/', component: HomeView },
-  { path: '/productos', component: ProductsView },
-  { path: '/producto/:id', component: ProductDetail, name: 'ProductoDetalle' }, 
+  { path: '/productos', name: 'ProductosList', component: ProductsView },
+  { path: '/producto/:id', component: ProductDetail, name: 'ProductoDetalle' },
   { path: '/contacto', component: ContactView },
   { path: '/login', component: LoginView },
   { path: '/admin', component: () => import('../views/AdminDashboard.vue'), meta: { requiresAuth: true } },

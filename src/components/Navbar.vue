@@ -17,7 +17,15 @@
       </div>
 
       <nav class="navbar__nav">
-        <a v-for="item in nav" :key="item.label" :href="item.href" class="navbar__link" :class="{ active: item.active }">{{ item.label }}</a>
+        <router-link
+          v-for="item in nav"
+          :key="item.label"
+          :to="item.to"
+          class="navbar__link"
+          :class="{ active: isActive(item) }"
+        >
+          {{ item.label }}
+        </router-link>
       </nav>
 
       <div class="navbar__actions">
@@ -45,15 +53,41 @@
 </template>
 
 <script setup>
-const nav = [
-  { label: 'Inicio', href: '#', active: true },
-  { label: 'Sala de estar', href: '#', active: false },
-  { label: 'Dormitorio', href: '#', active: false },
-  { label: 'Comedor', href: '#', active: false },
-  { label: 'Office', href: '#', active: false },
-  { label: 'Productos', href: '#', active: false }
+import { useRoute } from 'vue-router'
 
+const route = useRoute();
+
+// Usamos rutas con nombre para categorías y producto listado
+const nav = [
+  { label: 'Inicio', to: '/' },
+  { label: 'Sala de estar', to: { name: 'Productos', params: { categoria: 'salas' } } },
+  { label: 'Dormitorio', to: { name: 'Productos', params: { categoria: 'recamaras' } } },
+  { label: 'Comedor', to: { name: 'Productos', params: { categoria: 'comedores' } } },
+  { label: 'Office', to: { name: 'Productos', params: { categoria: 'oficina' } } },
+  { label: 'Productos', to: { name: 'ProductosList' } }
 ]
+
+function isActive(item) {
+  if (!route || !route.path) return false;
+
+  // Si `to` es un string, compáralo con route.path (exacto o prefijo para categorías)
+  if (typeof item.to === 'string') {
+    if (item.to === '/') return route.path === '/';
+    return route.path === item.to || route.path.startsWith(item.to + '/');
+  }
+
+  // Si `to` es un objeto (ruta nombrada), compara por nombre y params
+  if (typeof item.to === 'object' && item.to.name) {
+    if (route.name !== item.to.name) return false;
+    // si tiene params.categoria, comparar con el param actual
+    if (item.to.params && item.to.params.categoria) {
+      return String(route.params.categoria || '').toLowerCase() === String(item.to.params.categoria).toLowerCase();
+    }
+    return true;
+  }
+
+  return false;
+}
 </script>
 
 <style scoped>

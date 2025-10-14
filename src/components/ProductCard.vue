@@ -1,15 +1,50 @@
 <template>
-  <div class="product-card">
-    <img :src="product.img" :alt="product.name" class="product-image" />
+  <!-- Usamos router-link para que toda la tarjeta sea clicable y navegue al detalle -->
+  <router-link
+    class="product-card"
+    :to="productLink"
+    @click="handleClick"
+  >
+    <img :src="imgSrc" :alt="product.name || 'Producto'" class="product-image" />
     <div class="product-info">
       <h3 class="product-name">{{ product.name }}</h3>
-      <p class="price">${{ product.price.toLocaleString('es-MX') }}</p>
+      <p class="price">${{ product.price?.toLocaleString('es-MX') || '0' }}</p>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script setup>
-defineProps({ product: Object })
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+const props = defineProps({ product: Object });
+const router = useRouter();
+
+// Fallback para la imagen: puede venir como img o img_base64
+const imgSrc = computed(() => {
+  return props.product?.img || props.product?.img_base64 || '/assets/img/products/default.jpg';
+});
+
+// Construir un `to` seguro: si no hay id navegamos a la lista de productos
+const productLink = computed(() => {
+  const id = props.product?.id ?? props.product?._id ?? props.product?.product_id;
+  if (id !== undefined && id !== null && id !== '') {
+    return { name: 'ProductoDetalle', params: { id } };
+  }
+  // Fallback: ir a la lista de productos si no hay id
+  return { name: 'ProductosList' };
+});
+
+function handleClick(event) {
+  const id = props.product?.id ?? props.product?._id ?? props.product?.product_id;
+  console.log('[ProductCard] click, product id =', id);
+
+  if (id === undefined || id === null || id === '') {
+    // Si no hay id prevenimos la navegación por defecto y redirigimos a lista
+    event.preventDefault();
+    router.push({ name: 'ProductosList' });
+  }
+  // Si hay id, dejamos que router-link realice la navegación por defecto
+}
 </script>
 
 <style scoped>
@@ -23,6 +58,8 @@ defineProps({ product: Object })
   border: 1px solid #eee;
   display: flex;
   flex-direction: column;
+  text-decoration: none; /* prevenir subrayado de enlace */
+  color: inherit; /* heredar color para evitar estilo de enlace */
 }
 
 .product-image {
