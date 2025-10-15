@@ -9,7 +9,6 @@
         <div class="container">
           <div class="header-content">
             <div class="header-icon">
-              <i class="bi bi-chat-dots"></i>
             </div>
             <h1>¿Tienes dudas?</h1>
             <p>Estamos aquí para ayudarte. Contáctanos por el medio que prefieras</p>
@@ -21,14 +20,7 @@
       <div class="container contact-main">
         <!-- Columna del formulario -->
         <section class="contact-form-col">
-          <div class="section-header">
-            <i class="bi bi-envelope-heart"></i>
-            <h2>Envíanos un mensaje</h2>
-            <p>Completa el formulario y te responderemos pronto</p>
-          </div>
-          <div class="form-card">
             <ContactForm />
-          </div>
         </section>
 
         <!-- Columna de información -->
@@ -187,7 +179,7 @@ const whatsAppUrl = "https://wa.me/523411223344?text=Hola,%20quiero%20informes%2
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 800;
   margin: 0 0 1rem;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 2px 10px rgb(255, 255, 255);
 }
 
 .contact-header p {

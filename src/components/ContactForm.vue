@@ -1,8 +1,5 @@
 <template>
-
-
     <main>
-      <div class="container contact-main">
         <!-- Formulario -->
         <section class="contact-form-col">
           <!-- Solo la parte del formulario mejorada -->
@@ -43,58 +40,9 @@
                 <i class="fas fa-shield-alt"></i> Tus datos están protegidos y no serán compartidos.
               </div>
             </form>
-            <div class="whatsapp-helper">
-              <span>¿Prefieres WhatsApp?</span>
-              <a class="whatsapp-link" target="_blank" :href="whatsAppUrl">
-                <i class="fab fa-whatsapp"></i> Escríbenos aquí
-              </a>
-            </div>
+
           </section>
 
-          
-
-        <!-- Info lateral -->
-        <section class="contact-info-col">
-          <div class="info-card map-card">
-            <h3><i class="fas fa-map-marker-alt"></i> Dirección</h3>
-            <div class="card-info-text">Tetecala, Morelos, México</div>
-            <div class="map-container">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d120689.27438005756!2d-99.4238104!3d18.7309088!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85cddfa0a4aca6a5%3A0x4a8d740244bc1a1b!2sTetecala%2C%20Mor.!5e0!3m2!1ses!2smx!4v1716321238473!5m2!1ses!2smx"
-                width="100%" height="210" style="border:0;" allowfullscreen="" loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
-          </div>
-          <div class="info-bottom-row">
-            <div class="info-card">
-              <h3><i class="fas fa-clock"></i> Horario</h3>
-              <ul class="schedule">
-                <li><span>Lun - Vie:</span> 9:00 AM - 8:00 PM</li>
-                <li><span>Sábado:</span> 9:00 AM - 6:00 PM</li>
-                <li><span>Domingo:</span> Cerrado</li>
-              </ul>
-            </div>
-            <div class="info-card">
-              <h3><i class="fas fa-phone-alt"></i> Contacto directo</h3>
-              <ul class="contact-methods">
-                <li>
-                  <a href="tel:7341532692"><i class="fas fa-phone"></i> 734 153 2692</a>
-                </li>
-                <li>
-                  <a href="mailto:contacto@muebleriapr.com"><i class="fas fa-envelope"></i> contacto@muebleriapr.com</a>
-                </li>
-              </ul>
-              <div class="help-msg">
-                <i class="fas fa-info-circle"></i> Respuesta inmediata en horario laboral.
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-      <!-- WhatsApp flotante -->
-    <a :href="whatsAppUrl" class="whatsapp-float" target="_blank" aria-label="WhatsApp">
-      <i class="fab fa-whatsapp"></i>
-    </a>
     </main>
 
     
@@ -214,12 +162,21 @@ const handleSubmit = async () => {
 /* --- Formulario --- */
 .contact-form-col {
   border-radius: 1.4rem;
-    background: #ffffff !important;
-
+  background: #ffffff !important;
   box-shadow: 0 6px 28px #ff025a98;
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 8rem;
+  padding: 2.5rem 2rem 2rem 2rem; /* Espaciado interno para separar el contenido del borde */
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .contact-form-col {
+    margin-top: 4rem;
+    padding: 1.5rem 0.7rem 1.2rem 0.7rem; /* Menos padding en móvil */
+  }
 }
 
 input, textarea {
@@ -236,7 +193,7 @@ input, textarea {
 
 .contact-form {
   width: 100%;
-  max-width: 420px;
+  max-width: 900px; /* Aumentado para inputs más anchos */
   margin: 0 auto;
   padding: 0;
   display: flex;
@@ -556,6 +513,60 @@ button[type="submit"]:disabled {
 
   .contact-header h1 {
     font-size: 1.45rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-form-bg {
+    padding: 1.2rem 0;
+  }
+  .contact-form-wrapper {
+    max-width: 98vw;
+    padding: 1.5rem 0.7rem 1.2rem 0.7rem;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-form-col {
+    padding: 1rem 0.5rem 0.8rem 0.5rem;
+    width: 100%; /* Cambiado de 100vw a 100% para evitar overflow */
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .contact-form-col h2 {
+    font-size: 1.05rem;
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
+  }
+  .contact-form {
+    gap: 0.7rem;
+    width: 100%;
+    min-width: 0;
+  }
+  label {
+    font-size: 0.93rem;
+  }
+  input,
+  textarea {
+    font-size: 0.97rem;
+    padding: 0.6em 0.6em;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  button[type="submit"] {
+    font-size: 0.97rem;
+    padding: 0.7rem 0;
+    border-radius: 16px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .form-note {
+    font-size: 0.85rem;
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
   }
 }
 

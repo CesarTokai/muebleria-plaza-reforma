@@ -470,6 +470,76 @@ const benefits = [
   }
 }
 
+@media (max-width: 480px) {
+  .benefits-section {
+    padding: 2rem 0;
+  }
+
+  .container {
+    padding: 0 0.5rem;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+    gap: 0.4rem;
+    flex-direction: column;
+  }
+
+  .section-header {
+    margin-bottom: 1.2rem;
+  }
+
+  .section-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .benefits-grid {
+    gap: 0.75rem;
+  }
+
+  .benefit-card {
+    min-width: 0;
+  }
+
+  .card-wrapper {
+    padding: 1.1rem 0.5rem;
+    border-radius: 12px;
+  }
+
+  .icon-container {
+    margin-bottom: 1rem;
+  }
+
+  .benefit-icon {
+    min-height: 40px;
+  }
+
+  .benefit-icon :deep(svg) {
+    width: 40px;
+    height: 40px;
+  }
+
+  .benefit-title {
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .benefit-desc {
+    font-size: 0.92rem;
+  }
+
+  .trust-badge {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    gap: 0.5rem;
+  }
+
+  .trust-badge i {
+    font-size: 1rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .benefit-card,
   .card-wrapper,
