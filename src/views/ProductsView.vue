@@ -1,156 +1,213 @@
 <template>
-  <div>
+  <div class="products-view">
     <Navbar />
     <Header />
+
+    <!-- Hero Section -->
+    <section class="products-hero">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <i class="bi bi-shop"></i>
+          Catálogo de Productos
+        </h1>
+        <p class="hero-subtitle">Descubre nuestros muebles de calidad excepcional</p>
+      </div>
+    </section>
+
     <main class="products-page">
       <div class="container">
-        <h1 class="main-title">Catálogo de Productos</h1>
-        <p class="subtitle">Descubre nuestros muebles de calidad excepcional</p>
-
         <!-- Buscador y filtros mejorados -->
         <div class="filters-container">
-          <div class="filters-row">
-            <div class="search-wrapper">
-              <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.35-4.35"></path>
-              </svg>
-              <input
-                type="text"
-                class="search-input"
-                placeholder="Buscar producto..."
-                v-model="searchTerm"
-              />
+          <div class="filters-header">
+            <h2><i class="bi bi-funnel"></i> Filtrar productos</h2>
+            <button
+              v-if="hasActiveFilters"
+              class="clear-all-btn"
+              @click="clearFilters"
+              title="Limpiar todos los filtros"
+            >
+              <i class="bi bi-x-circle"></i>
+              Limpiar todo
+            </button>
+          </div>
+
+          <div class="filters-content">
+            <!-- Búsqueda -->
+            <div class="filter-item search-filter">
+              <label><i class="bi bi-search"></i> Buscar</label>
+              <div class="search-wrapper">
+                <input
+                  type="text"
+                  class="search-input"
+                  placeholder="Nombre del producto..."
+                  v-model="searchTerm"
+                />
+                <button
+                  v-if="searchTerm"
+                  class="clear-search-btn"
+                  @click="searchTerm = ''"
+                  title="Limpiar búsqueda"
+                >
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
             </div>
 
-            <div class="filter-group">
+            <!-- Categoría -->
+            <div class="filter-item">
+              <label><i class="bi bi-tag"></i> Categoría</label>
               <select v-model="selectedCategory" class="filter-select">
-                <option value="">📁 Todas las categorías</option>
+                <option value="">Todas las categorías</option>
                 <option v-for="cat in categories" :key="cat.value" :value="cat.value">
                   {{ cat.icon }} {{ cat.label }}
                 </option>
               </select>
+            </div>
 
-              <div class="price-filters">
+            <!-- Rango de Precio -->
+            <div class="filter-item price-filter">
+              <label><i class="bi bi-cash-stack"></i> Rango de precio</label>
+              <div class="price-inputs">
                 <input
                   type="number"
                   class="price-input"
-                  placeholder="$ Mínimo"
+                  placeholder="Mínimo"
                   v-model.number="minPrice"
                   min="0"
                 />
-                <span class="price-separator">-</span>
+                <span class="price-separator">—</span>
                 <input
                   type="number"
                   class="price-input"
-                  placeholder="$ Máximo"
+                  placeholder="Máximo"
                   v-model.number="maxPrice"
                   min="0"
                 />
               </div>
-
-              <button class="clear-filters-btn" @click="clearFilters" v-if="hasActiveFilters">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-                Limpiar
-              </button>
             </div>
           </div>
 
-          <!-- Contador de resultados -->
-          <div class="results-info" v-if="!loadingProducts">
-            <span class="results-count">
-              {{ filteredProducts.length }} producto{{ filteredProducts.length !== 1 ? 's' : '' }} encontrado{{ filteredProducts.length !== 1 ? 's' : '' }}
-            </span>
-            <span class="category-badge" v-if="selectedCategory">
+          <!-- Resultados -->
+          <div class="results-bar" v-if="!loadingProducts">
+            <div class="results-count">
+              <i class="bi bi-grid-3x3-gap"></i>
+              <strong>{{ filteredProducts.length }}</strong>
+              {{ filteredProducts.length === 1 ? 'producto encontrado' : 'productos encontrados' }}
+            </div>
+            <div v-if="selectedCategory" class="active-filter-tag">
+              <i class="bi bi-tag-fill"></i>
               {{ categories.find(c => c.value === selectedCategory)?.label }}
-            </span>
+              <button @click="selectedCategory = ''" class="remove-tag">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Loading con mejor diseño -->
+        <!-- Loading -->
         <div v-if="loadingProducts" class="loading-container">
-          <div class="spinner"></div>
-          <p>Cargando productos...</p>
+          <div class="spinner-container">
+            <div class="spinner"></div>
+            <p>Cargando productos...</p>
+          </div>
         </div>
 
         <!-- Grid de productos -->
-        <div class="gallery-grid" v-else>
-          <div
-            v-for="product in paginatedProducts"
-            :key="product.id"
-            class="product-item"
-          >
-            <!-- Tarjeta envolvente clicable -->
-            <div class="product-card" @click="goToProduct(product.id)">
-              <div class="product-badge" v-if="product.price < 5000">¡Oferta!</div>
+        <div v-else-if="filteredProducts.length > 0" class="products-section">
+          <div class="gallery-grid">
+            <article
+              v-for="product in paginatedProducts"
+              :key="product.id"
+              class="product-card"
+              @click="goToProduct(product.id)"
+            >
+              <!-- Badge de oferta -->
+              <div v-if="product.price < 5000" class="product-badge">
+                <i class="bi bi-lightning-fill"></i>
+                ¡Oferta!
+              </div>
+
+              <!-- Imagen -->
               <div class="product-img-wrap">
                 <img
                   :src="product.img || '/assets/img/products/default.jpg'"
                   :alt="product.name"
                   class="product-img"
+                  loading="lazy"
                 />
-              </div>
-              <div class="product-info">
-                <h4 class="product-name">{{ product.name }}</h4>
-                <div class="product-category-tag">{{ getCategoryLabel(product.category) }}</div>
-                <span class="product-price">${{ product.price.toLocaleString('es-MX') }}</span>
-                <button class="product-btn" type="button">
+                <div class="img-overlay">
+                  <i class="bi bi-eye"></i>
                   <span>Ver detalles</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </button>
+                </div>
               </div>
-            </div>
+
+              <!-- Info -->
+              <div class="product-info">
+                <div class="product-category-tag">
+                  {{ getCategoryLabel(product.category) }}
+                </div>
+                <h3 class="product-name">{{ product.name }}</h3>
+                <div class="product-footer">
+                  <span class="product-price">
+                    ${{ product.price.toLocaleString('es-MX') }}
+                  </span>
+                  <button class="product-btn" type="button" @click.stop="goToProduct(product.id)">
+                    <i class="bi bi-arrow-right-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </article>
           </div>
 
-          <div v-if="filteredProducts.length === 0" class="no-products">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M16 16s-1.5-2-4-2-4 2-4 2M9 9h.01M15 9h.01"/>
-            </svg>
-            <h3>No hay productos que coincidan</h3>
-            <p>Intenta ajustar los filtros de búsqueda</p>
-            <button class="clear-filters-btn" @click="clearFilters">Limpiar filtros</button>
-          </div>
+          <!-- Paginación -->
+          <nav class="pagination" v-if="totalPages > 1" aria-label="Navegación de productos">
+            <button
+              class="page-btn nav-btn"
+              @click="goToPage(currentPage - 1)"
+              :disabled="currentPage === 1"
+              aria-label="Página anterior"
+            >
+              <i class="bi bi-chevron-left"></i>
+            </button>
+
+            <button
+              v-for="page in visiblePages"
+              :key="page"
+              :class="['page-btn', { active: page === currentPage }]"
+              @click="goToPage(page)"
+              :aria-label="`Ir a página ${page}`"
+              :aria-current="page === currentPage ? 'page' : null"
+            >
+              {{ page }}
+            </button>
+
+            <button
+              class="page-btn nav-btn"
+              @click="goToPage(currentPage + 1)"
+              :disabled="currentPage === totalPages"
+              aria-label="Página siguiente"
+            >
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </nav>
         </div>
 
-        <!-- Paginación mejorada -->
-        <div class="pagination" v-if="totalPages > 1 && !loadingProducts">
-          <button
-            class="page-btn nav-btn"
-            @click="goToPage(currentPage - 1)"
-            :disabled="currentPage === 1"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M15 18l-6-6 6-6"/>
-            </svg>
-          </button>
-
-          <button
-            v-for="page in visiblePages"
-            :key="page"
-            :class="['page-btn', { active: page === currentPage }]"
-            @click="goToPage(page)"
-          >
-            {{ page }}
-          </button>
-
-          <button
-            class="page-btn nav-btn"
-            @click="goToPage(currentPage + 1)"
-            :disabled="currentPage === totalPages"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
+        <!-- Sin resultados -->
+        <div v-else class="no-products">
+          <div class="no-products-icon">
+            <i class="bi bi-inbox"></i>
+          </div>
+          <h3>No hay productos que coincidan</h3>
+          <p>Intenta ajustar los filtros de búsqueda o explora todas las categorías</p>
+          <button class="btn-primary" @click="clearFilters">
+            <i class="bi bi-arrow-clockwise"></i>
+            Ver todos los productos
           </button>
         </div>
       </div>
     </main>
+
     <Footer />
   </div>
 </template>
@@ -168,6 +225,7 @@ const router = useRouter();
 const route = useRoute();
 
 function goToProduct(id) {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   router.push({ name: 'ProductoDetalle', params: { id } });
 }
 
@@ -175,11 +233,9 @@ function goToProduct(id) {
 const products = ref([])
 const loadingProducts = ref(false)
 
-// Helper: extrae una cadena de categoría desde distintos formatos
 function normalizeCategory(cat) {
   if (!cat && cat !== 0) return '';
   if (typeof cat === 'string') return cat;
-  // Si la API devuelve un objeto, intentar varios campos comunes
   if (typeof cat === 'object') {
     return (cat.value || cat.slug || cat.name || cat.label || '') + '';
   }
@@ -194,7 +250,6 @@ async function fetchProducts() {
       id: item.id,
       name: item.name,
       price: item.price,
-      // Normalizamos category a string para evitar discrepancias
       category: normalizeCategory(item.category),
       img: item.img_base64 || '/assets/img/products/default.jpg',
     }))
@@ -210,17 +265,15 @@ onMounted(() => {
   const categoria = ref(route.params.categoria);
   fetchProductosPorCategoria(categoria.value);
 
-  // Si hay un query param 'buscar', establecer el término de búsqueda
   if (route.query.buscar) {
     searchTerm.value = route.query.buscar;
   }
 });
 
-// Observar cambios en los query params para búsquedas
 watch(() => route.query.buscar, (newSearchQuery) => {
   if (newSearchQuery) {
     searchTerm.value = newSearchQuery;
-    selectedCategory.value = ''; // Limpiar categoría al buscar
+    selectedCategory.value = '';
     currentPage.value = 1;
   }
 });
@@ -307,7 +360,6 @@ function clearFilters() {
 }
 
 function getCategoryLabel(category) {
-  // category puede venir ya normalizado (string) o bien ser nulo
   if (!category) return 'General';
   const catStr = normalizeCategory(category).toLowerCase();
   const cat = categories.find(c => (c.value || '').toLowerCase() === catStr || (c.label || '').toLowerCase() === catStr);
@@ -317,69 +369,160 @@ function getCategoryLabel(category) {
 function goToPage(page) {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 </script>
 
 <style scoped>
+.products-view {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fdfbff 0%, #f8f4fc 100%);
+}
+
+/* Hero Section */
+.products-hero {
+  position: relative;
+  background: linear-gradient(135deg, #860734 0%, #a91d4d 100%);
+  padding: 4rem 1.5rem 3rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  color: #ffffff;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+}
+
+.hero-title i {
+  font-size: 0.85em;
+}
+
+.hero-subtitle {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Main Content */
 .products-page {
-  padding: 3rem 0 4rem 0;
-  background: linear-gradient(135deg, #faf6fa 0%, #f0e8f0 100%);
-  min-height: 70vh;
+  padding: 2rem 0 4rem;
+  margin-top: -2rem;
+  position: relative;
+  z-index: 2;
 }
 
-.main-title {
-  text-align: center;
-  color: #860734;
-  font-size: 2.8rem;
-  margin-bottom: 0.5rem;
-  font-weight: 900;
-  letter-spacing: 1px;
-  text-shadow: 2px 2px 4px rgba(134, 7, 52, 0.1);
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
 }
 
-.subtitle {
-  text-align: center;
-  color: #3a223a;
-  font-size: 1.1rem;
-  margin-bottom: 2.5rem;
-  opacity: 0.85;
-}
-
-/* Filtros mejorados */
+/* Filtros Mejorados */
 .filters-container {
-  background: white;
-  padding: 1.8rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(134, 7, 52, 0.08);
-  margin-bottom: 2.5rem;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 2rem;
+  margin-bottom: 3rem;
+  box-shadow:
+    0 10px 40px rgba(134, 7, 52, 0.08),
+    0 2px 12px rgba(134, 7, 52, 0.04);
+  border: 1px solid rgba(134, 7, 52, 0.05);
 }
 
-.filters-row {
+.filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0e8f0;
+}
+
+.filters-header h2 {
+  color: #860734;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.clear-all-btn {
+  background: #f0e8f0;
+  color: #860734;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.clear-all-btn:hover {
+  background: #860734;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.filters-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr;
+  gap: 1.5rem;
+  align-items: end;
+}
+
+.filter-item {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 0.5rem;
+}
+
+.filter-item label {
+  color: #860734;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .search-wrapper {
   position: relative;
-  width: 100%;
-}
-
-.search-icon {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
-  color: #860734;
-  opacity: 0.6;
+  display: flex;
+  align-items: center;
 }
 
 .search-input {
   width: 100%;
-  padding: 0.85rem 1.2rem 0.85rem 3rem;
+  padding: 0.85rem 2.75rem 0.85rem 1rem;
   border-radius: 12px;
   font-size: 1rem;
   border: 2px solid #e0d0e0;
@@ -391,21 +534,31 @@ function goToPage(page) {
 
 .search-input:focus {
   border-color: #860734;
-  background: white;
+  background: #ffffff;
   box-shadow: 0 0 0 4px rgba(134, 7, 52, 0.1);
 }
 
-.filter-group {
+.clear-search-btn {
+  position: absolute;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem;
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
   align-items: center;
+  transition: color 0.2s;
+}
+
+.clear-search-btn:hover {
+  color: #860734;
 }
 
 .filter-select {
-  flex: 1;
-  min-width: 200px;
-  padding: 0.85rem 1.2rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
   border-radius: 12px;
   font-size: 1rem;
   border: 2px solid #e0d0e0;
@@ -418,16 +571,14 @@ function goToPage(page) {
 
 .filter-select:focus {
   border-color: #860734;
-  background: white;
+  background: #ffffff;
   box-shadow: 0 0 0 4px rgba(134, 7, 52, 0.1);
 }
 
-.price-filters {
+.price-inputs {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  flex: 1;
-  min-width: 250px;
+  gap: 0.75rem;
 }
 
 .price-input {
@@ -444,109 +595,136 @@ function goToPage(page) {
 
 .price-input:focus {
   border-color: #860734;
-  background: white;
+  background: #ffffff;
   box-shadow: 0 0 0 4px rgba(134, 7, 52, 0.1);
 }
 
 .price-separator {
   color: #860734;
-  font-weight: bold;
-  font-size: 1.2rem;
+  font-weight: 700;
+  font-size: 1.25rem;
 }
 
-.clear-filters-btn {
+/* Barra de resultados */
+.results-bar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.85rem 1.5rem;
-  background: #860734;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-}
-
-.clear-filters-btn svg {
-  width: 18px;
-  height: 18px;
-}
-
-.clear-filters-btn:hover {
-  background: #a50e48;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(134, 7, 52, 0.3);
-}
-
-.results-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1.2rem;
-  padding-top: 1.2rem;
-  border-top: 2px solid #f0e8f0;
+  justify-content: space-between;
   flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #f0e8f0;
 }
 
 .results-count {
-  color: #3a223a;
-  font-weight: 600;
+  color: #4a3440;
   font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.category-badge {
-  background: linear-gradient(135deg, #860734 0%, #a50e48 100%);
-  color: white;
-  padding: 0.4rem 1rem;
+.results-count strong {
+  color: #860734;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.active-filter-tag {
+  background: linear-gradient(135deg, #860734 0%, #a91d4d 100%);
+  color: #ffffff;
+  padding: 0.5rem 1rem;
   border-radius: 20px;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.remove-tag {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #ffffff;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+  font-size: 0.875rem;
+}
+
+.remove-tag:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
 }
 
 /* Loading */
 .loading-container {
+  min-height: 400px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem 0;
-  gap: 1rem;
+}
+
+.spinner-container {
+  text-align: center;
 }
 
 .spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid #f0e8f0;
-  border-top: 4px solid #860734;
+  width: 60px;
+  height: 60px;
+  border: 5px solid #f0e8f0;
+  border-top-color: #860734;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 1rem;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* Grid de productos */
+.spinner-container p {
+  color: #860734;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* Grid de Productos Mejorado */
+.products-section {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 2rem;
+  margin-bottom: 3rem;
 }
 
 .product-card {
-  background: white;
+  background: #ffffff;
   border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(134, 7, 52, 0.08);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  flex-direction: column;
-  padding: 1.2rem;
-  position: relative;
   overflow: hidden;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 4px 20px rgba(134, 7, 52, 0.06),
+    0 2px 8px rgba(134, 7, 52, 0.03);
+  border: 1px solid rgba(134, 7, 52, 0.05);
+  position: relative;
 }
 
 .product-card::before {
@@ -558,16 +736,20 @@ function goToPage(page) {
   height: 4px;
   background: linear-gradient(90deg, #860734 0%, #ffd700 100%);
   transform: scaleX(0);
-  transition: transform 0.3s ease;
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-12px);
+  box-shadow:
+    0 20px 50px rgba(134, 7, 52, 0.15),
+    0 8px 24px rgba(255, 215, 0, 0.1);
+  border-color: rgba(134, 7, 52, 0.12);
 }
 
 .product-card:hover::before {
   transform: scaleX(1);
-}
-
-.product-card:hover {
-  box-shadow: 0 12px 40px rgba(134, 7, 52, 0.15);
-  transform: translateY(-8px);
 }
 
 .product-badge {
@@ -576,52 +758,84 @@ function goToPage(page) {
   right: 1rem;
   background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
   color: #860734;
-  padding: 0.4rem 0.9rem;
+  padding: 0.4rem 0.85rem;
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
-  z-index: 2;
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+  z-index: 3;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .product-img-wrap {
-  width: 100%;
-  height: 220px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
-  overflow: hidden;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #f4e8f4 0%, #e8d8e8 100%);
   position: relative;
+  width: 100%;
+  height: 280px;
+  background: linear-gradient(135deg, #f4e8f4 0%, #e8d8e8 100%);
+  overflow: hidden;
 }
 
 .product-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .product-card:hover .product-img {
-  transform: scale(1.1);
+  transform: scale(1.15);
+}
+
+.img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(134, 7, 52, 0.9) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.img-overlay i {
+  font-size: 2rem;
+}
+
+.product-card:hover .img-overlay {
+  opacity: 1;
 }
 
 .product-info {
-  width: 100%;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+  padding: 1.5rem;
+}
+
+.product-category-tag {
+  display: inline-block;
+  background: #f0e8f0;
+  color: #860734;
+  padding: 0.35rem 0.85rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
 }
 
 .product-name {
-  color: #860734;
-  font-weight: 700;
+  color: #3a223a;
   font-size: 1.15rem;
+  font-weight: 700;
   line-height: 1.4;
+  margin: 0 0 1rem;
   min-height: 2.8rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -629,119 +843,121 @@ function goToPage(page) {
   overflow: hidden;
 }
 
-.product-category-tag {
-  display: inline-block;
-  align-self: center;
-  background: #f0e8f0;
-  color: #860734;
-  padding: 0.25rem 0.8rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
+.product-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .product-price {
   color: #860734;
+  font-size: 1.75rem;
   font-weight: 900;
-  font-size: 1.5rem;
-  display: block;
+  letter-spacing: -0.5px;
 }
 
 .product-btn {
-  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-  color: #860734;
-  font-weight: 700;
-  border-radius: 12px;
+  background: linear-gradient(135deg, #860734 0%, #a91d4d 100%);
+  color: #ffffff;
   border: none;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-  cursor: pointer;
-  transition: all 0.3s ease;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.product-btn svg {
-  width: 18px;
-  height: 18px;
-  transition: transform 0.3s ease;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(134, 7, 52, 0.3);
 }
 
 .product-btn:hover {
-  background: linear-gradient(135deg, #ffed4e 0%, #ffd700 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+  transform: scale(1.1) rotate(45deg);
+  box-shadow: 0 6px 20px rgba(134, 7, 52, 0.4);
 }
 
-.product-btn:hover svg {
-  transform: translateX(4px);
-}
-
+/* Sin Productos */
 .no-products {
-  grid-column: 1 / -1;
+  text-align: center;
+  padding: 5rem 2rem;
+  animation: fadeIn 0.5s ease;
+}
+
+.no-products-icon {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 2rem;
+  background: linear-gradient(135deg, #f0e8f0 0%, #e8d8e8 100%);
+  border-radius: 50%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  padding: 4rem 2rem;
-  text-align: center;
-}
-
-.no-products svg {
-  width: 80px;
-  height: 80px;
+  font-size: 4rem;
   color: #860734;
   opacity: 0.3;
 }
 
 .no-products h3 {
   color: #860734;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
-  margin: 0;
+  margin: 0 0 1rem;
 }
 
 .no-products p {
-  color: #3a223a;
-  font-size: 1rem;
+  color: #4a3440;
+  font-size: 1.1rem;
+  margin: 0 0 2rem;
   opacity: 0.7;
-  margin: 0;
 }
 
-/* Paginación mejorada */
+.btn-primary {
+  background: linear-gradient(135deg, #860734 0%, #a91d4d 100%);
+  color: #ffffff;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(134, 7, 52, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(134, 7, 52, 0.4);
+}
+
+/* Paginación Mejorada */
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 3rem;
   flex-wrap: wrap;
 }
 
 .page-btn {
   min-width: 44px;
   height: 44px;
-  padding: 0.5rem 1rem;
+  padding: 0;
   border: 2px solid #e0d0e0;
-  background: white;
+  background: #ffffff;
   color: #860734;
   border-radius: 12px;
-  cursor: pointer;
+  font-size: 1rem;
   font-weight: 600;
-  transition: all 0.3s ease;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.page-btn svg {
-  width: 20px;
-  height: 20px;
+  transition: all 0.3s ease;
 }
 
 .page-btn:hover:not(:disabled) {
@@ -751,8 +967,8 @@ function goToPage(page) {
 }
 
 .page-btn.active {
-  background: linear-gradient(135deg, #860734 0%, #a50e48 100%);
-  color: white;
+  background: linear-gradient(135deg, #860734 0%, #a91d4d 100%);
+  color: #ffffff;
   border-color: #860734;
   box-shadow: 0 4px 12px rgba(134, 7, 52, 0.3);
 }
@@ -766,87 +982,125 @@ function goToPage(page) {
   background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
   border-color: #ffd700;
   color: #860734;
+  font-size: 1.25rem;
 }
 
 .nav-btn:hover:not(:disabled) {
   background: linear-gradient(135deg, #ffed4e 0%, #ffd700 100%);
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
 }
 
-/* Responsive mejorado */
+/* Responsive Design */
 @media (max-width: 1024px) {
+  .filters-content {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filter-item.search-filter {
+    grid-column: 1 / -1;
+  }
+
   .gallery-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
+  .products-hero {
+    padding: 3rem 1rem 2.5rem;
+  }
+
+  .hero-title {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
   .products-page {
-    padding: 1rem 0;
+    padding: 1.5rem 0 3rem;
   }
 
-  .main-title {
-    font-size: 1.75rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .subtitle {
-    font-size: 0.95rem;
+  .container {
+    padding: 0 1rem;
   }
 
   .filters-container {
-    padding: 1rem;
-    border-radius: 16px;
+    padding: 1.5rem;
+    border-radius: 20px;
   }
 
-  .filters-row {
+  .filters-header {
     flex-direction: column;
     gap: 1rem;
+    align-items: flex-start;
   }
 
-  .search-wrapper,
-  .filter-group {
-    width: 100%;
+  .filters-header h2 {
+    font-size: 1.25rem;
   }
 
-  .filter-group {
+  .filters-content {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .filter-item.search-filter {
+    grid-column: 1;
+  }
+
+  .results-bar {
     flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .filter-select,
-  .price-filters {
-    width: 100%;
+    align-items: flex-start;
   }
 
   .gallery-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    gap: 1.25rem;
   }
 
-  .pagination {
-    flex-wrap: wrap;
-    gap: 0.5rem;
+  .product-img-wrap {
+    height: 220px;
+  }
+
+  .product-info {
+    padding: 1.25rem;
+  }
+
+  .product-name {
+    font-size: 1rem;
+    min-height: 2.5rem;
+  }
+
+  .product-price {
+    font-size: 1.5rem;
+  }
+
+  .product-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
   }
 
   .page-btn {
-    min-width: 36px;
-    height: 36px;
-    padding: 0;
+    min-width: 40px;
+    height: 40px;
+    font-size: 0.95rem;
   }
 }
 
 @media (max-width: 640px) {
-  .filters-container {
-    padding: 0.75rem;
-    border-radius: 12px;
+  .products-hero {
+    padding: 2.5rem 1rem 2rem;
   }
 
-  .price-filters {
+  .filters-container {
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .price-inputs {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
   }
 
   .price-separator {
@@ -857,98 +1111,121 @@ function goToPage(page) {
     width: 100%;
   }
 
-  .results-info {
-    flex-direction: column;
-    gap: 0.5rem;
-    text-align: center;
-  }
-
   .gallery-grid {
-    gap: 0.75rem;
+    gap: 1rem;
   }
 
   .product-card {
-    border-radius: 10px;
+    border-radius: 16px;
   }
 
-  .product-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    padding: 0 0.75rem;
+  .product-img-wrap {
+    height: 200px;
   }
 
-  .main-title {
-    font-size: 1.5rem;
+  .no-products {
+    padding: 3rem 1rem;
   }
 
-  .subtitle {
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-  }
-
-  .filters-container {
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .search-input {
-    font-size: 0.9rem;
-    padding: 0.65rem 0.85rem;
-  }
-
-  .filter-select {
-    font-size: 0.9rem;
-    padding: 0.65rem 0.85rem;
-  }
-
-  .price-input {
-    font-size: 0.9rem;
-    padding: 0.65rem 0.85rem;
-  }
-
-  .clear-filters-btn {
-    font-size: 0.85rem;
-    padding: 0.6rem 1rem;
-  }
-
-  .results-info {
-    font-size: 0.85rem;
-    padding: 0.5rem;
-  }
-
-  .gallery-grid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
-  .product-name {
-    font-size: 1rem;
-  }
-
-  .product-price {
-    font-size: 1.05rem;
-  }
-
-  .product-category-tag {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.6rem;
-  }
-
-  .no-products h3 {
-    font-size: 1.25rem;
-  }
-
-  .no-products p {
-    font-size: 0.9rem;
+  .no-products-icon {
+    width: 100px;
+    height: 100px;
+    font-size: 3rem;
   }
 
   .pagination {
     gap: 0.35rem;
+  }
+
+  .page-btn {
+    min-width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .products-hero {
+    padding: 2rem 0.75rem 1.75rem;
+  }
+
+  .products-page {
+    padding: 1rem 0 2rem;
+  }
+
+  .container {
+    padding: 0 0.75rem;
+  }
+
+  .filters-container {
+    padding: 1rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+  }
+
+  .filters-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .clear-all-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .filter-item label {
+    font-size: 0.85rem;
+  }
+
+  .search-input,
+  .filter-select,
+  .price-input {
+    padding: 0.75rem 0.85rem;
+    font-size: 0.95rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .product-img-wrap {
+    height: 240px;
+  }
+
+  .product-info {
+    padding: 1rem;
+  }
+
+  .product-category-tag {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.7rem;
+  }
+
+  .product-name {
+    font-size: 0.95rem;
+  }
+
+  .product-price {
+    font-size: 1.35rem;
+  }
+
+  .product-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+
+  .no-products h3 {
+    font-size: 1.35rem;
+  }
+
+  .no-products p {
+    font-size: 0.95rem;
+  }
+
+  .btn-primary {
+    padding: 0.85rem 1.5rem;
+    font-size: 0.95rem;
   }
 
   .page-btn {
@@ -957,13 +1234,19 @@ function goToPage(page) {
     font-size: 0.85rem;
   }
 
-  .loading-container {
-    padding: 2rem 1rem;
-  }
-
   .spinner {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 </style>
