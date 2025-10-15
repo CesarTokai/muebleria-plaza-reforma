@@ -1,19 +1,4 @@
 <template>
-  <!-- Barra superior de contacto y redes sociales -->
-  <div class="navbar__top-bar">
-    <div class="navbar__top-inner">
-      <div class="contact-info">
-        <a href="tel:5551234567" class="contact-link"><i class="bi bi-telephone-fill"></i> <span>55 5123 4567</span></a>
-        <a href="mailto:contacto@muebleriaplazareforma.com" class="contact-link"><i class="bi bi-envelope-fill"></i> <span>contacto@muebleriaplazareforma.com</span></a>
-        <a href="https://goo.gl/maps/xyz" target="_blank" class="contact-link"><i class="bi bi-geo-alt-fill"></i> <span>Av. Reforma 123, CDMX</span></a>
-      </div>
-      <div class="social-links">
-        <a href="https://wa.me/5215551234567" target="_blank" class="social-link whatsapp" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
-        <a href="https://facebook.com" target="_blank" class="social-link" title="Facebook"><i class="bi bi-facebook"></i></a>
-        <a href="https://instagram.com" target="_blank" class="social-link" title="Instagram"><i class="bi bi-instagram"></i></a>
-      </div>
-    </div>
-  </div>
 
   <header class="navbar">
     <!-- Barra principal de navegación -->

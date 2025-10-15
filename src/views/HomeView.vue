@@ -169,6 +169,57 @@ onMounted(fetchFeaturedProducts);
     height: 29px;
   }
 }
+
+/* Responsive mejorado */
+@media (max-width: 768px) {
+  .featured-section {
+    padding: 2rem 0;
+  }
+
+  .featured-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .whatsapp-float {
+    width: 54px;
+    height: 54px;
+    bottom: 16px;
+    right: 14px;
+  }
+
+  .whatsapp-float img {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .featured-section {
+    padding: 1.5rem 0;
+  }
+
+  .featured-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .container {
+    padding: 0 0.75rem;
+  }
+
+  .whatsapp-float {
+    width: 50px;
+    height: 50px;
+    bottom: 14px;
+    right: 12px;
+  }
+
+  .whatsapp-float img {
+    width: 28px;
+    height: 28px;
+  }
+}
 @keyframes waPop {
   0% { transform: scale(0.5) translateY(40px); opacity: 0;}
   100% { transform: scale(1) translateY(0); opacity: 1;}

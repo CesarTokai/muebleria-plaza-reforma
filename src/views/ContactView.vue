@@ -412,6 +412,12 @@ const whatsAppUrl = "https://wa.me/523411223344?text=Hola,%20quiero%20informes%2
   .contact-main {
     grid-template-columns: 1fr;
     gap: 2rem;
+    margin-top: -2rem;
+  }
+
+  .contact-form-col,
+  .contact-info-col {
+    width: 100%;
   }
 }
 
@@ -421,56 +427,23 @@ const whatsAppUrl = "https://wa.me/523411223344?text=Hola,%20quiero%20informes%2
   }
 
   .header-icon {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     font-size: 2rem;
   }
 
   .contact-main {
-    margin-top: -2rem;
     gap: 1.5rem;
+    margin-top: -1.5rem;
     padding-bottom: 3rem;
   }
 
-  .form-card {
-    padding: 1.5rem;
+  .info-cards {
+    gap: 0.75rem;
   }
 
   .info-card {
     padding: 1.25rem;
-  }
-
-  .map-card {
-    padding: 1.25rem;
-  }
-
-  .whatsapp-float {
-    width: 55px;
-    height: 55px;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    font-size: 1.75rem;
-  }
-
-  .whatsapp-tooltip {
-    display: none;
-  }
-}
-
-@media (max-width: 480px) {
-  .contact-header {
-    padding: 2rem 0.75rem 3rem;
-  }
-
-  .section-header i {
-    font-size: 2rem;
-  }
-
-  .form-card,
-  .info-card,
-  .map-card {
-    padding: 1rem;
-    border-radius: 16px;
   }
 
   .info-icon {
@@ -480,12 +453,160 @@ const whatsAppUrl = "https://wa.me/523411223344?text=Hola,%20quiero%20informes%2
     font-size: 1.3rem;
   }
 
+  .map-card {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .contact-header {
+    padding: 2.5rem 1rem 3.5rem;
+  }
+
+  .header-content h1 {
+    font-size: 1.75rem;
+  }
+
+  .header-content p {
+    font-size: 0.95rem;
+  }
+
+  .contact-main {
+    gap: 1.25rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .info-card {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
   .info-content h3 {
     font-size: 1rem;
   }
 
   .info-content p {
     font-size: 0.9rem;
+  }
+
+  .map-card h3 {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-header {
+    padding: 2rem 0.75rem 3rem;
+  }
+
+  .header-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .header-content h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .header-content p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .container {
+    padding: 0 0.5rem;
+  }
+
+  .contact-main {
+    gap: 1rem;
+    margin-top: -1rem;
+    padding-bottom: 2rem;
+  }
+
+  .section-header i {
+    font-size: 2rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .section-header p {
+    font-size: 0.9rem;
+  }
+
+  .info-cards {
+    gap: 0.65rem;
+  }
+
+  .info-card {
+    padding: 0.85rem;
+    border-radius: 10px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .info-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .info-content h3 {
+    font-size: 0.95rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .info-content p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .info-content a {
+    font-size: 0.85rem;
+  }
+
+  .map-card {
+    padding: 1.25rem;
+    border-radius: 12px;
+  }
+
+  .map-card h3 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .map-container {
+    border-radius: 8px;
+  }
+
+  .map-container iframe {
+    height: 250px;
+  }
+
+  .whatsapp-float {
+    width: 50px;
+    height: 50px;
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .whatsapp-float i {
+    font-size: 1.5rem;
+  }
+
+  .whatsapp-tooltip {
+    display: none;
   }
 }
 

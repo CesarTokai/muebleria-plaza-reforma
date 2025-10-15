@@ -392,17 +392,52 @@ const advantages = [
     padding: 2.5rem 0;
   }
 
+  .container {
+    padding: 0 1rem;
+  }
+
+  .section-header {
+    margin-bottom: 2rem;
+  }
+
   .advantages-grid {
     gap: 1rem;
+    grid-template-columns: 1fr;
   }
 
   .card-inner {
     padding: 1.5rem 1rem;
+    border-radius: 16px;
+  }
+
+  .icon-wrapper {
+    margin-bottom: 1.25rem;
+  }
+
+  .icon-circle {
+    width: 70px;
+    height: 70px;
+    font-size: 1.5rem;
+  }
+
+  .icon-circle svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .card-title {
+    font-size: 1.15rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .card-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
   }
 
   .card-badge {
-    font-size: 0.8rem;
     padding: 0.4rem 0.85rem;
+    font-size: 0.8rem;
   }
 }
 
@@ -410,6 +445,7 @@ const advantages = [
   .advantage-card,
   .card-inner,
   .icon-circle,
+  .icon-glow,
   .card-badge i {
     animation: none;
     transition: none;

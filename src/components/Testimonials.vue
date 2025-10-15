@@ -499,69 +499,177 @@ watch(perPage, () => {
   .testimonial-card {
     min-width: 240px;
     max-width: 320px;
-    padding: 1.5rem 1.25rem;
   }
 
   .arrow {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .testimonials-section {
+    padding: 2rem 1rem;
+    border-radius: 1.5rem;
+  }
+
+  .testimonials-subtitle {
+    margin-bottom: 2rem;
+  }
+
+  .testimonial-carousel {
+    gap: 0.75rem;
+  }
+
+  .testimonial-list {
+    min-height: 360px;
+  }
+
+  .testimonial-card {
+    min-width: 220px;
+    max-width: 100%;
+    padding: 1.75rem 1.5rem;
+  }
+
+  .testimonial-icon {
+    width: 55px;
+    height: 55px;
+    margin-bottom: 1rem;
+  }
+
+  .testimonial-icon i {
+    font-size: 2.2rem;
+  }
+
+  .testimonial-text {
+    font-size: 0.95rem;
+  }
+
+  .arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .carousel-dots {
+    margin-top: 1.5rem;
   }
 }
 
 @media (max-width: 640px) {
   .testimonials-section {
-    padding: 2rem 0.75rem;
-    border-radius: 1.5rem;
+    padding: 1.75rem 0.75rem;
     margin: 2rem auto;
-  }
-
-  .testimonials-subtitle {
-    margin-bottom: 1.5rem;
   }
 
   .testimonial-carousel {
     gap: 0.5rem;
   }
 
-  .testimonial-list {
-    gap: 0.75rem;
-    min-height: 380px;
+  .arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+    flex-shrink: 0;
   }
 
   .testimonial-card {
-    min-width: 260px;
-    max-width: 90vw;
-    padding: 1.5rem 1rem;
+    padding: 1.5rem 1.25rem;
+    border-radius: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .testimonials-section {
+    padding: 1.5rem 0.5rem;
+    border-radius: 1rem;
+  }
+
+  .testimonials-title {
+    font-size: 1.5rem;
+  }
+
+  .testimonials-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .testimonial-carousel {
+    gap: 0.35rem;
   }
 
   .arrow {
-    width: 38px;
-    height: 38px;
-    font-size: 1.2rem;
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    border-width: 1.5px;
+  }
+
+  .testimonial-list {
+    min-height: 320px;
+  }
+
+  .testimonial-card {
+    min-width: 0;
+    padding: 1.25rem 1rem;
+  }
+
+  .card-header {
+    margin-bottom: 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
   }
 
   .testimonial-icon {
     width: 50px;
     height: 50px;
+  }
+
+  .testimonial-icon i {
     font-size: 2rem;
   }
 
   .rating {
+    font-size: 0.85rem;
+  }
+
+  .testimonial-text {
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+  }
+
+  .quote-mark {
+    font-size: 2rem;
+  }
+
+  .testimonial-author {
+    font-size: 1rem;
+  }
+
+  .testimonial-role {
     font-size: 0.8rem;
   }
 
   .carousel-dots {
-    margin-top: 1.5rem;
     gap: 0.5rem;
+    margin-top: 1.25rem;
+  }
+
+  .carousel-dots button {
+    width: 10px;
+    height: 10px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .slide-fade-enter-active,
-  .slide-fade-leave-active,
   .testimonial-card,
-  .arrow {
+  .arrow,
+  .carousel-dots button,
+  .slide-fade-enter-active,
+  .slide-fade-leave-active {
+    animation: none;
     transition: none;
   }
 }
