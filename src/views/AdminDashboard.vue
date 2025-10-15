@@ -28,7 +28,7 @@
       <!-- Content cuando no está cargando -->
       <div v-else class="content-wrapper">
         <!-- Barra de acciones -->
-        <div class="actions-bar">
+        <div class="actions-bar"style="margin-top: 2rem;">
           <button @click="openCreateForm" class="btn-primary">
             <i class="bi bi-plus-circle"></i>
             Agregar Mueble
@@ -522,14 +522,14 @@ function getStockClass(stock) {
 /* Barra de acciones - MEJORADA Y RESPONSIVA */
 .actions-bar {
   background: var(--bg-white);
-  padding: 1.25rem;
+  padding: 2.25rem;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  gap: 1rem;
+  margin-bottom: 2.5rem;
+  gap: 2rem;
   flex-wrap: wrap;
 }
 
@@ -960,6 +960,7 @@ function getStockClass(stock) {
 .file-input {
   display: none;
 }
+
 
 .file-label {
   display: flex;

@@ -1,5 +1,5 @@
 <template>
-  <div class="products-view">
+   <div class="products-view">
     <Navbar />
     <Header />
 
