@@ -28,16 +28,55 @@
       <!-- Content cuando no está cargando -->
       <div v-else class="content-wrapper">
         <!-- Barra de acciones -->
-        <div class="actions-bar"style="margin-top: 2rem;">
-          <button @click="openCreateForm" class="btn-primary">
-            <i class="bi bi-plus-circle"></i>
-            Agregar Mueble
-          </button>
+        <div class="actions-bar">
+          <div class="actions-left">
+            <button @click="openCreateForm" class="btn-primary">
+              <i class="bi bi-plus-circle"></i>
+              Agregar Mueble
+            </button>
+            <button @click="openCreateCategory" class="btn-secondary" style="margin-left:0.75rem">
+              <i class="bi bi-tags"></i>
+              Nueva Categoría
+            </button>
+          </div>
           <div class="stats-summary">
             <div class="stat-item">
               <i class="bi bi-box-seam"></i>
               <span>{{ furnitureList.length }} productos</span>
             </div>
+          </div>
+        </div>
+
+        <!-- Sección de categorías integrada -->
+        <div class="categories-section">
+          <div class="section-header">
+            <h2>Categorías</h2>
+            <p class="muted">Gestiona las categorías disponibles en el catálogo</p>
+          </div>
+
+          <div v-if="categories.length" class="categories-grid">
+            <div v-for="cat in categories" :key="cat.id" class="category-card-mini">
+              <div class="cat-left">
+                <div class="icon-area-small">
+                  <div class="no-icon-small"><i class="bi bi-tags"></i></div>
+                </div>
+              </div>
+              <div class="cat-mid">
+                <strong class="cat-name">{{ cat.name }}</strong>
+                <div class="muted small">{{ cat.description || '-' }}</div>
+              </div>
+              <div class="cat-actions">
+                <button class="btn-icon" @click="openEditCategory(cat)"><i class="bi bi-pencil"></i></button>
+                <button class="btn-icon btn-delete" @click="confirmDeleteCategory(cat)"><i class="bi bi-trash"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="empty-state small">
+            <i class="bi bi-inbox"></i>
+            <h4>No hay categorías</h4>
+            <p>Añade categorías para organizar tus muebles</p>
+            <button class="btn-primary" @click="openCreateCategory">Crear Categoría</button>
           </div>
         </div>
 
@@ -71,7 +110,7 @@
                 <td data-label="Nombre" class="name-cell">{{ item.name }}</td>
                 <td data-label="Precio" class="price-cell">${{ item.price.toLocaleString('es-MX') }}</td>
                 <td data-label="Categoría">
-                  <span class="category-badge">{{ getCategoryLabel(item.category) }}</span>
+                  <span class="category-badge">{{ getCategoryLabel(item.category_id || item.category) }}</span>
                 </td>
                 <td data-label="Stock">
                   <span :class="['stock-badge', getStockClass(item.stock)]">
@@ -111,7 +150,7 @@
       </div>
     </div>
 
-    <!-- Modal del formulario -->
+    <!-- Modal del formulario (Mueble) -->
     <Transition name="modal">
       <div v-if="showForm" class="modal-overlay" @click.self="showForm = false">
         <div class="modal-form">
@@ -151,12 +190,17 @@
                       <i class="bi bi-tags"></i>
                       Categoría *
                     </label>
-                    <select id="category" v-model="form.category_id" required>
-                      <option :value="null" disabled>Selecciona una categoría</option>
-                      <option v-for="cat in categories" :key="cat.value" :value="cat.value">
-                        {{ cat.label }}
-                      </option>
-                    </select>
+                    <div class="category-select-controls">
+                      <select id="category" v-model="form.category_id" required>
+                        <option :value="null" disabled>Selecciona una categoría</option>
+                        <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+                          {{ cat.name }}
+                        </option>
+                      </select>
+                      <button type="button" class="btn-icon small" title="Crear categoría" @click="openCreateCategory">
+                        <i class="bi bi-plus-lg"></i>
+                      </button>
+                    </div>
                   </div>
 
                   <div class="form-row">
@@ -246,6 +290,37 @@
         </div>
       </div>
     </Transition>
+
+    <!-- Modal del formulario (Categoría) -->
+    <Transition name="modal">
+      <div v-if="showCategoryForm" class="modal-overlay" @click.self="showCategoryForm = false">
+        <div class="modal-card">
+          <form @submit.prevent="saveCategory">
+            <div class="modal-header">
+              <h2>{{ isEditingCategory ? 'Editar categoría' : 'Crear categoría' }}</h2>
+              <button type="button" class="close" @click="showCategoryForm = false"><i class="bi bi-x-lg"></i></button>
+            </div>
+
+            <div class="modal-body">
+              <div class="form-group">
+                <label>Nombre *</label>
+                <input v-model="categoryForm.name" required />
+              </div>
+
+              <div class="form-group">
+                <label>Descripción</label>
+                <textarea v-model="categoryForm.description" rows="3"></textarea>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn-secondary" @click="showCategoryForm = false">Cancelar</button>
+              <button type="submit" class="btn-primary">{{ isEditingCategory ? 'Guardar' : 'Crear' }}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -253,6 +328,7 @@
 import { useRouter } from 'vue-router';
 import axiosConfig from '../config/AxiosConfig.js';
 import { ref, reactive, onMounted } from 'vue';
+import * as categoriesService from '../services/categories';
 
 const router = useRouter();
 const furnitureList = ref([]);
@@ -274,16 +350,21 @@ const form = reactive({
   dimensions: ''
 });
 
-const categories = [
-  { label: "Sala", value: 1 },
-  { label: "Comedor", value: 2 },
-  { label: "Cocinas", value: 3 },
-  { label: "Oficina", value: 4 },
-  { label: "Camas y colchones", value: 5 },
-  { label: "Electrodomésticos pequeños", value: 6 },
-  { label: "Bicicletas", value: 7 },
-  { label: "Refrigeradores", value: 8 },
-];
+const categories = ref([]);
+
+// --- NUEVO: estados y formulario para categorías integradas ---
+const showCategoryForm = ref(false);
+const isEditingCategory = ref(false);
+// Removed icon_base64 from categoryForm
+const categoryForm = reactive({ id: null, name: '', description: '' });
+
+async function fetchCategories() {
+  try {
+    categories.value = await categoriesService.getCategories();
+  } catch (e) {
+    console.error('Error cargando categorías:', e);
+  }
+}
 
 function logout() {
   localStorage.removeItem('token');
@@ -302,8 +383,10 @@ async function fetchFurniture() {
   }
 }
 
-function openCreateForm() {
+async function openCreateForm() {
   isEditing.value = false;
+  // Ensure categories are up-to-date before opening the form
+  await fetchCategories();
   Object.assign(form, {
     id: null,
     name: '',
@@ -322,11 +405,85 @@ function openCreateForm() {
 
 function openEditForm(item) {
   isEditing.value = true;
+  // Normalizar category: si el item trae un objeto category, usar su id
+  const catId = item.category_id || (item.category && (item.category.id || item.category));
   Object.assign(form, {
     ...item,
-    category_id: item.category_id || item.category
+    category_id: catId
   });
   showForm.value = true;
+}
+
+// --- NUEVO: funciones para CRUD de categorías dentro del dashboard ---
+function openCreateCategory() {
+  isEditingCategory.value = false;
+  Object.assign(categoryForm, { id: null, name: '', description: '' });
+  showCategoryForm.value = true;
+}
+
+function openEditCategory(cat) {
+  isEditingCategory.value = true;
+  // removed icon_base64 handling
+  Object.assign(categoryForm, { id: cat.id, name: cat.name, description: cat.description || '' });
+  showCategoryForm.value = true;
+}
+
+async function saveCategory() {
+  if (!categoryForm.name || !categoryForm.name.trim()) {
+    axiosConfig.ToastWarning('Validación', 'El nombre es obligatorio');
+    return;
+  }
+  // payload no longer includes icon_base64
+  const payload = { name: categoryForm.name.trim(), description: categoryForm.description || undefined };
+  try {
+    if (isEditingCategory.value) {
+      const updated = await categoriesService.updateCategory(categoryForm.id, payload);
+      axiosConfig.ToastSuccess('Actualizado', 'Categoría actualizada correctamente');
+      // refresh categories and keep selection if needed
+      await fetchCategories();
+      if (updated && updated.id) {
+        if (form.category_id === updated.id || !form.category_id) form.category_id = updated.id;
+      }
+    } else {
+      const created = await categoriesService.createCategory(payload);
+      axiosConfig.ToastSuccess('Creado', 'Categoría creada correctamente');
+      // refrescar lista de categorías y asignar la nueva al formulario del mueble
+      await fetchCategories();
+      if (created && created.id) {
+        form.category_id = created.id;
+      }
+    }
+    showCategoryForm.value = false;
+  } catch (err) {
+    console.error(err);
+    if (err.response && err.response.status === 409) {
+      axiosConfig.ToastWarning('Conflicto', 'Ya existe una categoría con ese nombre');
+    } else if (err.response && err.response.data) {
+      axiosConfig.ToastWarning('Error', JSON.stringify(err.response.data));
+    } else {
+      axiosConfig.ToastError('Error', 'No se pudo guardar la categoría');
+    }
+  }
+}
+
+function confirmDeleteCategory(cat) {
+  if (!confirm(`¿Eliminar la categoría "${cat.name}"?`)) return;
+  deleteCategoryRequest(cat.id);
+}
+
+async function deleteCategoryRequest(id) {
+  try {
+    await categoriesService.deleteCategory(id);
+    axiosConfig.ToastSuccess('Eliminado', 'Categoría eliminada correctamente');
+    fetchCategories();
+  } catch (err) {
+    console.error(err);
+    if (err.response && err.response.status === 400) {
+      axiosConfig.ToastWarning('No se puede eliminar', 'La categoría tiene muebles asociados');
+    } else {
+      axiosConfig.ToastError('Error', 'No se pudo eliminar la categoría');
+    }
+  }
 }
 
 function validateForm() {
@@ -340,6 +497,13 @@ function validateForm() {
   }
   if (!form.category_id) {
     axiosConfig.ToastWarning('Validación', 'La categoría es obligatoria.');
+    return false;
+  }
+  // Ensure selected category exists in the loaded categories
+  const selId = Number(form.category_id);
+  const exists = categories.value.some(c => Number(c.id) === selId);
+  if (!exists) {
+    axiosConfig.ToastWarning('Validación', 'La categoría seleccionada no es válida. Selecciona una categoría existente.');
     return false;
   }
   if (form.stock < 0) {
@@ -409,231 +573,278 @@ function handleImageUpload(e) {
   reader.readAsDataURL(file);
 }
 
-onMounted(fetchFurniture);
+onMounted(() => {
+  fetchFurniture();
+  fetchCategories();
+});
 
 function getCategoryLabel(value) {
-  const cat = categories.find(c => c.value === value);
-  return cat ? cat.label : value;
+  // Si nos pasan un objeto category, devolver su nombre
+  if (!value && value !== 0) return '-';
+  if (typeof value === 'object') {
+    return value.name || '-';
+  }
+  // value puede venir como id (number/string)
+  const id = Number(value);
+  const cat = categories.value.find(c => Number(c.id) === id);
+  return cat ? cat.name : String(value);
 }
 
 function getStockClass(stock) {
-  if (stock === 0) return 'out-of-stock';
-  if (stock < 5) return 'low-stock';
-  return 'in-stock';
+  if (stock === undefined || stock === null) return '';
+  if (stock === 0) return 'stock-empty';
+  if (stock > 0 && stock <= 5) return 'stock-low';
+  if (stock > 5 && stock <= 20) return 'stock-medium';
+  if (stock > 20) return 'stock-high';
+  return '';
 }
 </script>
 
 <style scoped>
-/* Las variables CSS globales se definen en src/components/assets/styles.css */
-
 .admin-dashboard {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f0f4f8 0%, #e9ecef 100%);
+  font-family: 'Roboto', sans-serif;
+  background-color: #f4f7fa;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
-/* Header del Dashboard - MEJORADO Y RESPONSIVO */
 .dashboard-header {
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  color: white;
-  padding: 1.5rem 1rem 2.5rem;
-  box-shadow: var(--shadow-lg);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-content {
-  max-width: 1400px;
-  margin: 0 auto;
+  background-color: #007bff;
+  color: #fff;
+  padding: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
 }
 
 .header-title-section {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  flex: 1;
-  min-width: 200px;
 }
 
 .header-title-section i {
-  font-size: 2.5rem;
-  opacity: 0.9;
+  font-size: 2rem;
+  margin-right: 0.5rem;
 }
 
 .header-title-section h1 {
+  font-size: 1.5rem;
   margin: 0;
-  font-size: clamp(1.3rem, 4vw, 2rem);
-  font-weight: 700;
-  color: white;
 }
 
 .header-title-section p {
-  margin: 0.3rem 0 0;
-  font-size: clamp(0.85rem, 2.5vw, 1rem);
-  opacity: 0.9;
-  color: white;
+  margin: 0;
+  font-size: 0.875rem;
 }
 
 .logout-btn {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: all 0.3s;
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
   cursor: pointer;
-  white-space: nowrap;
 }
 
-.logout-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
-}
-
-/* Contenido del Dashboard - MEJORADO */
 .dashboard-content {
-  max-width: 1400px;
-  margin: -2rem auto 2rem;
-  padding: 0 1rem;
+  flex: 1;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.loading-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .content-wrapper {
-  animation: fadeIn 0.5s ease;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Barra de acciones - MEJORADA Y RESPONSIVA */
 .actions-bar {
-  background: var(--bg-white);
-  padding: 2.25rem;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  padding: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2.5rem;
-  gap: 2rem;
-  flex-wrap: wrap;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.actions-left {
+  display: flex;
+  align-items: center;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.btn-primary i {
+  margin-right: 0.5rem;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.btn-secondary i {
+  margin-right: 0.5rem;
 }
 
 .stats-summary {
   display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  align-items: center;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: var(--text-gray);
-  font-weight: 600;
-  font-size: 0.95rem;
+  margin-right: 1.5rem;
 }
 
 .stat-item i {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+.categories-section {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-header {
+  margin-bottom: 1rem;
+}
+
+.section-header h2 {
   font-size: 1.25rem;
-  color: var(--primary);
+  margin: 0;
 }
 
-/* Botones - MEJORADOS */
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  color: white;
-  border: none;
-  padding: 0.875rem 1.5rem;
-  border-radius: var(--radius);
-  font-weight: 600;
-  font-size: 0.95rem;
-  display: inline-flex;
+.section-header p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.category-card-mini {
+  background-color: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: var(--shadow);
-  white-space: nowrap;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.btn-secondary {
-  background: var(--bg-light);
-  color: var(--text-dark);
-  border: 1px solid var(--border);
-  padding: 0.875rem 1.5rem;
-  border-radius: var(--radius);
-  font-weight: 600;
-  font-size: 0.95rem;
-  display: inline-flex;
+.cat-left {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  transition: all 0.3s;
 }
 
-.btn-secondary:hover {
-  background: #e5e7eb;
+.icon-area-small {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background-color: #007bff;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 0.5rem;
+}
+
+.cat-mid {
+  flex: 1;
+}
+
+.cat-name {
+  font-weight: 500;
+  margin: 0;
+}
+
+.muted.small {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.cat-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .btn-icon {
-  background: transparent;
+  background-color: transparent;
   border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  color: #007bff;
   cursor: pointer;
-  transition: all 0.2s;
-  font-size: 1.1rem;
-  padding: 0;
+  font-size: 1.25rem;
 }
 
-.btn-edit {
-  color: #3b82f6;
+.btn-icon.btn-delete {
+  color: #dc3545;
 }
 
-.btn-edit:hover {
-  background: #eff6ff;
-}
-
-.btn-delete {
-  color: var(--danger);
-}
-
-.btn-delete:hover {
-  background: #fef2f2;
-}
-
-/* Tabla - COMPLETAMENTE REDISEÑADA PARA MÓVILES */
 .table-container {
-  background: var(--bg-white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  overflow: hidden;
+  flex: 1;
+  overflow-x: auto;
 }
 
 .furniture-table {
@@ -641,45 +852,29 @@ function getStockClass(stock) {
   border-collapse: collapse;
 }
 
-.furniture-table thead {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
+.furniture-table th,
+.furniture-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
 }
 
 .furniture-table th {
-  padding: 1rem;
-  text-align: left;
-  font-weight: 600;
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-.furniture-table tbody tr {
-  border-bottom: 1px solid var(--border);
-  transition: background 0.2s;
-}
-
-.furniture-table tbody tr:hover {
-  background: var(--bg-light);
-}
-
-.furniture-table td {
-  padding: 1rem;
-  color: var(--text-dark);
+  background-color: #f8f9fa;
+  font-weight: 500;
 }
 
 .img-cell {
   width: 80px;
+  height: 80px;
 }
 
 .img-wrapper {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  position: relative;
 }
 
 .img-wrapper img {
@@ -691,591 +886,206 @@ function getStockClass(stock) {
 .no-image {
   width: 100%;
   height: 100%;
-  background: var(--bg-light);
   display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: center;
-  color: var(--text-gray);
-  font-size: 1.5rem;
+  background-color: #f0f0f0;
+  border-radius: 0.5rem;
 }
 
-.name-cell {
-  font-weight: 600;
-  color: var(--text-dark);
-  max-width: 200px;
+.table-row {
+  transition: background-color 0.2s;
 }
 
-.price-cell {
-  font-weight: 700;
-  color: var(--primary);
-  white-space: nowrap;
+.table-row:hover {
+  background-color: #f1f3f5;
 }
 
-.category-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  background: #e0e7ff;
-  color: #4f46e5;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.stock-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 50px;
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 0.875rem;
-}
-
-.in-stock {
-  background: #d1fae5;
-  color: #065f46;
-}
-
-.low-stock {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.out-of-stock {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.color-dot {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 2px solid white;
-  box-shadow: 0 0 0 1px var(--border);
-  vertical-align: middle;
-  margin-right: 0.25rem;
-}
-
-.actions-cell {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-}
-
-/* Loading */
-.loading-container {
-  background: var(--bg-white);
-  border-radius: var(--radius-lg);
-  padding: 4rem 2rem;
-  text-align: center;
-  box-shadow: var(--shadow);
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid var(--border);
-  border-top-color: var(--primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 1rem;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Empty State */
 .empty-state {
-  background: var(--bg-white);
-  border-radius: var(--radius-lg);
-  padding: 3rem 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  box-shadow: var(--shadow);
 }
 
 .empty-state i {
-  font-size: 4rem;
-  color: var(--text-gray);
-  opacity: 0.5;
+  font-size: 3rem;
+  color: #007bff;
   margin-bottom: 1rem;
 }
 
 .empty-state h3 {
-  color: var(--text-dark);
-  margin-bottom: 0.5rem;
   font-size: 1.5rem;
+  margin: 0 0 0.5rem 0;
 }
 
 .empty-state p {
-  color: var(--text-gray);
-  margin-bottom: 2rem;
-}
-
-/* Modal - MEJORADO PARA MÓVILES */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6) !important;
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 1rem;
-  overflow-y: auto;
-}
-
-.modal-form {
-  background: var(--bg-white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl);
-  width: 100%;
-  max-width: 900px;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-  z-index: 10000;
-}
-
-.form-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  background: var(--bg-white);
-  z-index: 10;
-}
-
-.form-header h2 {
-  margin: 0;
-  font-size: clamp(1.2rem, 4vw, 1.5rem);
-  color: var(--text-dark);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.close-btn {
-  background: transparent;
-  border: none;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.2s;
-  color: var(--text-gray);
-  font-size: 1.2rem;
-}
-
-.close-btn:hover {
-  background: var(--bg-light);
-  color: var(--text-dark);
-}
-
-.form-body {
-  padding: 1.5rem;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.form-column {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-group label {
-  font-weight: 600;
-  color: var(--text-dark);
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.form-group label i {
-  color: var(--primary);
-  font-size: 1rem;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 1rem;
-  transition: all 0.2s;
-  font-family: inherit;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(134, 7, 52, 0.1);
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 80px;
+  margin: 0 0 1rem 0;
+  color: #6c757d;
 }
 
 .image-upload-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  position: relative;
 }
 
 .file-input {
   display: none;
 }
 
-
 .file-label {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: var(--bg-light);
-  border: 2px dashed var(--border);
-  border-radius: var(--radius);
+  align-items: center;
+  border: 2px dashed #007bff;
+  border-radius: 0.5rem;
+  padding: 1rem;
   cursor: pointer;
-  transition: all 0.2s;
-  font-weight: 600;
-  color: var(--text-gray);
+  text-align: center;
 }
 
-.file-label:hover {
-  background: #e5e7eb;
-  border-color: var(--primary);
-  color: var(--primary);
+.file-label i {
+  font-size: 2rem;
+  margin-right: 0.5rem;
 }
 
 .image-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-height: 200px;
-  object-fit: contain;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
 }
 
-.form-footer {
-  padding: 1.5rem;
-  border-top: 1px solid var(--border);
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-form,
+.modal-card {
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+}
+
+.form-header {
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.form-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.form-body {
+  padding: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
-  justify-content: flex-end;
-  position: sticky;
-  bottom: 0;
-  background: var(--bg-white);
-  flex-wrap: wrap;
 }
 
-/* Animaciones del modal */
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s;
+.form-column {
+  display: flex;
+  flex-direction: column;
 }
 
-.modal-enter-active .modal-form,
-.modal-leave-active .modal-form {
-  transition: transform 0.3s;
+.form-group {
+  margin-bottom: 1rem;
 }
 
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
-.modal-enter-from .modal-form,
-.modal-leave-to .modal-form {
-  transform: scale(0.95);
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  width: 100%;
 }
 
-/* RESPONSIVE - TABLET */
-@media (max-width: 1024px) {
-  .dashboard-content {
-    padding: 0 0.75rem;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .furniture-table {
-    font-size: 0.9rem;
-  }
-
-  .furniture-table th,
-  .furniture-table td {
-    padding: 0.75rem 0.5rem;
-  }
+.form-group textarea {
+  resize: vertical;
 }
 
-/* RESPONSIVE - MÓVIL */
-@media (max-width: 768px) {
-  .dashboard-header {
-    padding: 1rem 0.75rem 2rem;
-  }
-
-  .header-content {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .header-title-section {
-    justify-content: center;
-    text-align: center;
-  }
-
-  .header-title-section i {
-    font-size: 2rem;
-  }
-
-  .logout-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .actions-bar {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 1rem;
-  }
-
-  .btn-primary {
-    width: 100%;
-  }
-
-  .stats-summary {
-    justify-content: center;
-  }
-
-  /* TABLA RESPONSIVA TIPO TARJETAS - MEJORADA */
-  .table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border-radius: var(--radius-lg);
-  }
-
-  .furniture-table {
-    display: block;
-  }
-
-  .furniture-table thead {
-    display: none;
-  }
-
-  .furniture-table tbody {
-    display: block;
-  }
-
-  .table-row {
-    display: block;
-    margin-bottom: 1.25rem;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.25rem;
-    background: var(--bg-white);
-    box-shadow: 0 4px 15px rgba(134, 7, 52, 0.08);
-    transition: all 0.3s;
-  }
-
-  .table-row:hover {
-    box-shadow: 0 8px 25px rgba(134, 7, 52, 0.15);
-    transform: translateY(-2px);
-  }
-
-  .furniture-table td {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.875rem 0;
-    border-bottom: 1px solid var(--bg-light);
-  }
-
-  .furniture-table td:last-child {
-    border-bottom: none;
-    padding-top: 1.25rem;
-    border-top: 2px solid var(--bg-light);
-    margin-top: 0.5rem;
-  }
-
-  .furniture-table td::before {
-    content: attr(data-label);
-    font-weight: 700;
-    color: var(--primary);
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    flex-shrink: 0;
-  }
-
-  .img-cell::before {
-    content: 'Imagen';
-  }
-
-  .name-cell::before {
-    content: 'Nombre';
-  }
-
-  .price-cell::before {
-    content: 'Precio';
-  }
-
-  .img-cell,
-  .name-cell {
-    max-width: 100%;
-  }
-
-  .img-wrapper {
-    width: 80px;
-    height: 80px;
-    border-radius: 12px;
-  }
-
-  .actions-cell {
-    justify-content: flex-end;
-  }
-
-  .actions-cell::before {
-    display: none;
-  }
-
-  /* MODAL EN MÓVIL - MEJORADO */
-  .modal-overlay {
-    padding: 0;
-    align-items: flex-end;
-  }
-
-  .modal-form {
-    max-height: 95vh;
-    border-radius: 24px 24px 0 0;
-    margin-top: auto;
-    animation: slideUp 0.3s ease;
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-    }
-    to {
-      transform: translateY(0);
-    }
-  }
-
-  .form-body {
-    padding: 1rem;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-
-  .form-footer {
-    flex-direction: column-reverse;
-    padding: 1rem;
-  }
-
-  .form-footer .btn-primary,
-  .form-footer .btn-secondary {
-    width: 100%;
-  }
+.btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
-/* RESPONSIVE - MÓVIL PEQUEÑO */
-@media (max-width: 480px) {
-  .dashboard-header {
-    padding: 0.75rem 0.5rem 1.5rem;
-  }
-
-  .header-title-section h1 {
-    font-size: 1.2rem;
-  }
-
-  .header-title-section p {
-    font-size: 0.8rem;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    font-size: 0.9rem;
-    padding: 0.75rem 1.25rem;
-  }
-
-  .empty-state {
-    padding: 2rem 1rem;
-  }
-
-  .empty-state i {
-    font-size: 3rem;
-  }
-
-  .empty-state h3 {
-    font-size: 1.25rem;
-  }
-
-  .form-header {
-    padding: 1rem;
-  }
-
-  .form-header h2 {
-    font-size: 1.1rem;
-  }
-
-  .close-btn {
-    width: 36px;
-    height: 36px;
-  }
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
-/* Mejoras de accesibilidad y UX */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+.btn-primary i {
+  margin-right: 0.5rem;
 }
 
-/* Modo oscuro (opcional) */
-@media (prefers-color-scheme: dark) {
-  .admin-dashboard {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  }
+.btn-secondary i {
+  margin-right: 0.5rem;
+}
+
+.stock-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  color: #fff;
+}
+
+.stock-empty {
+  background-color: #dc3545;
+}
+
+.stock-low {
+  background-color: #ffc107;
+}
+
+.stock-medium {
+  background-color: #007bff;
+}
+
+.stock-high {
+  background-color: #28a745;
 }
 </style>

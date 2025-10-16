@@ -30,10 +30,12 @@ router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token');
   const userRole = localStorage.getItem('role'); // Suponiendo que el rol del usuario se almacena en localStorage
 
+  // Rutas que empiecen con /admin requieren token y rol admin
   if (to.meta.requiresAuth && !token) {
     next('/login');
-  } else if (to.path === '/admin' && userRole !== 'admin') {
-    next('/'); // Redirigir al home si no es administrador
+  } else if (to.path.startsWith('/admin') && userRole !== 'admin') {
+    // Si la ruta es área de administración y el usuario no es admin, redirigir
+    next('/');
   } else {
     next();
   }
