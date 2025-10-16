@@ -214,12 +214,13 @@
 
 <script setup>
 import '../components/assets/Styles.css';
-import Header from '../components/Header.vue'
-import Footer from '../components/Footer.vue'
-import Navbar from '../components/Navbar.vue'
-import { ref, computed, onMounted, watch } from 'vue'
-import axiosConfig from '../config/AxiosConfig.js'
+import Header from '../components/Header.vue';
+import Footer from '../components/Footer.vue';
+import Navbar from '../components/Navbar.vue';
+import { ref, computed, onMounted, watch } from 'vue';
+import axiosConfig from '../config/AxiosConfig.js';
 import { useRouter, useRoute } from 'vue-router';
+import { getCategories } from '../services/categories'; // Importamos el servicio de categorías
 
 const router = useRouter();
 const route = useRoute();
@@ -229,9 +230,11 @@ function goToProduct(id) {
   router.push({ name: 'ProductoDetalle', params: { id } });
 }
 
-// Simula tus productos (después los traerás de la API)
-const products = ref([])
-const loadingProducts = ref(false)
+// Productos y categorías
+const products = ref([]);
+const loadingProducts = ref(false);
+const categories = ref([]); // Ahora es reactivo para cargar desde la API
+const loadingCategories = ref(false); // Estado de carga para categorías
 
 function normalizeCategory(cat) {
   if (!cat && cat !== 0) return '';
@@ -242,26 +245,48 @@ function normalizeCategory(cat) {
   return String(cat);
 }
 
-async function fetchProducts() {
-  loadingProducts.value = true
+// Función para cargar las categorías desde la API
+async function fetchCategories() {
+  loadingCategories.value = true;
   try {
-    const res = await axiosConfig.doGet('/furniture/')
+    const categoriesData = await getCategories();
+    categories.value = categoriesData.map(cat => ({
+      value: cat.id || cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-'),
+      label: cat.name,
+      description: cat.description || ''
+    }));
+    console.log('Categorías cargadas:', categories.value);
+  } catch (error) {
+    console.error('Error al cargar categorías:', error);
+    categories.value = []; // Si hay error, dejamos el array vacío
+  } finally {
+    loadingCategories.value = false;
+  }
+}
+
+async function fetchProducts() {
+  loadingProducts.value = true;
+  try {
+    const res = await axiosConfig.doGet('/furniture/');
     products.value = res.data.map(item => ({
       id: item.id,
       name: item.name,
       price: item.price,
       category: normalizeCategory(item.category),
       img: item.img_base64 || '/assets/img/products/default.jpg',
-    }))
+    }));
   } catch (e) {
-    products.value = []
+    products.value = [];
   } finally {
-    loadingProducts.value = false
+    loadingProducts.value = false;
   }
 }
 
 onMounted(() => {
+  // Cargamos productos y categorías
   fetchProducts();
+  fetchCategories(); // Llamamos a la nueva función para cargar categorías
+
   const categoria = ref(route.params.categoria);
   fetchProductosPorCategoria(categoria.value);
 
@@ -290,15 +315,16 @@ function fetchProductosPorCategoria(categoria) {
   }
 }
 
-const categories = [
-  { value: 'salas', label: 'Salas', icon: '🛋️' },
-  { value: 'recamaras', label: 'Recámaras', icon: '🛏️' },
-  { value: 'comedores', label: 'Comedores', icon: '🍽️' },
-  { value: 'oficina', label: 'Oficina', icon: '💼' },
-  { value: 'bebes-ninos', label: 'Bebés y Niños', icon: '👶' },
-  { value: 'exteriores', label: 'Exteriores', icon: '🌳' },
-  { value: 'decoracion', label: 'Decoración', icon: '🎨' }
-];
+// Actualizada la función getCategoryLabel para usar las categorías dinámicas
+function getCategoryLabel(categoryId) {
+  if (!categoryId) return 'Sin categoría';
+
+  const category = categories.value.find(c =>
+    c.value.toString() === categoryId.toString()
+  );
+
+  return category ? category.label : 'Categoría desconocida';
+}
 
 const selectedCategory = ref('');
 const searchTerm = ref('');
@@ -312,11 +338,14 @@ const filteredProducts = computed(() => {
   return products.value.filter(product => {
     const prodCat = normalizeCategory(product.category).trim().toLowerCase();
     const selectedCat = normalizeCategory(selectedCategory.value).trim().toLowerCase();
+
+    // Aseguramos que las categorías coincidan correctamente
     const matchesCategory = !selectedCat || prodCat === selectedCat;
     const matchesSearch = !searchTerm.value ||
       product.name.toLowerCase().includes(searchTerm.value.toLowerCase());
     const matchesMinPrice = !minPrice.value || product.price >= minPrice.value;
     const matchesMaxPrice = !maxPrice.value || product.price <= maxPrice.value;
+
     return matchesCategory && matchesSearch && matchesMinPrice && matchesMaxPrice;
   });
 });
@@ -357,20 +386,6 @@ function clearFilters() {
   minPrice.value = '';
   maxPrice.value = '';
   currentPage.value = 1;
-}
-
-function getCategoryLabel(category) {
-  if (!category) return 'General';
-  const catStr = normalizeCategory(category).toLowerCase();
-  const cat = categories.find(c => (c.value || '').toLowerCase() === catStr || (c.label || '').toLowerCase() === catStr);
-  return cat ? cat.label : normalizeCategory(category) || 'General';
-}
-
-function goToPage(page) {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
 }
 </script>
 
