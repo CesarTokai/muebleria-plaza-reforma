@@ -16,9 +16,7 @@
     <div v-scroll-animate>
       <MisionVision />
     </div>
-    <div v-scroll-animate>
-      <HeroBanner />
-    </div>
+
     <section class="featured-section" v-scroll-animate>
       <div class="container">
         <h2 class="featured-title">Productos Destacados</h2>
@@ -61,7 +59,6 @@
 import BenefitsSection from '@/components/BenefitsSection.vue';
 import Header from '../components/Header.vue';
 import MisionVision from '@/components/MisionVision.vue';
-import HeroBanner from '../components/HeroBanner.vue';
 import Footer from '../components/Footer.vue';
 import ProductGallery from '../components/ProductGallery.vue';
 import Navbar from '../components/Navbar.vue';
