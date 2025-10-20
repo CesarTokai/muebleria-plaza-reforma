@@ -21,6 +21,13 @@ const router = useRouter();
 
 // Fallback para la imagen: puede venir como img o img_base64
 const imgSrc = computed(() => {
+  // Primero intentar obtener del array de imágenes
+  if (props.product?.images && Array.isArray(props.product.images) && props.product.images.length > 0) {
+    const firstImage = props.product.images[0];
+    // La imagen puede venir como string o como objeto con img_base64
+    return typeof firstImage === 'string' ? firstImage : (firstImage.img_base64 || firstImage.url || '/assets/img/products/default.jpg');
+  }
+  // Fallback a img o img_base64 por compatibilidad
   return props.product?.img || props.product?.img_base64 || '/assets/img/products/default.jpg';
 });
 

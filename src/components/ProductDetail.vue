@@ -316,13 +316,27 @@ async function fetchProduct() {
   try {
     const res = await axiosConfig.doGet(`/furniture/${route.params.id}`);
     const item = res.data;
+
+    // Normalizar imágenes: convertir a array
+    let itemImages = [];
+    if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+      itemImages = item.images.map(img => {
+        // La imagen puede venir como string o como objeto con img_base64
+        return typeof img === 'string' ? img : (img.img_base64 || img.url || '/assets/img/products/default.jpg');
+      }).filter(Boolean);
+    } else if (item.img_base64) {
+      itemImages = [item.img_base64];
+    } else {
+      itemImages = ['/assets/img/products/default.jpg'];
+    }
+
     product.value = {
       id: item.id,
       name: item.name,
       price: item.price,
       inStock: item.stock > 0,
       description: item.description,
-      images: item.img_base64 ? [item.img_base64] : ['/assets/img/products/default.jpg'],
+      images: itemImages,
       category: item.category || '',
       features: [
         item.brand ? `Marca: ${item.brand}` : null,

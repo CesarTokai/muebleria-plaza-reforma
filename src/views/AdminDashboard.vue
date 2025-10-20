@@ -101,7 +101,7 @@
               <tr v-for="item in furnitureList" :key="item.id" class="table-row">
                 <td data-label="Imagen" class="img-cell">
                   <div class="img-wrapper">
-                    <img v-if="item.img_base64" :src="item.img_base64" alt="img" />
+                    <img v-if="getMainImage(item)" :src="getMainImage(item)" alt="img" />
                     <div v-else class="no-image">
                       <i class="bi bi-image"></i>
                     </div>
@@ -258,18 +258,54 @@
                     <textarea id="description" v-model="form.description" placeholder="Describe las características del mueble..." rows="3"></textarea>
                   </div>
 
-                  <div class="form-group">
-                    <label for="image">
-                      <i class="bi bi-image"></i>
-                      Imagen del producto
-                    </label>
-                    <div class="image-upload-wrapper">
-                      <input id="image" type="file" accept="image/*" @change="handleImageUpload" class="file-input" />
-                      <label for="image" class="file-label">
+                  <div class="form-section-images">
+                    <h3>
+                      <i class="bi bi-images"></i>
+                      Galería de imágenes
+                    </h3>
+                    <div class="images-count">
+                      {{ form.images.length }} / {{ maxImages }} imágenes
+                    </div>
+
+                    <div class="image-uploader">
+                      <div class="image-drop-area" @click="fileInputRef.click()" @dragover="handleDragOver" @drop.prevent="handleDrop">
                         <i class="bi bi-cloud-upload"></i>
-                        <span>{{ form.img_base64 ? 'Cambiar imagen' : 'Subir imagen' }}</span>
-                      </label>
-                      <img v-if="form.img_base64" :src="form.img_base64" alt="Preview" class="image-preview" />
+                        <p>Arrastra y suelta imágenes aquí o</p>
+                        <button type="button" class="browse-text" @click="fileInputRef.click()">
+                          Selecciona archivos
+                        </button>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          ref="fileInputRef"
+                          class="hidden-file-input"
+                          @change="handleImageUpload"
+                        />
+                      </div>
+
+                      <div v-if="form.images.length" class="image-list">
+                        <div v-for="(img, index) in form.images" :key="index" class="image-item">
+                          <div class="image-preview-box">
+                            <img :src="img" alt="Imagen del mueble" />
+                            <div class="image-actions">
+                              <button type="button" class="btn-icon remove-btn" @click="removeImage(index)">
+                                <i class="bi bi-x-circle"></i>
+                              </button>
+                              <button type="button" class="btn-icon main-btn" @click="setAsMainImage(index)" v-if="!isEditing">
+                                <i class="bi bi-star"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div v-if="imageErrors.length" class="error-messages">
+                        <div v-for="(error, index) in imageErrors" :key="index" class="error-message">
+                          <i class="bi bi-exclamation-circle"></i>
+                          {{ error }}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -342,13 +378,17 @@ const form = reactive({
   description: '',
   price: 0,
   category_id: null,
-  img_base64: '',
+  images: [], // Array de imágenes en base64
   stock: 0,
   brand: '',
   color: '',
   material: '',
   dimensions: ''
 });
+const maxImages = 5;
+const maxFileSizeMB = 5;
+const imageErrors = ref([]);
+const fileInputRef = ref(null);
 
 const categories = ref([]);
 
@@ -393,7 +433,7 @@ async function openCreateForm() {
     description: '',
     price: 0,
     category_id: null,
-    img_base64: '',
+    images: [],
     stock: 0,
     brand: '',
     color: '',
@@ -407,10 +447,21 @@ function openEditForm(item) {
   isEditing.value = true;
   // Normalizar category: si el item trae un objeto category, usar su id
   const catId = item.category_id || (item.category && (item.category.id || item.category));
+
+  // Normalizar imágenes: convertir a array
+  let itemImages = [];
+  if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+    itemImages = item.images.map(img => (typeof img === 'string' ? img : (img.img_base64 || img.url || img))).filter(Boolean);
+  } else if (item.img_base64) {
+    itemImages = [item.img_base64];
+  }
+
   Object.assign(form, {
     ...item,
-    category_id: catId
+    category_id: catId,
+    images: itemImages
   });
+  imageErrors.value = [];
   showForm.value = true;
 }
 
@@ -522,7 +573,7 @@ async function saveFurniture() {
     description: form.description || '',
     price: parseFloat(form.price),
     category_id: parseInt(form.category_id),
-    img_base64: form.img_base64 || '',
+    images: form.images || [], // Enviar array de imágenes
     stock: parseInt(form.stock) || 0,
     brand: form.brand || '',
     color: form.color || '',
@@ -542,6 +593,7 @@ async function saveFurniture() {
     fetchFurniture();
   } catch (e) {
     console.error('Error al guardar:', e);
+    axiosConfig.ToastError('Error', 'No se pudo guardar el mueble.');
   }
 }
 
@@ -557,20 +609,100 @@ async function deleteFurniture(id) {
 }
 
 function handleImageUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+  const files = e.target.files;
+  if (!files.length) return;
 
-  // Validar tamaño (máximo 5MB)
-  if (file.size > 5 * 1024 * 1024) {
-    axiosConfig.ToastWarning('Imagen muy grande', 'La imagen no debe superar los 5MB.');
+  // Validar cantidad de imágenes
+  if (form.images.length + files.length > maxImages) {
+    axiosConfig.ToastWarning('Límite de imágenes', `Solo se permiten hasta ${maxImages} imágenes.`);
     return;
   }
 
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    form.img_base64 = ev.target.result;
-  };
-  reader.readAsDataURL(file);
+  imageErrors.value = [];
+
+  Array.from(files).forEach(file => {
+    // Validar tipo de archivo
+    if (!file.type.startsWith('image/')) {
+      imageErrors.value.push(`${file.name} no es una imagen válida.`);
+      return;
+    }
+
+    // Validar tamaño (máximo 5MB)
+    if (file.size > maxFileSizeMB * 1024 * 1024) {
+      imageErrors.value.push(`${file.name} supera el tamaño máximo de ${maxFileSizeMB}MB.`);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      form.images.push(ev.target.result);
+    };
+    reader.onerror = () => {
+      imageErrors.value.push(`Error al leer ${file.name}.`);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Limpiar el input para permitir subir el mismo archivo de nuevo
+  if (fileInputRef.value) {
+    fileInputRef.value.value = '';
+  }
+}
+
+function removeImage(index) {
+  form.images.splice(index, 1);
+  imageErrors.value = [];
+}
+
+function setAsMainImage(index) {
+  if (index === 0) return;
+  const [selectedImage] = form.images.splice(index, 1);
+  form.images.unshift(selectedImage);
+}
+
+// Funciones para drag & drop
+function handleDragOver(e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const files = e.dataTransfer.files;
+  if (!files.length) return;
+
+  // Validar cantidad de imágenes
+  if (form.images.length + files.length > maxImages) {
+    axiosConfig.ToastWarning('Límite de imágenes', `Solo se permiten hasta ${maxImages} imágenes.`);
+    return;
+  }
+
+  imageErrors.value = [];
+
+  Array.from(files).forEach(file => {
+    // Validar tipo de archivo
+    if (!file.type.startsWith('image/')) {
+      imageErrors.value.push(`${file.name} no es una imagen válida.`);
+      return;
+    }
+
+    // Validar tamaño
+    if (file.size > maxFileSizeMB * 1024 * 1024) {
+      imageErrors.value.push(`${file.name} supera el tamaño máximo de ${maxFileSizeMB}MB.`);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      form.images.push(ev.target.result);
+    };
+    reader.onerror = () => {
+      imageErrors.value.push(`Error al leer ${file.name}.`);
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
 onMounted(() => {
@@ -597,6 +729,31 @@ function getStockClass(stock) {
   if (stock > 5 && stock <= 20) return 'stock-medium';
   if (stock > 20) return 'stock-high';
   return '';
+}
+
+// Helper para obtener la primera imagen de un mueble
+function getMainImage(item) {
+  // Si tiene un array de imágenes, devolver la primera
+  if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+    const firstImage = item.images[0];
+    return typeof firstImage === 'string' ? firstImage : (firstImage.img_base64 || firstImage.url || null);
+  }
+  // Fallback a img_base64 por compatibilidad
+  if (item.img_base64) {
+    return item.img_base64;
+  }
+  return null;
+}
+
+// Helper para obtener el total de imágenes
+function getImageCount(item) {
+  if (item.images && Array.isArray(item.images)) {
+    return item.images.length;
+  }
+  if (item.img_base64) {
+    return 1;
+  }
+  return 0;
 }
 </script>
 
@@ -978,18 +1135,30 @@ function getStockClass(stock) {
   background: #fff;
   border-radius: 0.5rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  width: 100%;
+  max-width: 900px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .form-header {
   padding: 1rem;
   border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 10;
 }
 
 .form-header h2 {
   margin: 0;
   font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .close-btn {
@@ -998,16 +1167,24 @@ function getStockClass(stock) {
   cursor: pointer;
   font-size: 1.5rem;
   color: #333;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #dc3545;
 }
 
 .form-body {
-  padding: 1rem;
+  padding: 1.5rem;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .form-column {
@@ -1015,13 +1192,23 @@ function getStockClass(stock) {
   flex-direction: column;
 }
 
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
 .form-group {
   margin-bottom: 1rem;
 }
 
 .form-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  color: #495057;
 }
 
 .form-group input,
@@ -1032,10 +1219,56 @@ function getStockClass(stock) {
   border-radius: 0.25rem;
   font-size: 1rem;
   width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 .form-group textarea {
   resize: vertical;
+}
+
+.category-select-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.category-select-controls select {
+  flex: 1;
+}
+
+.category-select-controls .btn-icon {
+  padding: 0.5rem;
+  background-color: #007bff;
+  color: white;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+}
+
+.category-select-controls .btn-icon:hover {
+  background-color: #0056b3;
+}
+
+.form-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  z-index: 10;
 }
 
 .btn-secondary {
@@ -1046,6 +1279,14 @@ function getStockClass(stock) {
   border-radius: 0.25rem;
   font-size: 1rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
 }
 
 .btn-primary {
@@ -1056,14 +1297,14 @@ function getStockClass(stock) {
   border-radius: 0.25rem;
   font-size: 1rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
 }
 
-.btn-primary i {
-  margin-right: 0.5rem;
-}
-
-.btn-secondary i {
-  margin-right: 0.5rem;
+.btn-primary:hover {
+  background-color: #0056b3;
 }
 
 .stock-badge {
@@ -1087,5 +1328,286 @@ function getStockClass(stock) {
 
 .stock-high {
   background-color: #28a745;
+}
+
+.category-badge {
+  background-color: #e7f3ff;
+  color: #007bff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.color-dot {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #dee2e6;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+/* Estilos para carga de múltiples imágenes */
+.form-section-images {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #e9ecef;
+}
+
+.form-section-images h3 {
+  font-size: 1.1rem;
+  color: #007bff;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.images-count {
+  font-size: 0.8rem;
+  background-color: #e7f3ff;
+  border-radius: 20px;
+  padding: 0.25rem 0.75rem;
+  color: #007bff;
+  font-weight: normal;
+  margin-left: auto;
+}
+
+.image-uploader {
+  margin-top: 1rem;
+}
+
+.image-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.image-item {
+  position: relative;
+}
+
+.image-preview-box {
+  height: 120px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s;
+}
+
+.image-preview-box:hover {
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+}
+
+.image-preview-box img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.image-preview-box:hover img {
+  transform: scale(1.05);
+}
+
+.image-actions {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.image-preview-box:hover .image-actions {
+  opacity: 1;
+}
+
+.remove-btn,
+.main-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(4px);
+  font-size: 0.9rem;
+}
+
+.remove-btn:hover {
+  background-color: #dc3545;
+  color: white;
+  transform: scale(1.1);
+}
+
+.main-btn:hover {
+  background-color: #ffc107;
+  color: white;
+  transform: scale(1.1);
+}
+
+.main-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background-color: rgba(40, 167, 69, 0.95);
+  color: white;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 600;
+}
+
+.image-drop-area {
+  height: 120px;
+  border: 2px dashed #007bff;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  padding: 1rem;
+  text-align: center;
+  color: #6c757d;
+  background-color: #f8f9fa;
+}
+
+.image-drop-area:hover,
+.image-drop-area.drag-over {
+  border-color: #0056b3;
+  background-color: #e7f3ff;
+  transform: translateY(-2px);
+}
+
+.image-drop-area i {
+  font-size: 2rem;
+  color: #007bff;
+  margin-bottom: 0.5rem;
+}
+
+.image-drop-area p {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+}
+
+.browse-text {
+  color: #007bff;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.browse-text:hover {
+  color: #0056b3;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+.error-messages {
+  margin-top: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+
+.error-message {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+  color: #856404;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.error-message i {
+  color: #ffc107;
+}
+
+/* Transición del modal */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .modal-form,
+.modal-enter-active .modal-card {
+  animation: modalSlideIn 0.3s ease;
+}
+
+.modal-leave-active .modal-form,
+.modal-leave-active .modal-card {
+  animation: modalSlideOut 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-form,
+  .modal-card {
+    max-width: 95%;
+    width: 95%;
+  }
+
+  .image-list {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
 }
 </style>

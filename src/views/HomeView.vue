@@ -110,13 +110,24 @@ async function fetchFeaturedProducts() {
   try {
     const res = await axiosConfig.doGet('/furniture/');
     // Puedes filtrar aquí si quieres solo algunos destacados, por ahora muestra los primeros 6
-    featuredProducts.value = res.data.slice(0, 6).map(item => ({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      img: item.img_base64 || '/assets/img/products/default.jpg',
-      // Puedes agregar más campos si ProductGallery los usa
-    }));
+    featuredProducts.value = res.data.slice(0, 6).map(item => {
+      // Obtener la primera imagen del array o usar fallback
+      let mainImage = '/assets/img/products/default.jpg';
+      if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+        const firstImage = item.images[0];
+        mainImage = typeof firstImage === 'string' ? firstImage : (firstImage.img_base64 || firstImage.url || mainImage);
+      } else if (item.img_base64) {
+        mainImage = item.img_base64;
+      }
+
+      return {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        img: mainImage,
+        images: item.images || [] // Mantener el array completo para uso futuro
+      };
+    });
   } catch (e) {
     featuredProducts.value = [];
   } finally {
