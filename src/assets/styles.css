@@ -50,3 +50,12 @@ main, .detail-page, .product-detail, .container {
     overflow-x: hidden !important;
   }
 }
+
+/* Ajustar espaciado entre inputs */
+.form-group {
+  margin-bottom: 2.5rem; /* Incrementar aún más el margen inferior entre inputs */
+}
+
+.form-row {
+  gap: 2.5rem; /* Incrementar el espacio entre columnas en una fila */
+}

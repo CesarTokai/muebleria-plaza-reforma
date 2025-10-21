@@ -203,16 +203,16 @@
                     </div>
                   </div>
 
-                  <div class="form-row">
-                    <div class="form-group">
+                  <div class="form-row form-row-compact">
+                    <div class="form-group form-group-small">
                       <label for="stock">
                         <i class="bi bi-box"></i>
                         Stock
                       </label>
-                      <input id="stock" v-model.number="form.stock" type="number" placeholder="10" />
+                      <input id="stock" v-model.number="form.stock" type="number" placeholder="20" />
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group form-group-small">
                       <label for="brand">
                         <i class="bi bi-award"></i>
                         Marca
@@ -223,7 +223,7 @@
                 </div>
 
                 <!-- Columna derecha -->
-                <div class="form-column">
+                <div class="form-column sidebar">
                   <div class="form-row">
                     <div class="form-group">
                       <label for="color">
@@ -268,7 +268,7 @@
                     </div>
 
                     <div class="image-uploader">
-                      <div class="image-drop-area" @click="fileInputRef.click()" @dragover="handleDragOver" @drop.prevent="handleDrop">
+d                      <div class="image-drop-area" @dragover="handleDragOver" @drop.prevent="handleDrop">
                         <i class="bi bi-cloud-upload"></i>
                         <p>Arrastra y suelta imágenes aquí o</p>
                         <button type="button" class="browse-text" @click="fileInputRef.click()">
@@ -329,30 +329,60 @@
 
     <!-- Modal del formulario (Categoría) -->
     <Transition name="modal">
-      <div v-if="showCategoryForm" class="modal-overlay" @click.self="showCategoryForm = false">
-        <div class="modal-card">
-          <form @submit.prevent="saveCategory">
-            <div class="modal-header">
-              <h2>{{ isEditingCategory ? 'Editar categoría' : 'Crear categoría' }}</h2>
-              <button type="button" class="close" @click="showCategoryForm = false"><i class="bi bi-x-lg"></i></button>
-            </div>
-
-            <div class="modal-body">
-              <div class="form-group">
-                <label>Nombre *</label>
-                <input v-model="categoryForm.name" required />
+      <div v-if="showCategoryForm" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="category-modal-title" @keydown.esc="showCategoryForm = false" @click.self="showCategoryForm = false">
+        <div class="modal-card" role="document">
+          <form @submit.prevent="saveCategory" novalidate>
+            <header class="modal-header">
+              <div class="header-content">
+                <div class="icon-wrapper" aria-hidden="true">
+                  <i class="bi bi-folder-plus"></i>
+                </div>
+                <h2 id="category-modal-title" class="modal-title">{{ isEditingCategory ? 'Editar categoría' : 'Crear categoría' }}</h2>
+                <p class="modal-subtitle" v-if="isEditingCategory">Actualiza los datos de la categoría</p>
               </div>
 
-              <div class="form-group">
-                <label>Descripción</label>
-                <textarea v-model="categoryForm.description" rows="3"></textarea>
-              </div>
-            </div>
+              <button type="button" class="close-btn" @click="showCategoryForm = false" aria-label="Cerrar formulario">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+              </button>
+            </header>
 
-            <div class="modal-footer">
-              <button type="button" class="btn-secondary" @click="showCategoryForm = false">Cancelar</button>
-              <button type="submit" class="btn-primary">{{ isEditingCategory ? 'Guardar' : 'Crear' }}</button>
-            </div>
+            <main class="modal-body">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="category-name">
+                    Nombre <span class="required" aria-hidden="true">*</span>
+                  </label>
+                  <input
+                      id="category-name"
+                      v-model="categoryForm.name"
+                      type="text"
+                      placeholder="Ej: Tecnología, Hogar, etc."
+                      required
+                      aria-required="true"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="category-description">Descripción</label>
+                  <textarea
+                      id="category-description"
+                      v-model="categoryForm.description"
+                      rows="4"
+                      placeholder="Describe esta categoría (opcional)"
+                  ></textarea>
+                </div>
+              </div>
+            </main>
+
+            <footer class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="showCategoryForm = false">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi" :class="isEditingCategory ? 'bi-check-lg' : 'bi-plus-lg'" aria-hidden="true"></i>
+                <span class="btn-text">{{ isEditingCategory ? 'Guardar cambios' : 'Crear categoría' }}</span>
+              </button>
+            </footer>
           </form>
         </div>
       </div>
@@ -644,9 +674,11 @@ function handleImageUpload(e) {
   });
 
   // Limpiar el input para permitir subir el mismo archivo de nuevo
-  if (fileInputRef.value) {
-    fileInputRef.value.value = '';
-  }
+  setTimeout(() => {
+    if (fileInputRef.value) {
+      fileInputRef.value.value = '';
+    }
+  }, 0);
 }
 
 function removeImage(index) {
@@ -743,17 +775,6 @@ function getMainImage(item) {
     return item.img_base64;
   }
   return null;
-}
-
-// Helper para obtener el total de imágenes
-function getImageCount(item) {
-  if (item.images && Array.isArray(item.images)) {
-    return item.images.length;
-  }
-  if (item.img_base64) {
-    return 1;
-  }
-  return 0;
 }
 </script>
 
@@ -1083,313 +1104,6 @@ function getImageCount(item) {
   color: #6c757d;
 }
 
-.image-upload-wrapper {
-  position: relative;
-}
-
-.file-input {
-  display: none;
-}
-
-.file-label {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 2px dashed #007bff;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  cursor: pointer;
-  text-align: center;
-}
-
-.file-label i {
-  font-size: 2rem;
-  margin-right: 0.5rem;
-}
-
-.image-preview {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 0.5rem;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-form,
-.modal-card {
-  background: #fff;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 900px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.form-header {
-  padding: 1rem;
-  border-bottom: 1px solid #e9ecef;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  background: #fff;
-  z-index: 10;
-}
-
-.form-header h2 {
-  margin: 0;
-  font-size: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.close-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 1.5rem;
-  color: #333;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-  transition: color 0.2s;
-}
-
-.close-btn:hover {
-  color: #dc3545;
-}
-
-.form-body {
-  padding: 1.5rem;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-}
-
-.form-column {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #495057;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  padding: 0.75rem;
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
-  font-size: 1rem;
-  width: 100%;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-.form-group textarea {
-  resize: vertical;
-}
-
-.category-select-controls {
-  display: flex;
-  gap: 0.5rem;
-  align-items: stretch;
-}
-
-.category-select-controls select {
-  flex: 1;
-}
-
-.category-select-controls .btn-icon {
-  padding: 0.5rem;
-  background-color: #007bff;
-  color: white;
-  border-radius: 0.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-}
-
-.category-select-controls .btn-icon:hover {
-  background-color: #0056b3;
-}
-
-.form-footer {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #e9ecef;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  position: sticky;
-  bottom: 0;
-  background: #fff;
-  z-index: 10;
-}
-
-.btn-secondary {
-  background-color: #6c757d;
-  color: #fff;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.25rem;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background-color 0.2s;
-}
-
-.btn-secondary:hover {
-  background-color: #5a6268;
-}
-
-.btn-primary {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.25rem;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background-color 0.2s;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
-}
-
-.stock-badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
-  color: #fff;
-}
-
-.stock-empty {
-  background-color: #dc3545;
-}
-
-.stock-low {
-  background-color: #ffc107;
-}
-
-.stock-medium {
-  background-color: #007bff;
-}
-
-.stock-high {
-  background-color: #28a745;
-}
-
-.category-badge {
-  background-color: #e7f3ff;
-  color: #007bff;
-  padding: 0.25rem 0.75rem;
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.color-dot {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 1px solid #dee2e6;
-  margin-right: 0.5rem;
-  vertical-align: middle;
-}
-
-/* Estilos para carga de múltiples imágenes */
-.form-section-images {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 2px solid #e9ecef;
-}
-
-.form-section-images h3 {
-  font-size: 1.1rem;
-  color: #007bff;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.images-count {
-  font-size: 0.8rem;
-  background-color: #e7f3ff;
-  border-radius: 20px;
-  padding: 0.25rem 0.75rem;
-  color: #007bff;
-  font-weight: normal;
-  margin-left: auto;
-}
-
-.image-uploader {
-  margin-top: 1rem;
-}
-
-.image-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.image-item {
-  position: relative;
-}
-
 .image-preview-box {
   height: 120px;
   width: 100%;
@@ -1459,94 +1173,6 @@ function getImageCount(item) {
   transform: scale(1.1);
 }
 
-.main-badge {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  background-color: rgba(40, 167, 69, 0.95);
-  color: white;
-  border-radius: 4px;
-  padding: 3px 8px;
-  font-size: 0.7rem;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  font-weight: 600;
-}
-
-.image-drop-area {
-  height: 120px;
-  border: 2px dashed #007bff;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s;
-  padding: 1rem;
-  text-align: center;
-  color: #6c757d;
-  background-color: #f8f9fa;
-}
-
-.image-drop-area:hover,
-.image-drop-area.drag-over {
-  border-color: #0056b3;
-  background-color: #e7f3ff;
-  transform: translateY(-2px);
-}
-
-.image-drop-area i {
-  font-size: 2rem;
-  color: #007bff;
-  margin-bottom: 0.5rem;
-}
-
-.image-drop-area p {
-  margin: 0.25rem 0;
-  font-size: 0.85rem;
-}
-
-.browse-text {
-  color: #007bff;
-  font-weight: 600;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  text-decoration: underline;
-}
-
-.browse-text:hover {
-  color: #0056b3;
-}
-
-.hidden-file-input {
-  display: none;
-}
-
-.error-messages {
-  margin-top: 1rem;
-  background-color: #fff3cd;
-  border: 1px solid #ffc107;
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-}
-
-.error-message {
-  margin: 0.25rem 0;
-  font-size: 0.85rem;
-  color: #856404;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.error-message i {
-  color: #ffc107;
-}
-
 /* Transición del modal */
 .modal-enter-active,
 .modal-leave-active {
@@ -1594,10 +1220,24 @@ function getImageCount(item) {
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;
+    gap: 0; /* Eliminar espacio horizontal entre columnas en móvil */
   }
 
   .form-row {
     grid-template-columns: 1fr;
+    gap: 0; /* Eliminar espacio entre inputs en fila en móvil */
+  }
+
+  .form-body {
+    padding: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem; /* Reducir espacio entre inputs en móvil */
+  }
+
+  .form-group-small {
+    margin-bottom: 1.5rem; /* Mismo espacio en móvil */
   }
 
   .modal-form,
@@ -1608,6 +1248,65 @@ function getImageCount(item) {
 
   .image-list {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .form-body {
+    padding: 1rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem; /* Aún más compacto en pantallas muy pequeñas */
+  }
+
+  .form-group-small {
+    margin-bottom: 1.25rem;
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 0.75rem 0.875rem;
+    font-size: 0.95rem;
+  }
+
+  .modal-form,
+  .modal-card {
+    max-width: 98%;
+    width: 98%;
+    max-height: 95vh;
+  }
+
+  .form-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .form-section-images h3 {
+    font-size: 1rem;
+  }
+
+  .image-list {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .image-preview-box {
+    height: 100px;
+  }
+
+  .form-footer {
+    padding: 1rem;
+    flex-direction: column;
+  }
+
+  .form-footer button {
+    width: 100%;
   }
 }
 </style>

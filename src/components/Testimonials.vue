@@ -17,7 +17,12 @@
         </button>
 
         <div class="testimonial-wrapper">
-          <TransitionGroup name="slide-fade" tag="div" class="testimonial-list">
+          <TransitionGroup
+            name="slide-fade"
+            tag="div"
+            class="testimonial-list"
+            mode="out-in"
+          >
             <article
               v-for="(testimonial, idx) in visibleTestimonials"
               :key="`${page}-${idx}`"
@@ -304,13 +309,13 @@ watch(perPage, () => {
     0 8px 24px rgba(134, 7, 52, 0.12),
     0 2px 8px rgba(134, 7, 52, 0.06);
   padding: 2rem 1.75rem;
-  min-width: 280px;
-  max-width: 400px;
+  min-width: 240px;
+  max-width: 240px; /* Fijar el ancho para evitar ajustes dinámicos */
   flex: 1;
   display: flex;
   flex-direction: column;
   border: 1px solid rgba(134, 7, 52, 0.08);
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
   position: relative;
   overflow: hidden;
 }
@@ -329,11 +334,8 @@ watch(perPage, () => {
 }
 
 .testimonial-card:hover {
-  box-shadow:
-    0 16px 48px rgba(134, 7, 52, 0.18),
-    0 4px 16px rgba(255, 215, 0, 0.15);
-  transform: translateY(-8px);
-  border-color: rgba(134, 7, 52, 0.15);
+  box-shadow: 0 12px 36px rgba(134, 7, 52, 0.15);
+  transform: none; /* Mantener la posición estable */
 }
 
 .testimonial-card:hover::before {
@@ -472,7 +474,7 @@ watch(perPage, () => {
 /* Transiciones suaves */
 .slide-fade-enter-active,
 .slide-fade-leave-active {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .slide-fade-enter-from {
@@ -498,7 +500,7 @@ watch(perPage, () => {
 
   .testimonial-card {
     min-width: 240px;
-    max-width: 320px;
+    max-width: 240px;
   }
 
   .arrow {
@@ -527,8 +529,8 @@ watch(perPage, () => {
   }
 
   .testimonial-card {
-    min-width: 220px;
-    max-width: 100%;
+    min-width: 240px;
+    max-width: 240px;
     padding: 1.75rem 1.5rem;
   }
 
@@ -611,7 +613,8 @@ watch(perPage, () => {
   }
 
   .testimonial-card {
-    min-width: 0;
+    min-width: 240px;
+    max-width: 240px;
     padding: 1.25rem 1rem;
   }
 

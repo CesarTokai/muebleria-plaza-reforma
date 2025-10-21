@@ -347,24 +347,40 @@ const currentPage = ref(1);
 const itemsPerPage = 12;
 
 const filteredProducts = computed(() => {
+  // Filtra los productos según los valores ingresados en los filtros
   return products.value.filter(product => {
-    const prodCat = normalizeCategory(product.category).trim().toLowerCase();
-    const selectedCat = normalizeCategory(selectedCategory.value).trim().toLowerCase();
+    const productName = product.name.toLowerCase();
+    const searchQuery = searchTerm.value.toLowerCase();
 
-    // Aseguramos que las categorías coincidan correctamente
-    const matchesCategory = !selectedCat || prodCat === selectedCat;
-    const matchesSearch = !searchTerm.value ||
-      product.name.toLowerCase().includes(searchTerm.value.toLowerCase());
-    const matchesMinPrice = !minPrice.value || product.price >= minPrice.value;
-    const matchesMaxPrice = !maxPrice.value || product.price <= maxPrice.value;
+    // Verifica si el producto coincide con el término de búsqueda
+    const matchesSearch = productName.includes(searchQuery);
 
-    return matchesCategory && matchesSearch && matchesMinPrice && matchesMaxPrice;
+    // Verifica si el producto coincide con la categoría seleccionada
+    const matchesCategory = !selectedCategory.value ||
+      product.category.toLowerCase() === selectedCategory.value.toLowerCase();
+
+    // Verifica si el producto está dentro del rango de precios
+    const matchesMinPrice = !minPrice.value || product.price >= Number(minPrice.value);
+    const matchesMaxPrice = !maxPrice.value || product.price <= Number(maxPrice.value);
+
+    return matchesSearch && matchesCategory && matchesMinPrice && matchesMaxPrice;
   });
 });
 
+// Agregar registros para depurar paginatedProducts
 const paginatedProducts = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
+
+  console.log('Paginación:', {
+    currentPage: currentPage.value,
+    totalPages: totalPages.value,
+    itemsPerPage,
+    start,
+    end,
+    filteredProductsLength: filteredProducts.value.length
+  });
+
   return filteredProducts.value.slice(start, end);
 });
 
