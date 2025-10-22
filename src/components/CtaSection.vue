@@ -5,7 +5,7 @@
         <h3 class="cta-title">¿Listo para renovar tu hogar?</h3>
         <p class="cta-subtitle">Contáctanos y obtén tu cotización sin compromiso.</p>
         <a
-          href="https://wa.me/5217341532692"
+          href="https://wa.me/7513960035"
           class="cta-btn"
           target="_blank"
         >
@@ -146,23 +146,30 @@ import './assets/styles.css';
 
 @media (max-width: 480px) {
   .cta-section {
-    padding: 2rem 0.75rem;
+    padding: 1.5rem 0.5rem; /* Reducir padding para pantallas pequeñas */
   }
 
   .cta-card {
-    padding: 2rem 1.25rem;
-    border-radius: 16px;
+    padding: 2rem 1rem; /* Ajustar padding interno */
+    border-radius: 16px; /* Reducir el radio de borde */
+  }
+
+  .cta-title {
+    font-size: 1.5rem; /* Reducir tamaño de fuente del título */
+  }
+
+  .cta-subtitle {
+    font-size: 0.9rem; /* Reducir tamaño de fuente del subtítulo */
+    margin-bottom: 1.5rem; /* Ajustar margen inferior */
   }
 
   .cta-btn {
-    padding: 0.85rem 1.75rem;
-    font-size: 0.95rem;
-    width: 100%;
-    justify-content: center;
+    padding: 0.8rem 1.5rem; /* Reducir padding del botón */
+    font-size: 0.9rem; /* Reducir tamaño de fuente del botón */
   }
 
   .cta-btn i {
-    font-size: 1.3rem;
+    font-size: 1.2rem; /* Ajustar tamaño del ícono */
   }
 }
 </style>

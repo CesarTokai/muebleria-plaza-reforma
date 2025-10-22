@@ -211,7 +211,7 @@ const whatsAppUrl = "https://wa.me/7513960035?text=Hola,%20quiero%20informes%20d
 .contact-info-col {
   display: flex;
   flex-direction: column;
-  gap: 2rem; /* Reducido de 7rem a 2rem */
+  gap: 7rem; /* Reducido de 7rem a 2rem */
 }
 
 .section-header {
@@ -317,10 +317,11 @@ const whatsAppUrl = "https://wa.me/7513960035?text=Hola,%20quiero%20informes%20d
 
 /* Mapa */
 .map-card {
+  margin-top: -6rem; /* Ajustado para mover hacia arriba */
   background: white;
   padding: 1.5rem;
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(134, 7, 52, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 10px 10px rgba(134, 7, 52, 0.1);
   border: 1px solid rgba(134, 7, 52, 0.05);
 }
 
@@ -454,7 +455,7 @@ const whatsAppUrl = "https://wa.me/7513960035?text=Hola,%20quiero%20informes%20d
   }
 
   .map-card {
-    padding: 1.5rem;
+    padding: 1rem;
   }
 }
 
