@@ -1,5 +1,5 @@
 <template>
-   <div class="products-view">
+  <div class="products-view">
     <Navbar />
     <Header />
 
@@ -17,93 +17,20 @@
 
     <main class="products-page">
       <div class="container">
-        <!-- Buscador y filtros mejorados -->
-        <div class="filters-container">
-          <div class="filters-header">
-            <h2><i class="bi bi-funnel"></i> Filtrar productos</h2>
-            <button
-              v-if="hasActiveFilters"
-              class="clear-all-btn"
-              @click="clearFilters"
-              title="Limpiar todos los filtros"
-            >
-              <i class="bi bi-x-circle"></i>
-              Limpiar todo
-            </button>
-          </div>
-
-          <div class="filters-content">
-            <!-- Búsqueda -->
-            <div class="filter-item search-filter">
-              <label><i class="bi bi-search"></i> Buscar</label>
-              <div class="search-wrapper">
-                <input
-                  type="text"
-                  class="search-input"
-                  placeholder="Nombre del producto..."
-                  v-model="searchTerm"
-                />
-                <button
-                  v-if="searchTerm"
-                  class="clear-search-btn"
-                  @click="searchTerm = ''"
-                  title="Limpiar búsqueda"
-                >
-                  <i class="bi bi-x"></i>
-                </button>
-              </div>
-            </div>
-
-            <!-- Categoría -->
-            <div class="filter-item">
-              <label><i class="bi bi-tag"></i> Categoría</label>
-              <select v-model="selectedCategory" class="filter-select">
-                <option value="">Todas las categorías</option>
-                <option v-for="cat in categories" :key="cat.value" :value="cat.value">
-                  {{ cat.icon }} {{ cat.label }}
-                </option>
-              </select>
-            </div>
-
-            <!-- Rango de Precio -->
-            <div class="filter-item price-filter">
-              <label><i class="bi bi-cash-stack"></i> Rango de precio</label>
-              <div class="price-inputs">
-                <input
-                  type="number"
-                  class="price-input"
-                  placeholder="Mínimo"
-                  v-model.number="minPrice"
-                  min="0"
-                />
-                <span class="price-separator">—</span>
-                <input
-                  type="number"
-                  class="price-input"
-                  placeholder="Máximo"
-                  v-model.number="maxPrice"
-                  min="0"
-                />
-              </div>
-            </div>
-          </div>
-
-          <!-- Resultados -->
-          <div class="results-bar" v-if="!loadingProducts">
-            <div class="results-count">
-              <i class="bi bi-grid-3x3-gap"></i>
-              <strong>{{ filteredProducts.length }}</strong>
-              {{ filteredProducts.length === 1 ? 'producto encontrado' : 'productos encontrados' }}
-            </div>
-            <div v-if="selectedCategory" class="active-filter-tag">
-              <i class="bi bi-tag-fill"></i>
-              {{ categories.find(c => c.value === selectedCategory)?.label }}
-              <button @click="selectedCategory = ''" class="remove-tag">
-                <i class="bi bi-x"></i>
-              </button>
-            </div>
-          </div>
-        </div>
+        <!-- Componente de filtros -->
+        <ProductFilters
+          :searchTerm="searchTerm"
+          :selectedCategory="selectedCategory"
+          :minPrice="minPrice"
+          :maxPrice="maxPrice"
+          :categories="categories"
+          @update:searchTerm="value => searchTerm = value"
+          @update:selectedCategory="value => selectedCategory = value"
+          @update:minPrice="value => minPrice = value"
+          @update:maxPrice="value => maxPrice = value"
+          @apply-filters="applyFilters"
+          @clear-filters="clearFilters"
+        />
 
         <!-- Loading -->
         <div v-if="loadingProducts" class="loading-container">
@@ -145,7 +72,7 @@
               <!-- Info -->
               <div class="product-info">
                 <div class="product-category-tag">
-                  {{ getCategoryLabel(product.category) }}
+                  {{ product.category }}
                 </div>
                 <h3 class="product-name">{{ product.name }}</h3>
                 <div class="product-footer">
@@ -217,6 +144,7 @@ import '../components/assets/Styles.css';
 import Header from '../components/Header.vue';
 import Footer from '../components/Footer.vue';
 import Navbar from '../components/Navbar.vue';
+import ProductFilters from '../components/ProductFilters.vue';
 import { ref, computed, onMounted, watch } from 'vue';
 import axiosConfig from '../config/AxiosConfig.js';
 import { useRouter, useRoute } from 'vue-router';
@@ -230,7 +158,6 @@ function goToProduct(id) {
   router.push({ name: 'ProductoDetalle', params: { id } });
 }
 
-// Productos y categorías
 const products = ref([]);
 const loadingProducts = ref(false);
 const categories = ref([]); // Ahora es reactivo para cargar desde la API
@@ -245,20 +172,18 @@ function normalizeCategory(cat) {
   return String(cat);
 }
 
-// Función para cargar las categorías desde la API
 async function fetchCategories() {
   loadingCategories.value = true;
   try {
     const categoriesData = await getCategories();
     categories.value = categoriesData.map(cat => ({
-      value: cat.id || cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-'),
+      value: cat.name.toLowerCase(),
       label: cat.name,
-      description: cat.description || ''
+      description: cat.description || '',
+      id: cat.id
     }));
-    console.log('Categorías cargadas:', categories.value);
   } catch (error) {
-    console.error('Error al cargar categorías:', error);
-    categories.value = []; // Si hay error, dejamos el array vacío
+    categories.value = [];
   } finally {
     loadingCategories.value = false;
   }
@@ -268,8 +193,8 @@ async function fetchProducts() {
   loadingProducts.value = true;
   try {
     const res = await axiosConfig.doGet('/furniture/');
+
     products.value = res.data.map(item => {
-      // Obtener la primera imagen del array o usar fallback
       let mainImage = '/assets/img/products/default.jpg';
       if (item.images && Array.isArray(item.images) && item.images.length > 0) {
         const firstImage = item.images[0];
@@ -282,11 +207,12 @@ async function fetchProducts() {
         id: item.id,
         name: item.name,
         price: item.price,
-        category: normalizeCategory(item.category),
+        category: item.category_name || '',
         img: mainImage,
-        images: item.images || [] // Mantener el array completo para uso futuro
+        images: item.images || []
       };
     });
+
   } catch (e) {
     products.value = [];
   } finally {
@@ -295,9 +221,10 @@ async function fetchProducts() {
 }
 
 onMounted(() => {
-  // Cargamos productos y categorías
-  fetchProducts();
-  fetchCategories(); // Llamamos a la nueva función para cargar categorías
+  fetchProducts().then(() => {
+  });
+  fetchCategories().then(() => {
+  });
 
   const categoria = ref(route.params.categoria);
   fetchProductosPorCategoria(categoria.value);
@@ -327,15 +254,17 @@ function fetchProductosPorCategoria(categoria) {
   }
 }
 
-// Actualizada la función getCategoryLabel para usar las categorías dinámicas
-function getCategoryLabel(categoryId) {
-  if (!categoryId) return 'Sin categoría';
-
-  const category = categories.value.find(c =>
-    c.value.toString() === categoryId.toString()
+function getCategoryLabel(category) {
+  if (!category) return 'Sin categoría';
+  if (typeof category === 'object' && category.label) {
+    return category.label;
+  }
+  const categoryObj = categories.value.find(c =>
+    c.value.toString() === category.toString()
   );
-
-  return category ? category.label : 'Categoría desconocida';
+  if (!categoryObj) {
+  }
+  return categoryObj ? categoryObj.label : 'Categoría desconocida';
 }
 
 const selectedCategory = ref('');
@@ -347,40 +276,25 @@ const currentPage = ref(1);
 const itemsPerPage = 12;
 
 const filteredProducts = computed(() => {
-  // Filtra los productos según los valores ingresados en los filtros
-  return products.value.filter(product => {
+  const filtered = products.value.filter(product => {
     const productName = product.name.toLowerCase();
     const searchQuery = searchTerm.value.toLowerCase();
-
-    // Verifica si el producto coincide con el término de búsqueda
     const matchesSearch = productName.includes(searchQuery);
-
-    // Verifica si el producto coincide con la categoría seleccionada
     const matchesCategory = !selectedCategory.value ||
-      product.category.toLowerCase() === selectedCategory.value.toLowerCase();
-
-    // Verifica si el producto está dentro del rango de precios
+      String(product.category).toLowerCase() === String(selectedCategory.value).toLowerCase();
     const matchesMinPrice = !minPrice.value || product.price >= Number(minPrice.value);
     const matchesMaxPrice = !maxPrice.value || product.price <= Number(maxPrice.value);
 
     return matchesSearch && matchesCategory && matchesMinPrice && matchesMaxPrice;
   });
+
+  return filtered;
 });
 
 // Agregar registros para depurar paginatedProducts
 const paginatedProducts = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-
-  console.log('Paginación:', {
-    currentPage: currentPage.value,
-    totalPages: totalPages.value,
-    itemsPerPage,
-    start,
-    end,
-    filteredProductsLength: filteredProducts.value.length
-  });
-
   return filteredProducts.value.slice(start, end);
 });
 
@@ -413,6 +327,10 @@ function clearFilters() {
   searchTerm.value = '';
   minPrice.value = '';
   maxPrice.value = '';
+  currentPage.value = 1;
+}
+
+function applyFilters() {
   currentPage.value = 1;
 }
 </script>

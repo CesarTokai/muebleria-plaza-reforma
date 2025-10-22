@@ -117,6 +117,7 @@ function handleSearch() {
       name: 'ProductosList',
       query: { buscar: searchQuery.value.trim() }
     });
+    searchQuery.value = '';
   }
 }
 

@@ -43,15 +43,19 @@
       <Footer />
     </div>
     <!-- Botón flotante de WhatsApp -->
-    <a
-      href="https://wa.me/521XXXXXXXXXX?text=¡Hola!%20Quiero%20más%20información%20sobre%20sus%20muebles."
-      class="whatsapp-float"
-      target="_blank"
-      rel="noopener"
-      aria-label="Chatea por WhatsApp"
-    >
+
+
+      <!-- WhatsApp flotante mejorado -->
+      <a
+          :href="whatsAppUrl"
+          class="whatsapp-float"
+          target="_blank"
+          aria-label="WhatsApp"
+      >
+        <i class="bi bi-whatsapp"></i>
+        <span class="whatsapp-tooltip">¡Chatea con nosotros!</span>
+      </a>
       <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg" alt="WhatsApp" />
-    </a>
   </div>
 </template>
 
@@ -136,47 +140,78 @@ async function fetchFeaturedProducts() {
 }
 
 onMounted(fetchFeaturedProducts);
+
+const whatsAppUrl = "https://wa.me/7513960035?text=Hola,%20quiero%20informes%20sobre%20los%20productos.";
 </script>
 
 <style scoped>
 
+
+/* WhatsApp flotante mejorado */
 .whatsapp-float {
   position: fixed;
-  bottom: 24px;
-  right: 22px;
-  z-index: 9999;
-  background: #25D366;
+  bottom: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
   border-radius: 50%;
-  box-shadow: 0 4px 18px #25d36653;
-  width: 61px;
-  height: 61px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.17s, box-shadow 0.16s;
-  animation: waPop 0.7s;
+  color: white;
+  font-size: 2rem;
+  box-shadow: 0 6px 25px rgba(37, 211, 102, 0.4);
+  z-index: 1000;
+  transition: all 0.3s;
+  text-decoration: none;
+  cursor: pointer;
 }
-.whatsapp-float img {
-  width: 37px;
-  height: 37px;
-  filter: brightness(1.13) drop-shadow(0 2px 8px #25d36655);
-}
+
 .whatsapp-float:hover {
-  transform: scale(1.08) translateY(-3px);
-  box-shadow: 0 7px 25px #25d36685;
+  transform: scale(1.1);
+  box-shadow: 0 8px 35px rgba(37, 211, 102, 0.6);
 }
-@media (max-width: 700px) {
-  .whatsapp-float {
-    width: 52px;
-    height: 52px;
-    bottom: 18px;
-    right: 12px;
-  }
-  .whatsapp-float img {
-    width: 29px;
-    height: 29px;
-  }
+
+.whatsapp-float:hover .whatsapp-tooltip {
+  opacity: 1;
+  transform: translateX(-10px);
+  visibility: visible;
 }
+
+
+.whatsapp-tooltip {
+  position: absolute;
+  right: 70px;
+  background: #1f2937;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateX(0);
+  transition: all 0.3s;
+  visibility: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.whatsapp-tooltip::after {
+  content: '';
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 0 8px 8px;
+  border-color: transparent transparent transparent #1f2937;
+}
+
+
+
 
 /* Responsive mejorado */
 @media (max-width: 768px) {

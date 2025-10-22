@@ -85,7 +85,7 @@
               <button
                 class="thumb-arrow left"
                 @click="scrollThumbs(-1)"
-                :disabled="thumbScrollLeft <= 0"
+                :disabled="currentImageIdx <= 0"
               >
                 <i class="fas fa-chevron-left"></i>
               </button>
@@ -94,15 +94,15 @@
                   v-for="(img, i) in product.images"
                   :key="i"
                   :src="img"
-                  :class="{ active: currentImage === img }"
-                  @click="currentImage = img"
+                  :class="{ active: currentImageIdx === i }"
+                  @click="setCurrentImage(i)"
                   :alt="`Vista ${i + 1}`"
                 />
               </div>
               <button
                 class="thumb-arrow right"
                 @click="scrollThumbs(1)"
-                :disabled="thumbScrollRight"
+                :disabled="currentImageIdx >= product.images.length - 1"
               >
                 <i class="fas fa-chevron-right"></i>
               </button>
@@ -250,9 +250,8 @@
 
     <!-- Modal de imagen ampliada -->
     <Transition name="modal">
-      <div v-if="showImageModal" class="image-modal" @click="closeImageModal">
-        <div class="modal-overlay"></div>
-        <div class="modal-content" @click.stop>
+      <div v-if="showImageModal" class="image-modal-overlay" @click="closeImageModal">
+        <div class="image-modal-content" @click.stop>
           <button class="modal-close" @click="closeImageModal">
             <i class="fas fa-times"></i>
           </button>
@@ -277,7 +276,7 @@
 <script setup>
 import axiosConfig from '../config/AxiosConfig.js';
 import { getFurniture } from '../services/furniture.js';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Navbar from '@/components/Navbar.vue';
 import Header from '@/components/Header.vue';
@@ -306,9 +305,17 @@ const thumbScrollRight = ref(false);
 const showImageModal = ref(false);
 const relatedProducts = ref([]);
 const loadingRelated = ref(false);
+const currentImageIdx = ref(0);
 
 const currentImageIndex = computed(() => {
   return product.value.images.findIndex(img => img === currentImage.value);
+});
+
+watch(() => product.value.images, (imgs) => {
+  if (imgs && imgs.length > 0) {
+    currentImageIdx.value = 0;
+    currentImage.value = imgs[0];
+  }
 });
 
 async function fetchProduct() {
@@ -388,18 +395,29 @@ function goToProduct(productId) {
 
 onMounted(fetchProduct);
 
-function scrollThumbs(direction) {
-  const el = thumbs.value;
-  if (el) {
-    el.scrollBy({ left: direction * 120, behavior: 'smooth' });
+function setCurrentImage(idx) {
+  currentImageIdx.value = idx;
+  currentImage.value = product.value.images[idx];
+}
+
+function nextImage() {
+  if (currentImageIdx.value < product.value.images.length - 1) {
+    setCurrentImage(currentImageIdx.value + 1);
   }
 }
 
-function updateThumbScroll() {
-  const el = thumbs.value;
-  if (el) {
-    thumbScrollLeft.value = el.scrollLeft;
-    thumbScrollRight.value = el.scrollLeft >= (el.scrollWidth - el.clientWidth - 5);
+function previousImage() {
+  if (currentImageIdx.value > 0) {
+    setCurrentImage(currentImageIdx.value - 1);
+  }
+}
+
+// Reemplazar scrollThumbs para cambiar imagen
+function scrollThumbs(direction) {
+  if (direction === 1) {
+    nextImage();
+  } else if (direction === -1) {
+    previousImage();
   }
 }
 
@@ -421,25 +439,15 @@ function resetZoom() {
 }
 
 function openImageModal() {
+  resetZoom(); // Siempre resetea el zoom antes de abrir el modal
   showImageModal.value = true;
   document.body.style.overflow = 'hidden';
 }
 
 function closeImageModal() {
+  resetZoom(); // Siempre resetea el zoom al cerrar el modal
   showImageModal.value = false;
   document.body.style.overflow = '';
-}
-
-function nextImage() {
-  const currentIndex = currentImageIndex.value;
-  const nextIndex = (currentIndex + 1) % product.value.images.length;
-  currentImage.value = product.value.images[nextIndex];
-}
-
-function previousImage() {
-  const currentIndex = currentImageIndex.value;
-  const prevIndex = (currentIndex - 1 + product.value.images.length) % product.value.images.length;
-  currentImage.value = product.value.images[prevIndex];
 }
 
 function reserveProduct() {
@@ -1605,5 +1613,82 @@ function toggleFavorite() {
   .image-modal {
     padding: 1rem;
   }
+}
+
+.image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.85);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.image-modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.modal-image {
+  max-width: 80vw;
+  max-height: 80vh;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  background: white;
+}
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10001;
+}
+.modal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+.modal-nav-btn {
+  background: rgba(0,0,0,0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal-nav-btn:hover {
+  background: #860734;
+}
+.modal-counter {
+  color: white;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
 </style>

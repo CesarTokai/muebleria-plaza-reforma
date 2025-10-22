@@ -52,8 +52,6 @@
 <script setup>
 import { ref } from 'vue';
 
-const whatsAppUrl = "https://wa.me/523411223344?text=Hola,%20quiero%20informes%20de%20muebles";
-
 const form = ref({
   name: '',
   email: '',
@@ -97,11 +95,15 @@ const handleSubmit = async () => {
   }
   isSubmitting.value = true;
   try {
-    await new Promise(resolve => setTimeout(resolve, 1400));
-    alert('¡Mensaje enviado con éxito!');
-    form.value = { name: '', email: '', phone: '', message: '' };
+    // Construir el mensaje para WhatsApp
+    const message = `Hola, mi nombre es ${form.value.name}. Mi correo es ${form.value.email}, mi teléfono es ${form.value.phone}. Quiero decir: ${form.value.message}`;
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappLink = `https://wa.me/7341218621?text=${encodedMessage}`;
+
+    // Redirigir al enlace de WhatsApp
+    window.location.href = whatsappLink;
   } catch (error) {
-    alert('Error al enviar el mensaje');
+    alert('Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.');
   } finally {
     isSubmitting.value = false;
   }

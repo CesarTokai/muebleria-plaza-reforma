@@ -9,6 +9,7 @@
         <div class="container">
           <div class="header-content">
             <div class="header-icon">
+              <i class="bi bi-question-circle"></i>
             </div>
             <h1>¿Tienes dudas?</h1>
             <p>Estamos aquí para ayudarte. Contáctanos por el medio que prefieras</p>
@@ -26,8 +27,6 @@
         <!-- Columna de información -->
         <section class="contact-info-col">
           <div class="section-header">
-            <i class="bi bi-info-circle"></i>
-            <h2>Información de contacto</h2>
           </div>
 
           <div class="info-cards">
@@ -37,7 +36,7 @@
               </div>
               <div class="info-content">
                 <h3>Dirección</h3>
-                <p>Plaza Reforma, Local 123<br>Ciudad de México, CP 06600</p>
+                <p>No Reelección Sn, Tetecala.<br> 62620 Tetecala, Morelos</p>
               </div>
             </div>
 
@@ -47,7 +46,7 @@
               </div>
               <div class="info-content">
                 <h3>Teléfono</h3>
-                <p><a href="tel:+523411223344">+52 341 122 3344</a></p>
+                <p><a href="tel:+523411223344">+52 751 396 0035</a></p>
               </div>
             </div>
 
@@ -67,7 +66,7 @@
               </div>
               <div class="info-content">
                 <h3>Horario</h3>
-                <p>Lun - Sáb: 9:00 AM - 8:00 PM<br>Dom: 10:00 AM - 6:00 PM</p>
+                <p>Lun - Sáb: 8:00 AM - 8:00 PM<br>Dom: 8:00 AM - 8:00 PM</p>
               </div>
             </div>
           </div>
@@ -76,15 +75,16 @@
           <div class="map-card">
             <h3><i class="bi bi-map"></i> Encuéntranos</h3>
             <div class="map-container">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.6748939487716!2d-99.16858368509205!3d19.42651998688!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1f92d8e3f8b9d%3A0x8f8f8f8f8f8f8f8f!2sReforma!5e0!3m2!1ses!2smx!4v1234567890"
-                width="100%"
-                height="300"
-                style="border:0;"
-                allowfullscreen=""
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-              ></iframe>
+
+              <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1382.2723339199551!2d-99.39990252639842!3d18.728819667257643!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85cdcfbaf63ba957%3A0x93f721af2123d9fb!2sMuebler%C3%ADa%20Plaza%20Reforma%20S.A.%20de%20C.V.!5e1!3m2!1ses!2smx!4v1761155962689!5m2!1ses!2smx" 
+              width="100%"
+              height="300"
+              style="border:0;" 
+              allowfullscreen="" 
+              loading="lazy" 
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+              
             </div>
           </div>
         </section>
@@ -112,7 +112,7 @@ import Footer from '../components/Footer.vue';
 import ContactForm from '../components/ContactForm.vue';
 import Navbar from '../components/Navbar.vue';
 
-const whatsAppUrl = "https://wa.me/523411223344?text=Hola,%20quiero%20informes%20de%20muebles";
+const whatsAppUrl = "https://wa.me/7513960035?text=Hola,%20quiero%20informes%20de%20muebles";
 </script>
 
 <style scoped>
@@ -211,7 +211,7 @@ const whatsAppUrl = "https://wa.me/523411223344?text=Hola,%20quiero%20informes%2
 .contact-info-col {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem; /* Reducido de 7rem a 2rem */
 }
 
 .section-header {
