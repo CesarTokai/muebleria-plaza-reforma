@@ -84,55 +84,55 @@
         <div v-if="furnitureList.length" class="table-container">
           <table class="furniture-table">
             <thead>
-              <tr>
-                <th>Imagen</th>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Categoría</th>
-                <th>Stock</th>
-                <th>Marca</th>
-                <th>Color</th>
-                <th>Material</th>
-                <th>Dimensiones</th>
-                <th>Acciones</th>
-              </tr>
+            <tr>
+              <th>Imagen</th>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Categoría</th>
+              <th>Stock</th>
+              <th>Marca</th>
+              <th>Color</th>
+              <th>Material</th>
+              <th>Dimensiones</th>
+              <th>Acciones</th>
+            </tr>
             </thead>
             <tbody>
-              <tr v-for="item in furnitureList" :key="item.id" class="table-row">
-                <td data-label="Imagen" class="img-cell">
-                  <div class="img-wrapper">
-                    <img v-if="getMainImage(item)" :src="getMainImage(item)" alt="img" />
-                    <div v-else class="no-image">
-                      <i class="bi bi-image"></i>
-                    </div>
+            <tr v-for="item in furnitureList" :key="item.id" class="table-row">
+              <td data-label="Imagen" class="img-cell">
+                <div class="img-wrapper">
+                  <img v-if="getMainImage(item)" :src="getMainImage(item)" alt="img" />
+                  <div v-else class="no-image">
+                    <i class="bi bi-image"></i>
                   </div>
-                </td>
-                <td data-label="Nombre" class="name-cell">{{ item.name }}</td>
-                <td data-label="Precio" class="price-cell">${{ item.price.toLocaleString('es-MX') }}</td>
-                <td data-label="Categoría">
-                  <span class="category-badge">{{ getCategoryLabel(item.category_id || item.category) }}</span>
-                </td>
-                <td data-label="Stock">
+                </div>
+              </td>
+              <td data-label="Nombre" class="name-cell">{{ item.name }}</td>
+              <td data-label="Precio" class="price-cell">${{ item.price.toLocaleString('es-MX') }}</td>
+              <td data-label="Categoría">
+                <span class="category-badge">{{ getCategoryLabel(item.category_id || item.category) }}</span>
+              </td>
+              <td data-label="Stock">
                   <span :class="['stock-badge', getStockClass(item.stock)]">
                     {{ item.stock }}
                   </span>
-                </td>
-                <td data-label="Marca">{{ item.brand || '-' }}</td>
-                <td data-label="Color">
-                  <span class="color-dot" :style="{ background: item.color || '#ccc' }"></span>
-                  {{ item.color || '-' }}
-                </td>
-                <td data-label="Material">{{ item.material || '-' }}</td>
-                <td data-label="Dimensiones">{{ item.dimensions || '-' }}</td>
-                <td data-label="Acciones" class="actions-cell">
-                  <button @click="openEditForm(item)" class="btn-icon btn-edit" title="Editar">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button @click="deleteFurniture(item.id)" class="btn-icon btn-delete" title="Eliminar">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </td>
-              </tr>
+              </td>
+              <td data-label="Marca">{{ item.brand || '-' }}</td>
+              <td data-label="Color">
+                <span class="color-dot" :style="{ background: item.color || '#ccc' }"></span>
+                {{ item.color || '-' }}
+              </td>
+              <td data-label="Material">{{ item.material || '-' }}</td>
+              <td data-label="Dimensiones">{{ item.dimensions || '-' }}</td>
+              <td data-label="Acciones" class="actions-cell">
+                <button @click="openEditForm(item)" class="btn-icon btn-edit" title="Editar">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button @click="deleteFurniture(item.id)" class="btn-icon btn-delete" title="Eliminar">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
             </tbody>
           </table>
         </div>
@@ -151,242 +151,24 @@
     </div>
 
     <!-- Modal del formulario (Mueble) -->
-    <Transition name="modal">
-      <div v-if="showForm" class="modal-overlay" @click.self="showForm = false">
-        <div class="modal-form">
-          <form @submit.prevent="saveFurniture">
-            <div class="form-header">
-              <h2>
-                <i :class="isEditing ? 'bi bi-pencil-square' : 'bi bi-plus-square'"></i>
-                {{ isEditing ? 'Editar Mueble' : 'Nuevo Mueble' }}
-              </h2>
-              <button type="button" @click="showForm = false" class="close-btn">
-                <i class="bi bi-x-lg"></i>
-              </button>
-            </div>
-
-            <div class="form-body">
-              <div class="form-grid">
-                <!-- Columna izquierda -->
-                <div class="form-column">
-                  <div class="form-group">
-                    <label for="name">
-                      <i class="bi bi-card-heading"></i>
-                      Nombre del mueble *
-                    </label>
-                    <input id="name" v-model="form.name" placeholder="Ej: Silla ergonómica" required />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="price">
-                      <i class="bi bi-currency-dollar"></i>
-                      Precio *
-                    </label>
-                    <input id="price" v-model.number="form.price" type="number" placeholder="1500" required />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="category">
-                      <i class="bi bi-tags"></i>
-                      Categoría *
-                    </label>
-                    <div class="category-select-controls">
-                      <select id="category" v-model="form.category_id" required>
-                        <option :value="null" disabled>Selecciona una categoría</option>
-                        <option v-for="cat in categories" :key="cat.id" :value="cat.id">
-                          {{ cat.name }}
-                        </option>
-                      </select>
-                      <button type="button" class="btn-icon small" title="Crear categoría" @click="openCreateCategory">
-                        <i class="bi bi-plus-lg"></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="form-row form-row-compact">
-                    <div class="form-group form-group-small">
-                      <label for="stock">
-                        <i class="bi bi-box"></i>
-                        Stock
-                      </label>
-                      <input id="stock" v-model.number="form.stock" type="number" placeholder="20" />
-                    </div>
-
-                    <div class="form-group form-group-small">
-                      <label for="brand">
-                        <i class="bi bi-award"></i>
-                        Marca
-                      </label>
-                      <input id="brand" v-model="form.brand" placeholder="IKEA" />
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Columna derecha -->
-                <div class="form-column sidebar">
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="color">
-                        <i class="bi bi-palette"></i>
-                        Color
-                      </label>
-                      <input id="color" v-model="form.color" placeholder="Blanco" />
-                    </div>
-
-                    <div class="form-group">
-                      <label for="material">
-                        <i class="bi bi-tree"></i>
-                        Material
-                      </label>
-                      <input id="material" v-model="form.material" placeholder="Madera" />
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="dimensions">
-                      <i class="bi bi-rulers"></i>
-                      Dimensiones
-                    </label>
-                    <input id="dimensions" v-model="form.dimensions" placeholder="120x60x80 cm" />
-                  </div>
-
-                  <div class="form-group">
-                    <label for="description">
-                      <i class="bi bi-text-paragraph"></i>
-                      Descripción
-                    </label>
-                    <textarea id="description" v-model="form.description" placeholder="Describe las características del mueble..." rows="3"></textarea>
-                  </div>
-
-                  <div class="form-section-images">
-                    <h3>
-                      <i class="bi bi-images"></i>
-                      Galería de imágenes
-                    </h3>
-                    <div class="images-count">
-                      {{ form.images.length }} / {{ maxImages }} imágenes
-                    </div>
-
-                    <div class="image-uploader">
-d                      <div class="image-drop-area" @dragover="handleDragOver" @drop.prevent="handleDrop">
-                        <i class="bi bi-cloud-upload"></i>
-                        <p>Arrastra y suelta imágenes aquí o</p>
-                        <button type="button" class="browse-text" @click="fileInputRef.click()">
-                          Selecciona archivos
-                        </button>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          multiple
-                          ref="fileInputRef"
-                          class="hidden-file-input"
-                          @change="handleImageUpload"
-                        />
-                      </div>
-
-                      <div v-if="form.images.length" class="image-list">
-                        <div v-for="(img, index) in form.images" :key="index" class="image-item">
-                          <div class="image-preview-box">
-                            <img :src="img" alt="Imagen del mueble" />
-                            <div class="image-actions">
-                              <button type="button" class="btn-icon remove-btn" @click="removeImage(index)">
-                                <i class="bi bi-x-circle"></i>
-                              </button>
-                              <button type="button" class="btn-icon main-btn" @click="setAsMainImage(index)" v-if="!isEditing">
-                                <i class="bi bi-star"></i>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div v-if="imageErrors.length" class="error-messages">
-                        <div v-for="(error, index) in imageErrors" :key="index" class="error-message">
-                          <i class="bi bi-exclamation-circle"></i>
-                          {{ error }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-footer">
-              <button type="button" @click="showForm = false" class="btn-secondary">
-                <i class="bi bi-x-circle"></i>
-                Cancelar
-              </button>
-              <button type="submit" class="btn-primary">
-                <i class="bi bi-check-circle"></i>
-                {{ isEditing ? 'Guardar Cambios' : 'Crear Mueble' }}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </Transition>
+    <FurnitureFormModal
+      :is-open="showForm"
+      :is-editing="isEditing"
+      :furniture-data="form"
+      :categories="categories"
+      @close="showForm = false"
+      @success="handleFurnitureSuccess"
+      @open-category-form="openCreateCategory"
+    />
 
     <!-- Modal del formulario (Categoría) -->
-    <Transition name="modal">
-      <div v-if="showCategoryForm" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="category-modal-title" @keydown.esc="showCategoryForm = false" @click.self="showCategoryForm = false">
-        <div class="modal-card" role="document">
-          <form @submit.prevent="saveCategory" novalidate>
-            <header class="modal-header">
-              <div class="header-content">
-                <div class="icon-wrapper" aria-hidden="true">
-                  <i class="bi bi-folder-plus"></i>
-                </div>
-                <h2 id="category-modal-title" class="modal-title">{{ isEditingCategory ? 'Editar categoría' : 'Crear categoría' }}</h2>
-                <p class="modal-subtitle" v-if="isEditingCategory">Actualiza los datos de la categoría</p>
-              </div>
-
-              <button type="button" class="close-btn" @click="showCategoryForm = false" aria-label="Cerrar formulario">
-                <i class="bi bi-x-lg" aria-hidden="true"></i>
-              </button>
-            </header>
-
-            <main class="modal-body">
-              <div class="form-grid">
-                <div class="form-group">
-                  <label for="category-name">
-                    Nombre <span class="required" aria-hidden="true">*</span>
-                  </label>
-                  <input
-                      id="category-name"
-                      v-model="categoryForm.name"
-                      type="text"
-                      placeholder="Ej: Tecnología, Hogar, etc."
-                      required
-                      aria-required="true"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label for="category-description">Descripción</label>
-                  <textarea
-                      id="category-description"
-                      v-model="categoryForm.description"
-                      rows="4"
-                      placeholder="Describe esta categoría (opcional)"
-                  ></textarea>
-                </div>
-              </div>
-            </main>
-
-            <footer class="modal-footer">
-              <button type="button" class="btn btn-secondary" @click="showCategoryForm = false">
-                Cancelar
-              </button>
-              <button type="submit" class="btn btn-primary">
-                <i class="bi" :class="isEditingCategory ? 'bi-check-lg' : 'bi-plus-lg'" aria-hidden="true"></i>
-                <span class="btn-text">{{ isEditingCategory ? 'Guardar cambios' : 'Crear categoría' }}</span>
-              </button>
-            </footer>
-          </form>
-        </div>
-      </div>
-    </Transition>
+    <CategoryFormModal
+      :is-open="showCategoryForm"
+      :is-editing="isEditingCategory"
+      :category-data="categoryForm"
+      @close="showCategoryForm = false"
+      @success="handleCategorySuccess"
+    />
   </div>
 </template>
 
@@ -395,6 +177,8 @@ import { useRouter } from 'vue-router';
 import axiosConfig from '../config/AxiosConfig.js';
 import { ref, reactive, onMounted } from 'vue';
 import * as categoriesService from '../services/categories';
+import FurnitureFormModal from '../components/FurnitureFormModal.vue';
+import CategoryFormModal from '../components/CategoryFormModal.vue';
 
 const router = useRouter();
 const furnitureList = ref([]);
@@ -504,46 +288,17 @@ function openCreateCategory() {
 
 function openEditCategory(cat) {
   isEditingCategory.value = true;
-  // removed icon_base64 handling
   Object.assign(categoryForm, { id: cat.id, name: cat.name, description: cat.description || '' });
   showCategoryForm.value = true;
 }
 
-async function saveCategory() {
-  if (!categoryForm.name || !categoryForm.name.trim()) {
-    axiosConfig.ToastWarning('Validación', 'El nombre es obligatorio');
-    return;
-  }
-  // payload no longer includes icon_base64
-  const payload = { name: categoryForm.name.trim(), description: categoryForm.description || undefined };
-  try {
-    if (isEditingCategory.value) {
-      const updated = await categoriesService.updateCategory(categoryForm.id, payload);
-      axiosConfig.ToastSuccess('Actualizado', 'Categoría actualizada correctamente');
-      // refresh categories and keep selection if needed
-      await fetchCategories();
-      if (updated && updated.id) {
-        if (form.category_id === updated.id || !form.category_id) form.category_id = updated.id;
-      }
-    } else {
-      const created = await categoriesService.createCategory(payload);
-      axiosConfig.ToastSuccess('Creado', 'Categoría creada correctamente');
-      // refrescar lista de categorías y asignar la nueva al formulario del mueble
-      await fetchCategories();
-      if (created && created.id) {
-        form.category_id = created.id;
-      }
-    }
-    showCategoryForm.value = false;
-  } catch (err) {
-    console.error(err);
-    if (err.response && err.response.status === 409) {
-      axiosConfig.ToastWarning('Conflicto', 'Ya existe una categoría con ese nombre');
-    } else if (err.response && err.response.data) {
-      axiosConfig.ToastWarning('Error', JSON.stringify(err.response.data));
-    } else {
-      axiosConfig.ToastError('Error', 'No se pudo guardar la categoría');
-    }
+// El modal ahora maneja la API directamente, solo necesitamos recargar las categorías
+async function handleCategorySuccess() {
+  showCategoryForm.value = false;
+  await fetchCategories();
+  // Si hay un formulario de mueble abierto, actualizar su lista de categorías también
+  if (showForm.value) {
+    // Las categorías ya están actualizadas en categories.value
   }
 }
 
@@ -594,37 +349,10 @@ function validateForm() {
   return true;
 }
 
-async function saveFurniture() {
-  if (!validateForm()) return;
-
-  // Preparar los datos para enviar
-  const dataToSend = {
-    name: form.name,
-    description: form.description || '',
-    price: parseFloat(form.price),
-    category_id: parseInt(form.category_id),
-    images: form.images || [], // Enviar array de imágenes
-    stock: parseInt(form.stock) || 0,
-    brand: form.brand || '',
-    color: form.color || '',
-    material: form.material || '',
-    dimensions: form.dimensions || ''
-  };
-
-  try {
-    if (isEditing.value) {
-      await axiosConfig.doPut(`/furniture/${form.id}/`, dataToSend);
-      axiosConfig.ToastSuccess('¡Éxito!', 'Mueble actualizado correctamente.');
-    } else {
-      await axiosConfig.doPost('/furniture/', dataToSend);
-      axiosConfig.ToastSuccess('¡Éxito!', 'Mueble creado correctamente.');
-    }
-    showForm.value = false;
-    fetchFurniture();
-  } catch (e) {
-    console.error('Error al guardar:', e);
-    axiosConfig.ToastError('Error', 'No se pudo guardar el mueble.');
-  }
+// El modal ahora maneja la API directamente, solo necesitamos recargar los muebles
+async function handleFurnitureSuccess() {
+  showForm.value = false;
+  await fetchFurniture();
 }
 
 async function deleteFurniture(id) {
@@ -780,61 +508,105 @@ function getMainImage(item) {
 
 <style scoped>
 .admin-dashboard {
-  font-family: 'Roboto', sans-serif;
-  background-color: #f4f7fa;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #f4f7fa 0%, #e8ecf1 100%);
   color: #333;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .dashboard-header {
-  background-color: #007bff;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
   color: #fff;
-  padding: 1rem;
+  padding: 1.5rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
 }
 
 .header-content {
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .header-title-section {
   display: flex;
   align-items: center;
+  gap: 1rem;
 }
 
 .header-title-section i {
-  font-size: 2rem;
-  margin-right: 0.5rem;
+  font-size: 2.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.75rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease;
+}
+
+.header-title-section i:hover {
+  transform: scale(1.1) rotate(5deg);
 }
 
 .header-title-section h1 {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .header-title-section p {
-  margin: 0;
-  font-size: 0.875rem;
+  margin: 0.25rem 0 0 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
 }
 
 .logout-btn {
-  background-color: transparent;
-  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   color: #fff;
+  padding: 0.65rem 1.5rem;
+  border-radius: 8px;
   font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.logout-btn i {
+  font-size: 1.1rem;
 }
 
 .dashboard-content {
   flex: 1;
-  padding: 1rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .loading-container {
@@ -843,14 +615,21 @@ function getMainImage(item) {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 1rem;
+}
+
+.loading-container p {
+  color: #6c757d;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .spinner {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid #fff;
+  border: 4px solid rgba(0, 123, 255, 0.1);
+  border-top: 4px solid #007bff;
   border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
+  width: 3rem;
+  height: 3rem;
   animation: spin 0.8s linear infinite;
 }
 
@@ -867,140 +646,219 @@ function getMainImage(item) {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: #fff;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .actions-bar {
-  padding: 1rem;
+  padding: 1.5rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  background: linear-gradient(to right, #f8f9fa, #ffffff);
+  border-bottom: 2px solid #e9ecef;
 }
 
 .actions-left {
   display: flex;
   align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .btn-primary {
-  background-color: #007bff;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
   color: #fff;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.35);
 }
 
 .btn-primary i {
-  margin-right: 0.5rem;
+  font-size: 1.1rem;
 }
 
 .btn-secondary {
-  background-color: #6c757d;
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
   color: #fff;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.25);
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(108, 117, 125, 0.35);
 }
 
 .btn-secondary i {
-  margin-right: 0.5rem;
+  font-size: 1.1rem;
 }
 
 .stats-summary {
   display: flex;
   align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
-  margin-right: 1.5rem;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, rgba(0, 123, 255, 0.05), rgba(0, 86, 179, 0.05));
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .stat-item i {
-  font-size: 1.5rem;
-  margin-right: 0.5rem;
+  font-size: 1.75rem;
+  color: #007bff;
+}
+
+.stat-item span {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
 }
 
 .categories-section {
-  padding: 1rem;
+  padding: 2rem;
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
 .section-header {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .section-header h2 {
-  font-size: 1.25rem;
-  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  letter-spacing: -0.5px;
 }
 
 .section-header p {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: 0.95rem;
+  color: #6c757d;
+}
+
+.muted {
   color: #6c757d;
 }
 
 .categories-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
 }
 
 .category-card-mini {
-  background-color: #fff;
-  border: 1px solid #e9ecef;
-  border-radius: 0.5rem;
-  padding: 1rem;
+  background: #fff;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1.25rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.category-card-mini:hover {
+  border-color: #007bff;
+  box-shadow: 0 4px 16px rgba(0, 123, 255, 0.15);
+  transform: translateY(-2px);
 }
 
 .cat-left {
   display: flex;
   align-items: center;
+  gap: 0.75rem;
 }
 
 .icon-area-small {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.5rem;
-  background-color: #007bff;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
   color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: 0.5rem;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+}
+
+.no-icon-small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cat-mid {
   flex: 1;
+  min-width: 0;
 }
 
 .cat-name {
-  font-weight: 500;
-  margin: 0;
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0 0 0.25rem 0;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .muted.small {
   font-size: 0.875rem;
   color: #6c757d;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .cat-actions {
@@ -1009,50 +867,96 @@ function getMainImage(item) {
 }
 
 .btn-icon {
-  background-color: transparent;
-  border: none;
+  background: transparent;
+  border: 1px solid #e9ecef;
   color: #007bff;
   cursor: pointer;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btn-icon:hover {
+  background: #007bff;
+  color: #fff;
+  border-color: #007bff;
+  transform: scale(1.1);
 }
 
 .btn-icon.btn-delete {
   color: #dc3545;
+  border-color: #e9ecef;
+}
+
+.btn-icon.btn-delete:hover {
+  background: #dc3545;
+  color: #fff;
+  border-color: #dc3545;
 }
 
 .table-container {
   flex: 1;
   overflow-x: auto;
+  padding: 0 2rem 2rem 2rem;
 }
 
 .furniture-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .furniture-table th,
 .furniture-table td {
-  padding: 0.75rem;
+  padding: 1rem 1.25rem;
   text-align: left;
   border-bottom: 1px solid #e9ecef;
 }
 
 .furniture-table th {
-  background-color: #f8f9fa;
-  font-weight: 500;
+  background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #495057;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.furniture-table tbody tr {
+  transition: all 0.3s ease;
+}
+
+.furniture-table tbody tr:hover {
+  background: linear-gradient(to right, #f8f9fa, #ffffff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .img-cell {
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
 }
 
 .img-wrapper {
   width: 100%;
   height: 100%;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   overflow: hidden;
   position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.img-wrapper:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .img-wrapper img {
@@ -1067,16 +971,79 @@ function getMainImage(item) {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f0f0f0;
-  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+  border-radius: 8px;
+  color: #6c757d;
+  font-size: 1.5rem;
 }
 
 .table-row {
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
 }
 
 .table-row:hover {
-  background-color: #f1f3f5;
+  background: linear-gradient(to right, rgba(0, 123, 255, 0.03), transparent);
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: linear-gradient(135deg, rgba(0, 123, 255, 0.1), rgba(0, 86, 179, 0.1));
+  color: #007bff;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.stock-badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.stock-empty {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.stock-low {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.stock-medium {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.stock-high {
+  background: #d4edda;
+  color: #155724;
+}
+
+.color-dot {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  border: 2px solid #dee2e6;
+  vertical-align: middle;
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.btn-edit {
+  color: #007bff;
+}
+
+.btn-edit:hover {
+  background: #007bff;
+  color: #fff;
 }
 
 .empty-state {
@@ -1086,22 +1053,46 @@ function getMainImage(item) {
   justify-content: center;
   align-items: center;
   text-align: center;
+  padding: 3rem 1rem;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .empty-state i {
-  font-size: 3rem;
+  font-size: 4rem;
   color: #007bff;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
 }
 
 .empty-state h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  color: #333;
+}
+
+.empty-state h4 {
   font-size: 1.5rem;
+  font-weight: 600;
   margin: 0 0 0.5rem 0;
+  color: #333;
 }
 
 .empty-state p {
-  margin: 0 0 1rem 0;
+  margin: 0 0 1.5rem 0;
   color: #6c757d;
+  font-size: 1rem;
+  max-width: 400px;
 }
 
 .image-preview-box {
@@ -1216,97 +1207,422 @@ function getMainImage(item) {
   }
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 0; /* Eliminar espacio horizontal entre columnas en móvil */
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 0; /* Eliminar espacio entre inputs en fila en móvil */
-  }
-
-  .form-body {
+/* === Responsive Design === */
+@media (max-width: 1024px) {
+  .dashboard-content {
     padding: 1.5rem;
   }
 
-  .form-group {
-    margin-bottom: 1.5rem; /* Reducir espacio entre inputs en móvil */
+  .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
 
-  .form-group-small {
-    margin-bottom: 1.5rem; /* Mismo espacio en móvil */
+  .stats-summary {
+    flex-wrap: wrap;
+    gap: 1rem;
   }
 
-  .modal-form,
-  .modal-card {
-    max-width: 95%;
-    width: 95%;
+  .furniture-table {
+    font-size: 0.9rem;
   }
 
-  .image-list {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  .furniture-table th,
+  .furniture-table td {
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .header-title-section {
+    width: 100%;
+  }
+
+  .header-title-section i {
+    font-size: 2rem;
+  }
+
+  .header-title-section h1 {
+    font-size: 1.5rem;
+  }
+
+  .logout-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dashboard-content {
+    padding: 1rem;
+  }
+
+  .actions-bar {
+    padding: 1.25rem 1.5rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .actions-left {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stats-summary {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .stat-item {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .categories-section {
+    padding: 1.5rem;
+  }
+
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .table-container {
+    padding: 0 1rem 1rem 1rem;
+  }
+
+  .furniture-table {
+    font-size: 0.85rem;
+  }
+
+  .furniture-table th,
+  .furniture-table td {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .img-cell {
+    width: 70px;
+    height: 70px;
+  }
+
+  /* Scroll horizontal para tablas */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .furniture-table {
+    min-width: 800px;
   }
 }
 
 @media (max-width: 480px) {
-  .form-body {
+  .dashboard-header {
     padding: 1rem;
   }
 
-  .form-group {
-    margin-bottom: 1.25rem; /* Aún más compacto en pantallas muy pequeñas */
+  .header-title-section i {
+    font-size: 1.75rem;
+    padding: 0.5rem;
   }
 
-  .form-group-small {
-    margin-bottom: 1.25rem;
+  .header-title-section h1 {
+    font-size: 1.25rem;
   }
 
-  .form-group label {
+  .header-title-section p {
+    font-size: 0.8rem;
+  }
+
+  .dashboard-content {
+    padding: 0.75rem;
+  }
+
+  .actions-bar {
+    padding: 1rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.65rem 1.25rem;
     font-size: 0.9rem;
-    margin-bottom: 0.5rem;
+  }
+
+  .categories-section {
+    padding: 1rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .category-card-mini {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cat-left {
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+
+  .cat-mid {
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+
+  .cat-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .icon-area-small {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+  }
+
+  .table-container {
+    padding: 0 0.5rem 0.5rem 0.5rem;
+  }
+
+  .furniture-table {
+    font-size: 0.8rem;
+  }
+
+  .furniture-table th,
+  .furniture-table td {
+    padding: 0.5rem;
+  }
+
+  .img-cell {
+    width: 60px;
+    height: 60px;
+  }
+
+  .empty-state {
+    padding: 2rem 1rem;
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+  }
+
+  .empty-state h3,
+  .empty-state h4 {
+    font-size: 1.25rem;
+  }
+
+  .empty-state p {
+    font-size: 0.9rem;
+  }
+}
+
+/* === Mejoras adicionales de accesibilidad === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === Utilidades === */
+.btn-icon.small {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.95rem;
+}
+
+/* === Mejoras para formularios en columnas (si existen) === */
+.dashboard-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.column {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.5s ease;
+}
+
+.column:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+}
+
+.column h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid #007bff;
+}
+
+.column h2::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 1.5rem;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border-radius: 2px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 0.875rem 1rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background: #fff;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form button[type="submit"] {
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.form button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.35);
+}
+
+.form button[type="submit"]:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .dashboard-columns {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .column {
+    padding: 1.5rem;
+  }
+
+  .column h2 {
+    font-size: 1.35rem;
   }
 
   .form-group input,
-  .form-group select,
-  .form-group textarea {
+  .form-group textarea,
+  .form-group select {
     padding: 0.75rem 0.875rem;
     font-size: 0.95rem;
   }
 
-  .modal-form,
-  .modal-card {
-    max-width: 98%;
-    width: 98%;
-    max-height: 95vh;
+  .form button[type="submit"] {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-columns {
+    padding: 0.75rem;
+    gap: 1rem;
   }
 
-  .form-header h2 {
-    font-size: 1.1rem;
+  .column {
+    padding: 1.25rem;
   }
 
-  .form-section-images h3 {
-    font-size: 1rem;
+  .column h2 {
+    font-size: 1.25rem;
   }
 
-  .image-list {
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 0.75rem;
+  .form {
+    gap: 1rem;
   }
 
-  .image-preview-box {
-    height: 100px;
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.9rem;
   }
 
-  .form-footer {
-    padding: 1rem;
-    flex-direction: column;
-  }
-
-  .form-footer button {
-    width: 100%;
+  .form button[type="submit"] {
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
   }
 }
 </style>
