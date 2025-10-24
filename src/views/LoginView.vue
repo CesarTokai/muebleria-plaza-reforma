@@ -262,8 +262,6 @@ async function handleLogin() {
   error.value = '';
   loading.value = true;
   try {
-    console.log('API Endpoint: /login');
-    console.log('Payload:', { email: email.value, password: password.value });
     const res = await axios.doPost('/login', { email: email.value, password: password.value });
     if (res.data && (res.data.token || res.data.access_token)) {
       localStorage.setItem('token', res.data.token || res.data.access_token);
@@ -293,8 +291,6 @@ async function requestReset() {
   error.value = '';
   loading.value = true;
   try {
-    console.log('API Endpoint: /request-reset');
-    console.log('Payload:', { email: email.value });
     await axios.doPost('/request-reset', { email: email.value });
     resetStep.value = 2;
   } catch (e) {
@@ -308,8 +304,6 @@ async function verifyCode() {
   error.value = '';
   loading.value = true;
   try {
-    console.log('API Endpoint: /verify-code');
-    console.log('Payload:', { email: email.value, code: code.value });
     await axios.doPost('/verify-code', { email: email.value, code: code.value });
     resetStep.value = 3;
   } catch (e) {
@@ -323,8 +317,6 @@ async function resetPassword() {
   error.value = '';
   loading.value = true;
   try {
-    console.log('API Endpoint: /reset-password');
-    console.log('Payload:', { email: email.value, code: code.value, new_password: newPassword.value });
     await axios.doPost('/reset-password', { email: email.value, code: code.value, new_password: newPassword.value });
     resetStep.value = 0;
     alert('Contraseña restablecida con éxito');
