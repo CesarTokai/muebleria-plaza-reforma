@@ -199,6 +199,10 @@ async function handleSubmit() {
   overflow: hidden;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   animation: scaleIn 0.3s ease;
+  /* permitir que el modal sea alto y el body haga scroll en pantallas pequeñas */
+  max-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes scaleIn {
@@ -215,6 +219,8 @@ async function handleSubmit() {
 .modal-card form {
   display: flex;
   flex-direction: column;
+  /* asegurar que el contenido principal pueda crecer y el body haga scroll */
+  min-height: 0;
 }
 
 /* Modal Header */
@@ -302,64 +308,12 @@ async function handleSubmit() {
 .modal-body {
   padding: 2rem;
   background: linear-gradient(to bottom, #fafbfc, #ffffff);
+  /* Hacer la zona central scrollable si el contenido desborda */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-.modal-body .form-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.modal-body .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.modal-body .form-group label {
-  font-weight: 600;
-  color: #333;
-  font-size: 0.95rem;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.modal-body .form-group .required {
-  color: #dc3545;
-  font-weight: 700;
-}
-
-.modal-body .form-group input,
-.modal-body .form-group textarea {
-  padding: 0.875rem 1rem;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-family: inherit;
-  transition: all 0.3s ease;
-  background: #fff;
-}
-
-.modal-body .form-group input:focus,
-.modal-body .form-group textarea:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
-  transform: translateY(-1px);
-}
-
-.modal-body .form-group textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-.modal-body .form-group input::placeholder,
-.modal-body .form-group textarea::placeholder {
-  color: #9ca3af;
-}
-
-/* Modal Footer */
+/* Mantener el footer fijo al final pero dentro del modal */
 .modal-footer {
   padding: 1.5rem 2rem;
   background: linear-gradient(to top, #f8f9fa, #ffffff);
@@ -367,43 +321,6 @@ async function handleSubmit() {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-}
-
-.modal-footer .btn {
-  padding: 0.875rem 2rem;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.modal-footer .btn-secondary {
-  background: #fff;
-  color: #333;
-  border: 2px solid #e9ecef;
-}
-
-.modal-footer .btn-secondary:hover {
-  background: #f8f9fa;
-  border-color: #6c757d;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.modal-footer .btn-primary {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
-}
-
-.modal-footer .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.35);
 }
 
 /* Modal Transitions */
@@ -520,4 +437,3 @@ async function handleSubmit() {
   }
 }
 </style>
-

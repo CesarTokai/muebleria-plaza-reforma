@@ -55,7 +55,7 @@
         <i class="bi bi-whatsapp"></i>
         <span class="whatsapp-tooltip">¡Chatea con nosotros!</span>
       </a>
-      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg" alt="WhatsApp" />
+
   </div>
 </template>
 

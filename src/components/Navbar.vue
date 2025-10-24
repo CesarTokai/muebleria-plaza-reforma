@@ -103,10 +103,10 @@ watch(() => route.path, () => {
 
 const nav = [
   { label: 'Inicio', to: '/', icon: 'bi bi-house-door-fill' },
-  { label: 'Sala de estar', to: { name: 'Productos', params: { categoria: 'salas' } }, icon: 'bi bi-flower1' },
-  { label: 'Dormitorio', to: { name: 'Productos', params: { categoria: 'recamaras' } }, icon: 'bi bi-moon-stars-fill' },
-  { label: 'Comedor', to: { name: 'Productos', params: { categoria: 'comedores' } }, icon: 'bi bi-cup-hot-fill' },
-  { label: 'Office', to: { name: 'Productos', params: { categoria: 'oficina' } }, icon: 'bi bi-briefcase-fill' },
+  { label: 'Sala de estar', to: { name: 'Productos', params: { categoria: 'sala de estar' } }, icon: 'bi bi-flower1' },
+  { label: 'Dormitorio', to: { name: 'Productos', params: { categoria: 'dormitorio' } }, icon: 'bi bi-moon-stars-fill' },
+  { label: 'Comedor', to: { name: 'Productos', params: { categoria: 'comedor' } }, icon: 'bi bi-cup-hot-fill' },
+  { label: 'Oficiona', to: { name: 'Productos', params: { categoria: 'oficina' } }, icon: 'bi bi-briefcase-fill' },
   { label: 'Productos', to: { name: 'ProductosList' }, icon: 'bi bi-grid-3x3-gap-fill' },
   { label: 'Contacto', to: '/contacto', icon: 'bi bi-envelope-fill' },
 ];

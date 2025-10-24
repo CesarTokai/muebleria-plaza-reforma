@@ -479,6 +479,7 @@ function handleDrop(e) {
   overflow: hidden;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   animation: scaleIn 0.3s ease;
+  -webkit-overflow-scrolling: touch;
 }
 
 @keyframes scaleIn {
@@ -554,6 +555,7 @@ function handleDrop(e) {
   overflow-y: auto;
   padding: 2rem;
   background: linear-gradient(to bottom, #fafbfc, #ffffff);
+  -webkit-overflow-scrolling: touch;
 }
 
 .form-body::-webkit-scrollbar {
@@ -996,5 +998,15 @@ function handleDrop(e) {
     height: 85px;
   }
 }
-</style>
 
+/* Responsive tweaks for mobile */
+@media (max-width: 520px) {
+  .modal-form { max-width: 100%; width: calc(100% - 1rem); border-radius: 12px; }
+  .form-header { padding: 1rem; }
+  .form-body { padding: 1rem; }
+  .form-section-images { padding: 1rem; }
+  .image-item { width: 80px; height: 80px; }
+  .form-grid { gap: 1rem; grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+}
+</style>

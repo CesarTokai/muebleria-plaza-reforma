@@ -1566,63 +1566,65 @@ function getMainImage(item) {
 .form button[type="submit"]:active {
   transform: translateY(0);
 }
+</style>
 
-@media (max-width: 768px) {
-  .dashboard-columns {
-    grid-template-columns: 1fr;
-    padding: 1rem;
-    gap: 1.5rem;
-  }
-
-  .column {
-    padding: 1.5rem;
-  }
-
-  .column h2 {
-    font-size: 1.35rem;
-  }
-
-  .form-group input,
-  .form-group textarea,
-  .form-group select {
-    padding: 0.75rem 0.875rem;
-    font-size: 0.95rem;
-  }
-
-  .form button[type="submit"] {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.95rem;
-  }
+<!-- Agregado CSS responsivo adicional para móviles sin tocar lógica ni diseño -->
+<style scoped>
+/* Asegurar que modales sean scrollables en pantallas pequeñas */
+.modal-card,
+.modal-form {
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-@media (max-width: 480px) {
-  .dashboard-columns {
-    padding: 0.75rem;
-    gap: 1rem;
-  }
+/* Mejorar interacción táctil */
+.actions-bar .btn-primary,
+.actions-bar .btn-secondary,
+.btn-icon,
+.logout-btn,
+.btn-primary,
+.btn-secondary {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
 
-  .column {
-    padding: 1.25rem;
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 420px) {
+  .dashboard-content { padding: 0.6rem; }
+  .actions-bar { padding: 0.75rem; gap: 0.5rem; }
+  .actions-left { gap: 0.5rem; }
+  .btn-primary, .btn-secondary {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.92rem;
   }
+  .header-title-section h1 { font-size: 1.05rem; }
+  .header-title-section p { font-size: 0.78rem; }
 
-  .column h2 {
-    font-size: 1.25rem;
-  }
+  /* Mantener tabla desplazable pero reducir min-width para mejor encaje */
+  .furniture-table { min-width: 700px; }
+  .table-container { padding: 0 0.4rem 0.6rem 0.4rem; }
 
-  .form {
-    gap: 1rem;
+  /* Ajustes de tarjetas de categoría para mejor lectura */
+  .category-card-mini {
+    padding: 0.9rem;
+    gap: 0.6rem;
   }
+  .cat-name { font-size: 0.95rem; }
+  .muted.small { font-size: 0.82rem; }
 
-  .form-group input,
-  .form-group textarea,
-  .form-group select {
-    padding: 0.65rem 0.75rem;
-    font-size: 0.9rem;
-  }
+  /* Imagenes más compactas */
+  .img-cell { width: 56px; height: 56px; }
+  .img-wrapper img { object-position: center center; }
 
-  .form button[type="submit"] {
-    padding: 0.65rem 1rem;
-    font-size: 0.9rem;
-  }
+  /* Espaciado en estados vacíos */
+  .empty-state { padding: 1.6rem 0.6rem; }
+}
+
+/* Pequeño ajuste en tablet para mejor legibilidad */
+@media (min-width: 421px) and (max-width: 768px) {
+  .furniture-table { min-width: 780px; }
+  .dashboard-content { padding: 1rem; }
+  .actions-bar { padding: 1rem 1rem; }
 }
 </style>

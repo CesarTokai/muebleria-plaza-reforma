@@ -98,10 +98,16 @@ const handleSubmit = async () => {
     // Construir el mensaje para WhatsApp
     const message = `Hola, mi nombre es ${form.value.name}. Mi correo es ${form.value.email}, mi teléfono es ${form.value.phone}. Quiero decir: ${form.value.message}`;
     const encodedMessage = encodeURIComponent(message);
-    const whatsappLink = `https://wa.me/7341218621?text=${encodedMessage}`;
+    // Usar el enlace web de WhatsApp (evita intentar abrir el esquema nativo que falla en algunos navegadores)
+    const phoneNumber = '7341218621';
+    const webWhatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodedMessage}`;
 
-    // Redirigir al enlace de WhatsApp
-    window.location.href = whatsappLink;
+    // Abrir en una nueva pestaña/ventana (más seguro en escritorio y móviles)
+    const newWin = window.open(webWhatsappLink, '_blank');
+    // Si el navegador bloquea popups, forzar la navegación en la misma ventana como fallback
+    if (!newWin) {
+      window.location.href = webWhatsappLink;
+    }
   } catch (error) {
     alert('Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.');
   } finally {
@@ -363,7 +369,7 @@ button[type="submit"]:disabled {
   }
 
   textarea {
-    rows: 3;
+    /* removed invalid CSS property 'rows' */
   }
 
   button[type="submit"] {
