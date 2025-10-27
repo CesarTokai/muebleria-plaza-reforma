@@ -77,6 +77,7 @@
           <img
             :src="images[i]"
             :alt="`Imagen promocional ${i + 1}`"
+            :title="`Promoción ${i + 1}`"
             loading="lazy"
             @load="onImageLoad(i)"
           />

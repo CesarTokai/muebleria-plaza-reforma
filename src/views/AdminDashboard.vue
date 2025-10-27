@@ -101,9 +101,9 @@
             <tr v-for="item in furnitureList" :key="item.id" class="table-row">
               <td data-label="Imagen" class="img-cell">
                 <div class="img-wrapper">
-                  <img v-if="getMainImage(item)" :src="getMainImage(item)" alt="img" />
-                  <div v-else class="no-image">
-                    <i class="bi bi-image"></i>
+                  <img v-if="getMainImage(item)" :src="getMainImage(item)" :alt="`Imagen de ${item.name}`" :title="`Imagen de ${item.name}`" />
+                  <div v-else class="no-image" role="img" aria-label="Sin imagen disponible">
+                    <i class="bi bi-image" aria-hidden="true"></i>
                   </div>
                 </div>
               </td>

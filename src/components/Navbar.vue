@@ -45,8 +45,11 @@
             </button>
             <input
                 type="search"
+                id="search-input"
+                name="search"
                 class="navbar__search-input"
                 placeholder="Buscar productos..."
+                title="Buscar productos"
                 aria-label="Buscar productos"
                 v-model="searchQuery"
                 @focus="searchFocused = true"

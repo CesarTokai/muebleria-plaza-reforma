@@ -37,8 +37,13 @@
 
       <!-- Categoría -->
       <div class="filter-item">
-        <label><i class="bi bi-tag"></i> Categoría</label>
-        <select v-model="localSelectedCategory" class="filter-select">
+        <label for="category-filter"><i class="bi bi-tag"></i> Categoría</label>
+        <select
+          id="category-filter"
+          name="category"
+          v-model="localSelectedCategory"
+          class="filter-select"
+          aria-label="Filtrar por categoría">
           <option value="">Todas las categorías</option>
           <option v-for="cat in categories" :key="cat.value" :value="cat.value">
             {{ cat.icon }} {{ cat.label }}
@@ -52,16 +57,24 @@
         <div class="price-inputs">
           <input
             type="number"
+            id="price-min"
+            name="priceMin"
             class="price-input"
             placeholder="Mínimo"
+            title="Precio mínimo"
+            aria-label="Precio mínimo"
             v-model.number="localMinPrice"
             min="0"
           />
           <span class="price-separator">—</span>
           <input
             type="number"
+            id="price-max"
+            name="priceMax"
             class="price-input"
             placeholder="Máximo"
+            title="Precio máximo"
+            aria-label="Precio máximo"
             v-model.number="localMaxPrice"
             min="0"
           />

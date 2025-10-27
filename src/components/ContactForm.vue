@@ -7,28 +7,28 @@
             <form class="contact-form" @submit.prevent="handleSubmit" autocomplete="off">
               <div class="form-group">
                 <label for="name"><i class="fas fa-user"></i> Nombre</label>
-                <input type="text" id="name" v-model="form.name" @blur="validateField('name')"
+                <input type="text" id="name" name="name" v-model="form.name" @blur="validateField('name')"
                   :class="{ error: errors.name }" autocomplete="name" placeholder="Tu nombre completo" />
                 <span class="error-message" v-if="errors.name">{{ errors.name }}</span>
               </div>
 
               <div class="form-group">
                 <label for="email"><i class="fas fa-envelope"></i> Correo</label>
-                <input type="email" id="email" v-model="form.email" @blur="validateField('email')"
+                <input type="email" id="email" name="email" v-model="form.email" @blur="validateField('email')"
                   :class="{ error: errors.email }" autocomplete="email" placeholder="tucorreo@ejemplo.com" />
                 <span class="error-message" v-if="errors.email">{{ errors.email }}</span>
               </div>
 
               <div class="form-group">
                 <label for="phone"><i class="fas fa-phone"></i> Teléfono</label>
-                <input type="tel" id="phone" v-model="form.phone" @blur="validateField('phone')"
+                <input type="tel" id="phone" name="phone" v-model="form.phone" @blur="validateField('phone')"
                   :class="{ error: errors.phone }" autocomplete="tel" placeholder="10 dígitos" />
                 <span class="error-message" v-if="errors.phone">{{ errors.phone }}</span>
               </div>
 
               <div class="form-group">
                 <label for="message"><i class="fas fa-comment-alt"></i> Mensaje</label>
-                <textarea id="message" v-model="form.message" @blur="validateField('message')"
+                <textarea id="message" name="message" v-model="form.message" @blur="validateField('message')"
                   :class="{ error: errors.message }" rows="4" placeholder="¿En qué podemos ayudarte?"></textarea>
                 <span class="error-message" v-if="errors.message">{{ errors.message }}</span>
               </div>

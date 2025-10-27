@@ -34,8 +34,8 @@
                 <div class="testimonial-icon" aria-hidden="true">
                   <i class="bi bi-person-circle"></i>
                 </div>
-                <div class="rating" aria-label="Calificación 5 estrellas">
-                  <i v-for="star in 5" :key="star" class="bi bi-star-fill"></i>
+                <div class="rating" role="img" aria-label="Calificación 5 estrellas">
+                  <i v-for="star in 5" :key="star" class="bi bi-star-fill" aria-hidden="true"></i>
                 </div>
               </div>
 
