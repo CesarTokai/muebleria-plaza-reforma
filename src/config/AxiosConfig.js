@@ -17,6 +17,8 @@ const ToastError = (title, message) => {
   });
 };
 
+
+
 // Función para mostrar mensajes de advertencia
 const ToastWarning = (title, message) => {
   Swal.fire({
